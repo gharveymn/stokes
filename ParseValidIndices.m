@@ -75,7 +75,9 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd] = ParseValidIndices
 		ymesh = kron(yinit,ones(xsz,1));
 		
 		%Credit to Darren Engwirda for inpoly
-		valInd = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
+		[valInd,on] = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
+		
+		%valInd = valInd & ~on;
 		
 		Xmesh = (reshape(xmesh,[xsz,ysz]))';
 		Ymesh = (reshape(ymesh,[xsz,ysz]))';
