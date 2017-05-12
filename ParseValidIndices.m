@@ -1,4 +1,4 @@
-function [X,Y,indices] = ParseValidIndices
+function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd] = ParseValidIndices
 	% We'll either use an ascii map file or a connected grid outline (connections counter-clockwise in listed form.
 	% Last point should also be the first point).
 	
@@ -24,8 +24,8 @@ function [X,Y,indices] = ParseValidIndices
 		end
 		data = flipud(data);
 		
-		x = [];
-		y = [];
+		xmesh = [];
+		ymesh = [];
 		
 		initflow = zeros(size(data,1),size(data,2));
 		
@@ -46,8 +46,8 @@ function [X,Y,indices] = ParseValidIndices
 				end
 			end
 			
-			x = vertcat(x,currx);
-			y = vertcat(y,curry);
+			xmesh = vertcat(xmesh,currx);
+			ymesh = vertcat(ymesh,curry);
 			
 		end
 		
@@ -71,15 +71,16 @@ function [X,Y,indices] = ParseValidIndices
 		yinit = (limits(3):h:limits(4))';
 		xsz = numel(xinit);
 		ysz = numel(yinit);
-		xmesh = kron(xinit,ones(xsz,1));
-		ymesh = kron(ones(ysz,1),yinit);
+		xmesh = kron(ones(ysz,1),xinit);
+		ymesh = kron(yinit,ones(xsz,1));
 		
 		%Credit to Darren Engwirda for inpoly
-		indices = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
+		valInd = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
 		
-		X = reshape(xmesh,[xsz,xsz]);
-		Y = reshape(ymesh,[ysz,ysz]);
-			
+		Xmesh = (reshape(xmesh,[xsz,ysz]))';
+		Ymesh = (reshape(ymesh,[xsz,ysz]))';
+		
+		
 	else
 		error('Not a valid type of map')
 	end

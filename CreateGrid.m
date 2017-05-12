@@ -65,29 +65,10 @@ function [x,y,ux,uy] = CreateGrid
 			ylimcoords((i+1)/2) = data(i+1);
 		end
 		
-		%turn into vectors
-		%xlimvects = diff(xlimcoords);
-		%ylimvects = diff(ylimcoords);
+		%We'll use the fluid cell/obstacle cell method as described by Griebel, etc.
 		
-		%make grid
-		limits = [min(xlimcoords),max(xlimcoords),min(ylimcoords),max(ylimcoords)];
-		xinit = (limits(1):h:limits(2))';
-		yinit = (limits(3):h:limits(4))';
-		xmesh = kron(xinit,ones(numel(yinit),1));
-		ymesh = kron(ones(numel(xinit),1),yinit);
 		
-		%rows correspond to each limcoords, columns in those rows are meshpoints
-		%xvects = (kron(ones(1,numel(xlimcoords(1:end-1))),xmesh) - kron(ones(numel(xmesh),1),xlimcoords(1:end-1)'))';
-		%yvects = (kron(ones(1,numel(ylimcoords(1:end-1))),ymesh) - kron(ones(numel(ymesh),1),ylimcoords(1:end-1)'))';
 		
-		%if all cross products are positive then point is inside
-		%indices = (prod((xlimvects.*yvects - xvects.*ylimvects) > 0))' == 1;
-		
-		%Credit to Darren Engwirda for inpoly
-		indices = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
-		
-		x = xmesh(indices);
-		y = ymesh(indices);	
 	else
 		error('Not a valid type of map')
 	end
