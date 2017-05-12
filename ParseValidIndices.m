@@ -1,4 +1,4 @@
-function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd] = ParseValidIndices
+function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd,on] = ParseValidIndices
 	% We'll either use an ascii map file or a connected grid outline (connections counter-clockwise in listed form.
 	% Last point should also be the first point).
 	

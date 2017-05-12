@@ -1,4 +1,4 @@
-function [fx,fy] = GetAppliedForce(xinit,yinit,xmesh,ymesh,valInd,sz)
+function [fx,fy,inds] = GetAppliedForce(xinit,yinit,xmesh,ymesh,valInd,sz)
 	%APPFORCE Summary of this function goes here
 	%   Detailed explanation goes here
 	
@@ -18,9 +18,13 @@ function [fx,fy] = GetAppliedForce(xinit,yinit,xmesh,ymesh,valInd,sz)
 	
 	fx = zeros(sz,1);
 	fy = fx;
+	inds = fy;
 	
 	for i=1:numel(yinit)
-		fx(xmesh==0&ymesh==yinit(i)&valInd(xmesh==0&ymesh==yinit(i))) = 0.5;
+		ind1 = xmesh==zeros(sz,1) & ymesh==yinit(i);
+		ind = ind1 & valInd(ind1);
+		fx(ind) = 10;
+		inds = inds | ind;
 	end
 	
 	
