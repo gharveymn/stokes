@@ -17,8 +17,7 @@ function Stokes
 	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
 	Dx(1,1) = -1/h;
 	Dx(1,2) = 1/h;
-	Dx(end,end-1) = -1/h;
-	Dx(end,end) = 1/h;
+	Dx(end,:) = Dx(end-1,:);
 	ddx = kron(eye(ysz),Dx);
 	
 	ddy = sptoeplitz([zeros(1,xsz),-1],[zeros(1,xsz) 1], sz)./(2*h);
@@ -28,39 +27,37 @@ function Stokes
 	ddy(end-xsz+1:end,end-2*xsz+1:end-xsz) = -corner;
 	ddy(end-xsz+1:end,end-xsz+1:end) = corner;
 	
-	
 	[fx,fy,finds] = GetAppliedForce(xinit,yinit,xmesh,ymesh,valInd,sz);
 	
 	nLh = -Lh;
 	nLh = nLh.*(~on) + spdiags(on,0,size(nLh,1),size(nLh,2));
-	%nLh = nLh.*(~finds) + spdiags(finds,0,size(nLh,1),size(nLh,2));
-	nLh = nLh(valInd,:)';
-	nLh = nLh(valInd,:)';
+	nLh = nLh.*(~finds) + spdiags(finds,0,size(nLh,1),size(nLh,2));
 	
-	ddxne = ddx;
-	%ddxne = ddx.*(~finds);
-	ddxne = ddxne(valInd,:)';
-	ddxne = ddxne(valInd,:)';
+	ddxne = ddx.*(~on) + spdiags(on,0,size(ddx,1),size(ddx,2));
+	ddxne = ddxne.*(~finds) + spdiags(finds,0,size(ddxne,1),size(ddxne,2));
 	
-	ddyne = ddy;
-	%ddyne = ddy.*(~finds);
-	ddyne = ddyne(valInd,:)';
-	ddyne = ddyne(valInd,:)';
+	ddyne = ddy.*(~on) + spdiags(on,0,size(ddy,1),size(ddy,2));
+	ddyne = ddyne.*(~finds) + spdiags(finds,0,size(ddyne,1),size(ddyne,2));
+	
+	ddxsw = ddx;
+	ddysw = ddy;
 	
 	sz = size(ddxne,1);
 	
 	zer = sparse(sz,sz);
-	
+		
 	nw = [nLh zer
 		 zer nLh];
 	 
 	ne = [ddxne;ddyne];
 	
-	lhs=[nw  ne
-		ne' zer];
+	sw = [ddxsw,ddysw];
 	
-	fx = fx(valInd);
-	fy = fy(valInd);
+	lhs=[nw ne
+		sw zer];
+	
+% 	fx = fx(valInd);
+% 	fy = fy(valInd);
 	
 	rhs=[fx;fy;zeros(sz,1)];
 	
@@ -87,20 +84,18 @@ function Stokes
 	ax = [centerx-difa/2, centerx+difa/2, centery-difa/2, centery+difa/2];
 	
 	figure(1)
-	%surf(Xmesh,Ymesh,(reshape(ux,[xsz,ysz]))','edgecolor','none','facecolor','interp');
-	scatter(xmesh(valInd),ymesh(valInd),10,[clrsu zeros(numel(su),1) 1-clrsu],'.');
+	surf(Xmesh,Ymesh,(reshape(ux,[xsz,ysz]))','edgecolor','none','facecolor','interp');
+	%scatter(xmesh(valInd),ymesh(valInd),50,[clrsu zeros(numel(su),1) 1-clrsu],'.');
 	axis(ax)
 	title('velocity field')
 	drawnow
 	
 	figure(2)
-	%surf(Xmesh,Ymesh,(reshape(p,[xsz,ysz]))','edgecolor','none','facecolor','interp');
-	scatter(xmesh(valInd),ymesh(valInd),10,[clrsp zeros(numel(sp),1) 1-clrsp],'.');
+	surf(Xmesh,Ymesh,(reshape(p,[xsz,ysz]))','edgecolor','none','facecolor','interp');
+	%scatter(xmesh(valInd),ymesh(valInd),50,[clrsp zeros(numel(sp),1) 1-clrsp],'.');
 	axis(ax)
 	title('pressure field')
 	drawnow
-	
-	
 	
 end
 

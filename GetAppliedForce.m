@@ -27,6 +27,13 @@ function [fx,fy,inds] = GetAppliedForce(xinit,yinit,xmesh,ymesh,valInd,sz)
 		inds = inds | ind;
 	end
 	
+	for i=1:numel(yinit)
+		ind1 = xmesh==max(xinit)*ones(sz,1) & ymesh==yinit(i);
+		ind = ind1 & valInd(ind1);
+		fx(ind) = 10;
+		inds = inds | ind;
+	end
+	
 	
 end
 
