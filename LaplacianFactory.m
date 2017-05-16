@@ -7,17 +7,15 @@ function laplacian = LaplacianFactory(xsz,ysz,h,neumann)
 	Dyy = sptoeplitz([-2 1],ysz)./h.^2;
 	
 	if(neumann)
-		Dxx(1,1) = -1/h.^2;
-		Dxx(1,2) = 1/h.^2;
-		Dxx(end,end-1) = -1/h.^2;
-		Dxx(end,end) = 1/h.^2;
+		Dxx(1,:) = Dxx(2,:);
+		Dxx(end,:) = Dxx(end-1,:);
 		
-		Dyy(1,1) = -1/h.^2;
-		Dyy(1,2) = 1/h.^2;
-		Dyy(end,end-1) = -1/h.^2;
-		Dyy(end,end) = 1/h.^2;
+		Dyy(1,:) = Dyy(2,:);
+		Dyy(end,:) = Dyy(end-1,:);
+	else
+		
 	end
-		
+	
 	laplacian = kron(Dyy,speye(xsz))+kron(speye(ysz),Dxx);
 	
 end

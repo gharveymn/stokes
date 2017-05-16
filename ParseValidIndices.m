@@ -77,11 +77,11 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd,on] = ParseValidIndices
 		%Credit to Darren Engwirda for inpoly
 		[valInd,on] = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
 		
-		%valInd = valInd & ~on;
+		Xmesh = (reshape(xmesh./valInd,[xsz,ysz]))';
+		Ymesh = flipud((reshape(ymesh./valInd,[xsz,ysz]))');
 		
-		Xmesh = (reshape(xmesh,[xsz,ysz]))';
-		Ymesh = (reshape(ymesh,[xsz,ysz]))';
-		
+		xmesh = xmesh(valInd);
+		ymesh = ymesh(valInd);
 		
 	else
 		error('Not a valid type of map')
