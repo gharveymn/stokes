@@ -1,4 +1,4 @@
-function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd,on] = ParseValidIndices
+function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
 	% We'll either use an ascii map file or a connected grid outline (connections counter-clockwise in listed form.
 	% Last point should also be the first point).
 	
@@ -77,11 +77,15 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,valInd,on] = ParseValidIndices
 		%Credit to Darren Engwirda for inpoly
 		[valInd,on] = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
 		
+		filterMat = spdiags(valInd,0,xsz*ysz,xsz*ysz);
+		filterMat = filterMat(valInd,:);
+		on = on(valInd);
+		
 		Xmesh = (reshape(xmesh./valInd,[xsz,ysz]))';
 		Ymesh = flipud((reshape(ymesh./valInd,[xsz,ysz]))');
 		
-		xmesh = xmesh(valInd);
-		ymesh = ymesh(valInd);
+		xmesh = filterMat*xmesh;
+		ymesh = filterMat*ymesh;
 		
 	else
 		error('Not a valid type of map')
