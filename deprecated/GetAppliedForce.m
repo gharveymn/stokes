@@ -21,8 +21,8 @@ function [fx,fy,inds] = GetAppliedForce(xinit,yinit,xmesh,ymesh,on,sz)
 	inds = fy;
 	
 	for i=1:numel(yinit)
-		ind = xmesh==zeros(sz,1) & ymesh==yinit(i);
-		fx(ind) = 4*0.3*yinit(i)*(0.5 - yinit(i))/(0.41)^2;
+		ind = (xmesh==inflowx & ymesh==yinit(i));
+		fx(ind) = 4*0.3*yinit(i).*(0.5 - yinit(i))./(0.41)^2;
 		inds = inds | ind;
 	end
 	

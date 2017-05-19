@@ -18,7 +18,7 @@ function laplacian = LaplacianFactory(xsz,ysz,h,neumann)
 		
 	end
 	
-	laplacian = kron(Dyy,speye(xsz))+kron(speye(ysz),Dxx);
+	laplacian = kron(speye(ysz),Dxx) + kron(Dyy,speye(xsz));
 	
 end
 
