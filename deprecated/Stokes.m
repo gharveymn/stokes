@@ -40,16 +40,16 @@ function Stokes
 	nLh = nLh.*(~finds) + spdiags(finds,0,size(nLh,1),size(nLh,2));
 	
 	ddxne = ddx.*(~on).*(~finds) + spdiags(on&finds,0,size(ddx,1),size(ddx,2));
-	ddyne = ddy.*(~on).*(~finds) + spdiags(on&finds,0,size(ddy,1),size(ddy,2));
+	ddyne = -ddy.*(~on).*(~finds) + spdiags(on&finds,0,size(ddy,1),size(ddy,2));
 
 	ddxsw = ddx;
-	ddysw = ddy;
+	ddysw = -ddy;
 	
 	zer = sparse(size(ddxsw,2),size(ddxne,1));
 		
-	nw = blkdiag(nLh,nLh);
+	nw = blkdiag(nLh,-nLh);
 	ne = [ddxne;ddyne];
-	sw = ne';%[ddxsw;ddysw]';
+	sw = [ddxsw;ddysw]';
 	
 	lhs=[nw ne
 		sw zer];
