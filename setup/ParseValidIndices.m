@@ -41,7 +41,7 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
      on = on(valInd);
 
      Xmesh = (reshape(xmesh./valInd,[xsz,ysz]))';
-     Ymesh = flipud((reshape(ymesh./valInd,[xsz,ysz]))');
+     Ymesh = flipud((reshape(ymesh./valInd,[ysz,xsz]))');
 
      xmesh = filterMat*xmesh;
      ymesh = filterMat*ymesh;

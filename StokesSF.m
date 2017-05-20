@@ -14,6 +14,7 @@ function StokesSF
 	bcinds = rhs;
 	
 	%inflow
+	
 	inflowx = zeros(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==inflowx & ymesh==yinit(i));
@@ -21,13 +22,13 @@ function StokesSF
 		bcinds = bcinds | ind;
 	end
 	
-	outhalfwidth = (max(yinit)-min(yinit))/2;
-	
 	%outflow
+	
+	outwidth = (max(yinit)-min(yinit));
 	outflowx = max(xmesh)*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==outflowx & ymesh==yinit(i));
-		rhs(ind) = 1/(8*outhalfwidth^3)*(outhalfwidth^2*yinit(i) - yinit(i)^3/3) + 1/12;
+		rhs(ind) = 1/(outwidth^3)*(1/4*outwidth^2*yinit(i) - yinit(i)^3/3) + 1/12;
 		bcinds = bcinds | ind;
 	end
 	
@@ -42,7 +43,7 @@ function StokesSF
 	
 	
 	rmesh = filterMat'*rhs;
-	Rmesh = flipud(reshape(rmesh,[xsz,ysz])');
+	Rmesh = flipud(reshape(rmesh,[ysz,xsz]));
 	
 	figure(1)
 	ax = MakeAxis(Xmesh,Ymesh);
@@ -63,7 +64,6 @@ function StokesSF
 	bih = bih.*(~(bcinds|on)) + spdiags((bcinds|on),0,sz,sz);
 	
 	psi = bih\rhs;
-	
 	
 	psimesh = filterMat'*psi;
 	Psimesh = flipud(reshape(psimesh,[xsz,ysz])');
