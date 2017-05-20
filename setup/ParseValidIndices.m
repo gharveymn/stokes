@@ -1,10 +1,10 @@
-function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
+function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices
 	%PARSEVALIDINDICES parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
      %Xmesh,Ymesh have NaN wherever invalid -- matrix
      %filterMat filters out invalids when multiplied, inserts zeros when transposed and multiplied -- matrix
-     %on holds the indices which are on the boundary -- in vector form
+     %on holds the indices which are on the boundary -- in vector form, not prefiltered
 	
 	par = Parameters;
 	
@@ -30,21 +30,20 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
      yinit = (limits(3):h:limits(4))';
      xsz = numel(xinit);
      ysz = numel(yinit);
-     xmesh = kron(ones(ysz,1),xinit);
-     ymesh = kron(yinit,ones(xsz,1));
+     xmeshfull = kron(ones(ysz,1),xinit);
+     ymeshfull = kron(yinit,ones(xsz,1));
 
      %Credit to Darren Engwirda for inpoly
-     [valInd,on] = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
+     [valind,on] = inpoly(horzcat(xmeshfull,ymeshfull),horzcat(xlimcoords,ylimcoords));
 
-     filterMat = spdiags(valInd,0,xsz*ysz,xsz*ysz);
-     filterMat = filterMat(valInd,:);
-     on = on(valInd);
+     filterMat = spdiags(valind,0,xsz*ysz,xsz*ysz);
+     filterMat = filterMat(valind,:);
 
-     Xmesh = (reshape(xmesh./valInd,[xsz,ysz]))';
-     Ymesh = flipud((reshape(ymesh./valInd,[ysz,xsz]))');
+     Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
+     Ymesh = (reshape(ymeshfull./valind,[ysz,xsz]))';
 
-     xmesh = filterMat*xmesh;
-     ymesh = filterMat*ymesh;
+     xmesh = filterMat*xmeshfull;
+     ymesh = filterMat*ymeshfull;
 
 	
 end
