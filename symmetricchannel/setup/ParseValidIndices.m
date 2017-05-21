@@ -45,5 +45,5 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymes
      xmesh = filterMat*xmeshfull;
      ymesh = filterMat*ymeshfull;
 
-	
+	fclose('all');
 end
