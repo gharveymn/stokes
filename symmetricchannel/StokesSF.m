@@ -10,6 +10,7 @@ function StokesSF
 	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
 	
 	%note: numel(psi) = numel(xmesh) = numel(ymesh)
+	onpf = on(valind);
 	
 	xmin = min(xinit);
 	xmax = max(xinit);
@@ -24,16 +25,18 @@ function StokesSF
 	
 	%inflow
 	
-	inflowx = zeros(numel(xmesh),1);
+	inflowx = xmin*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==inflowx+h & ymesh==yinit(i));
 		in(ind) = yinit(i)./4 - yinit(i).^3./3 + 1/12;
 		bcinds = bcinds | ind;
 	end
 	
+	in(onpf) = 0;
+	
 	rhs = rhs + in;
 	
-	for i=1:1
+	for i=1:0
 		rhs = rhs + circshift(in,i);
 		bcinds = bcinds | circshift(bcinds,i);
 	end
@@ -42,16 +45,19 @@ function StokesSF
 	%outflow
 	
 	outwidth = ymax-ymin;
-	outflowx = max(xmesh)*ones(numel(xmesh),1);
+	outflowx = xmax*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==outflowx-h & ymesh==yinit(i));
 		%out(ind) = 1/30*yinit(i) + 1/12;
 		out(ind) = 1/outwidth^3*(outwidth^2/4*yinit(i) - yinit(i)^3/3) + 1/12;
 		bcinds = bcinds | ind;
 	end
+	
+	out(onpf) = 0;
+	
 	rhs = rhs + out;
 	
-	for i=1:1
+	for i=1:0
 		rhs = rhs + circshift(out,-i);
 		bcinds = bcinds | circshift(bcinds,-i);
 	end
@@ -125,17 +131,6 @@ function StokesSF
 % 	end
 	
 	bcsz = numel(bcw);
-% 	o = ones(bcsz,1);
-% 	bih = ~bcw.*bih + (o+0.1*rand(bcsz,1)).*bcw.*circshift(bih,-1);
-% 	bih = ~bce.*bih + (o+0.1*rand(bcsz,1)).*bce.*circshift(bih,1);
-% 	bih = ~bcs.*bih + (o+0.1*rand(bcsz,1)).*bcs.*circshift(bih,-xsz);
-% 	bih = ~bcn.*bih + (o+0.1*rand(bcsz,1)).*bcn.*circshift(bih,xsz);
-% 	bih = ~bcc.*bih + (o+0.1*rand(bcsz,1)).*spdiags(bcc,0,xsz*ysz,xsz*ysz);
-	
-% 	bcw = bcw | circshift(bcw,-1);
-% 	bce = bce | circshift(bce,1);
-% 	bcs = bcs | circshift(bcs,-xsz);
-% 	bcn = bcn | circshift(bcn,xsz);
 	
 	%wipe out invalid indices
 	bih = filterMat*bih*filterMat';
@@ -151,13 +146,10 @@ function StokesSF
 	bih = ~bcinds.*bih + spdiags(bcinds,0,sz,sz);
 %	bih = ~(bcw&bce&bcn&bcs).*bih + spdiags(bcw&bce&bcs&bcn,0,sz,sz);
 	
-	onpf = on(valind);
-% 	on(xmesh==0 & ymesh==0.5) = 0;
-% 	on(xmesh==0 & ymesh==-0.5) = 0;
-% 	on(xmesh==max(xinit) & ymesh==max(yinit)) = 0;
-% 	on(xmesh==max(xinit) & ymesh==min(yinit)) = 0;
 	
 	bih = ~onpf.*bih + spdiags(onpf,0,sz,sz);
+	
+	cond(full(bih))
 	
 	psi = bih\rhs;
 	
