@@ -1,4 +1,4 @@
-function StokesSFSpectral
+function figs=StokesSFSpectral(figs)
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	
@@ -21,18 +21,22 @@ function StokesSFSpectral
 	out = 0*xmesh;
 	bcinds = rhs;
 	
+	bs = 1:0.1:30;
+	
+	for k=1:1%numel(bs)
 	%inflow
-	outwidth = ymax-ymin;
+	H = ymax-ymin;
+	b = bs(k)
+	c = -exp(-H^2/(4*b));
+	
 	inflowx = xmin*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
-		ind = (xmesh==inflowx & ymesh==yinit(i));
-		%in(ind) = yinit(i)./4 - yinit(i).^3./3 + 1/12;
-		in(ind) = 1/outwidth^3*(outwidth^2/4*yinit(i) - yinit(i)^3/3) + 1/12;
+		curry = yinit(i);
+		ind = (xmesh==inflowx & ymesh==curry);
+		in(ind) = (12.*curry.*exp(-curry.^2./b))./b^2 - (8.*curry.^3.*exp(-curry.^2./b))./b.^3;
+		%in(ind) = (12*exp(-curry^2/b))/b^2 - (48*curry^2*exp(-curry^2/b))/b^3 + (16*curry^4*exp(-curry^2/b))/b^4;
 		bcinds = bcinds | ind;
 	end
-	
-	in(xmesh==0&ymesh==2.5) = 0;
-	in(xmesh==0&ymesh==-2.5) = 0;
 	
 	rhs = rhs + in;
 	
@@ -41,50 +45,43 @@ function StokesSFSpectral
 		bcinds = bcinds | circshift(bcinds,i);
 	end
 	
-	
 	%outflow
-	
-	outwidth = ymax-ymin;
 	outflowx = xmax*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
-		ind = (xmesh==outflowx & ymesh==yinit(i));
+		curry = yinit(i);
+		ind = (xmesh==outflowx & ymesh==curry);
 		%out(ind) = 1/30*yinit(i) + 1/12;
-		out(ind) = 1/outwidth^3*(outwidth^2/4*yinit(i) - yinit(i)^3/3) + 1/12;
+		out(ind) = (12.*curry.*exp(-curry.^2./b))./b^2 - (8.*curry.^3.*exp(-curry.^2./b))./b.^3;
+		%out(ind) = (12*exp(-curry^2/b))/b^2 - (48*curry^2*exp(-curry^2/b))/b^3 + (16*curry^4*exp(-curry^2/b))/b^4;
 		bcinds = bcinds | ind;
 	end
-	
-	out(xmesh==0&ymesh==2.5) = 0;
-	out(xmesh==0&ymesh==-2.5) = 0;
 	
 	rhs = rhs + out;
 	
 	for i=1:0
 		rhs = rhs + circshift(out,-i);
 		bcinds = bcinds | circshift(bcinds,-i);
-	end	
+	end
 	
 	xsz = numel(xinit);
 	ysz = numel(yinit);
 	
-	rmesh = filterMat'*rhs;
-	Rmesh = reshape(rmesh,[xsz,ysz])';
-	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp');
-	
+	figure(4)
+ 	rmesh = filterMat'*rhs;
+ 	Rmesh = reshape(rmesh,[xsz,ysz])';
+ 	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp');
+
 	%make derivative matrices
 	
 	%change when switch to rectangular
 	A = 1/h^2*sptoeplitz([2 -1],xsz);
-	C = sparse([1,xsz],[1,xsz],[1,1],xsz,xsz);
+	C = sparse([1,xsz],[1,xsz],[2/h^4,2/h^4],xsz,xsz);
 	
-	A(1,:) = 0;
-	A(end,:) = 0;
-	A(:,1) = 0;
-	A(:,end) = 0;
 	
 	[P,D] = eigs(C,A,xsz);
 	
 	G = P'*reshape(filterMat'*rhs,xsz,xsz)*P;
-	V = G./((4+repmat(diag(D),1,xsz)+repmat(diag(D)',xsz,1)));
+	V = G./(4+repmat(diag(D),1,xsz)+repmat(diag(D)',xsz,1));
 	psi = reshape(P*V*P',xsz*ysz,1);
 	
 	psi = filterMat*psi;
@@ -121,7 +118,12 @@ function StokesSFSpectral
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
 	
-	Plot(mat,vec,par.toPlot,par.filter);
+	if(nargin == 1)
+		Plot(mat,vec,par.toPlot,par.filter,figs);
+	else
+		figs = Plot(mat,vec,par.toPlot,par.filter);
+	end
+	end
 	
 end
 

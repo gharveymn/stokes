@@ -73,6 +73,7 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 		figs = {f1,f2};
 		
 	else
+		
 		figure(1)
 		f1 = scatter3(x,y,u,10,'.');
 		axis(ax)
@@ -87,24 +88,23 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 		
 		figs = {f1,f2,f3};
 	end
+	
+	drawnow;
+	
 end
 
 function Update(mat,vec,toPlot,filter,figs)
 	
-	X = mat(:,:,1);
-	Y = mat(:,:,2);
 	U = mat(:,:,3);
 	V = mat(:,:,4);
 	Psi = mat(:,:,5);
 	
-	x = vec(:,1);
-	y = vec(:,2);
 	u = vec(:,3);
 	v = vec(:,4);
 	psi = vec(:,5);
 	
 	if(filter)
-		[isz,jsz] = size(X);
+		[isz,jsz] = size(U);
 		ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
 		jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
 		fil = ifil&jfil;
@@ -145,6 +145,9 @@ function Update(mat,vec,toPlot,filter,figs)
 		set(figs{3},'ZData',psi);
 		set(figs{3},'CData',clrs);
 	end
+	
+	drawnow;
+	
 end
 
 function ax = MakeAxis(x,y)
