@@ -1,4 +1,4 @@
-function StokesSF
+function StokesSFDuo
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	
@@ -24,11 +24,11 @@ function StokesSF
 	bcinds = rhs;
 	
 	%inflow
-	
+	outwidth = ymax-ymin;
 	inflowx = xmin*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==inflowx+h & ymesh==yinit(i));
-		in(ind) = yinit(i)./4 - yinit(i).^3./3 + 1/12;
+		in(ind) = 1/outwidth^3*(outwidth^2/4*yinit(i) - yinit(i)^3/3) + 1/12;
 		bcinds = bcinds | ind;
 	end
 	
@@ -70,13 +70,13 @@ function StokesSF
 	rmesh = filterMat'*rhs;
 	Rmesh = reshape(rmesh,[xsz,ysz])';
 	
-	figure(1)
-	ax = MakeAxis(Xmesh,Ymesh);
-	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp')
-	axis(ax)
+% 	figure(1)
+% 	ax = MakeAxis(Xmesh,Ymesh);
+% 	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp')
+% 	axis(ax)
 	
 	%make derivative matrices
-	bih = biharmonic2(xsz,ysz,h);
+	lap = laplacian2(xsz,ysz,h);
 	
 	bcw = 0&on;
 	bce = 0&on;
@@ -133,39 +133,36 @@ function StokesSF
 	bcsz = numel(bcw);
 	
 	%wipe out invalid indices
-	bih = filterMat*bih*filterMat';
+	lap = filterMat*lap*filterMat';
 	bcw = bcw(valind);
 	bce = bce(valind);
 	bcs = bcs(valind);
 	bcn = bcn(valind);
 	
-	sz = size(bih,1);
+	sz = size(lap,1);
+	
+	nw = lap;
+	ne = speye(sz,sz) + lap;
+	sw = sparse(sz,sz);
+	se = lap;
 	
 	%impose Dirichlet conditions
 	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-	bih = ~bcinds.*bih + spdiags(bcinds,0,sz,sz);
-%	bih = ~(bcw&bce&bcn&bcs).*bih + spdiags(bcw&bce&bcs&bcn,0,sz,sz);
+	nw = ~(bcinds|onpf).*nw + spdiags(bcinds|onpf,0,sz,sz);
+	ne = ~(bcinds|onpf).*ne;
+	se = ~(bcinds|onpf).*se + spdiags(bcinds|onpf,0,sz,sz);
 	
+	M = [nw ne
+		sw se];
 	
-	bih = ~onpf.*bih + spdiags(onpf,0,sz,sz);
+	rhs = [rhs;rhs];
 	
-	cond(full(bih))
+ 	%[L,U] = ilu(M);
+ 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
+	vec = M\rhs;
+	psi = vec(1:sz);
 	
-	psi = bih\rhs;
-	
-	on = on|circshift(on,-1)|circshift(on,1)|circshift(on,-xsz)|circshift(on,xsz);
-	
-	
-	valindinner = valind&~on;
-	filterMatinner = spdiags(valindinner,0,xsz*ysz,xsz*ysz);
-     filterMatinner = filterMatinner(valindinner,:);
-	
-	Xmesh = (reshape(xmeshfull./valindinner,[xsz,ysz]))';
-     Ymesh = (reshape(ymeshfull./valindinner,[ysz,xsz]))';
-
-     xmesh = filterMatinner*xmeshfull;
-     ymesh = filterMatinner*ymeshfull;
-	
+	psi = filterMat*psi;
 	
 	%make some derivative operator matrices
 	%TODO: just make these into a function in the path
@@ -174,28 +171,33 @@ function StokesSF
 	Dx(1,:) = 0;
 	Dx(end,:) = 0;
 	dx = kron(speye(ysz),Dx);
-	dx = filterMatinner*dx*filterMatinner';
+	dx = filterMat*dx*filterMat';
 	dx = dx.*~(sum(dx,2)~=0);
 	
 	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
 	Dy(1,:) = 0;
 	Dy(end,:) = 0;
 	dy = kron(Dy,speye(xsz));
-	dy = filterMatinner*dy*filterMatinner';
+	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	psi = psi(~(on(valind)));
 	u = dy*psi;
 	v = -dx*psi;
 	
-	umesh = filterMatinner'*u;
+	umesh = filterMat'*u;
 	Umesh = reshape(umesh,[xsz,ysz])';
 	
-	vmesh = filterMatinner'*v;
+	vmesh = filterMat'*v;
 	Vmesh = reshape(vmesh,[xsz,ysz])';
 	
-	psimesh = filterMatinner'*psi;
+	psimesh = filterMat'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
+	
+	Xmesh = Xmesh(3:end-2,3:end-2);
+	Ymesh = Ymesh(3:end-2,3:end-2);
+	Umesh = Umesh(3:end-2,3:end-2);
+	Vmesh = Vmesh(3:end-2,3:end-2);
+	Psimesh = Psimesh(3:end-2,3:end-2);
 	
 	if(toPlot == "surf")
 		figure(1)
