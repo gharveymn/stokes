@@ -1,4 +1,4 @@
-function StokesSFQuadro
+function StokesSFJacobi
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	
@@ -66,59 +66,28 @@ function StokesSFQuadro
 	xsz = numel(xinit);
 	ysz = numel(yinit);
 	
-% 	figure(1)
-% 	ax = MakeAxis(Xmesh,Ymesh);
-% 	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp')
-% 	axis(ax)
-	
 	%make derivative matrices
+	bih = biharmonic2(xsz,ysz,h);
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-	Dx(1,:) = Dx(2,:);
-	Dx(end,:) = Dx(end-1,:);
-	dx = kron(speye(ysz),Dx);
-	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-	Dy(1,:) = Dy(2,:);
-	Dy(end,:) = Dy(end-1,:);
-	dy = kron(Dy,speye(xsz));
-	
-	sz = xsz*ysz;
-	
-	Z = sparse(sz,sz);
-	I = speye(sz);
-	
-	M = [-dx -I+dx dy -I+dx I+dx dy
-		-dy dx -I+dy -I+dy dx I+dy
-		Z Z Z dx -I Z
-		Z Z Z dy Z -I
-		Z Z Z Z dx dy
-		Z dx dy -I Z Z
-		dx I Z Z Z Z
-		dy Z I Z Z Z];
-	
+	sz = size(bih,1);
 	
 	%impose Dirichlet conditions
 	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-	M(1:sz,1:sz) = ~(bcinds|onpf).*M(1:sz,1:sz) + spdiags(bcinds|onpf,0,sz,sz);
-	M(1:sz,sz+1:end) = ~(bcinds|onpf).*M(1:sz,sz+1:end);
-	M(sz+1:2*sz,1:sz) = ~(bcinds|onpf).*M(sz+1:2*sz,1:sz) + spdiags(bcinds|onpf,0,sz,sz);
-	M(sz+1:2*sz,sz+1:end) = ~(bcinds|onpf).*M(sz+1:2*sz,sz+1:end);
+	bih = ~bcinds.*bih + spdiags(bcinds,0,sz,sz);
+%	bih = ~(bcw&bce&bcn&bcs).*bih + spdiags(bcw&bce&bcs&bcn,0,sz,sz);
 	
-	z = zeros(sz,1);
-	rhs = [rhs;rhs;z;z;rhs;z;z;z];
+	bih = ~onpf.*bih + spdiags(onpf,0,sz,sz);
 	
-	%disp(['lower bound for condition number: ' num2str(condest(M))])
+	[L,D,U] = ldu(bih);
 	
- 	%[L,U] = ilu(M);
- 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
-	vec = M\rhs;
-	psi = vec(1:sz);
+	Dinv = D^(-1);
 	
+	disp(['lower bound for condition number: ' num2str(condest(bih))])
+	
+	vecn = bih\rhs;
+	
+	psi = vecn(1:sz);
 	psi = filterMat*psi;
-	
-	%make some derivative operator matrices
-	%TODO: just make these into a function in the path
 	
 	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
 	Dx(1,:) = 0;
@@ -126,7 +95,7 @@ function StokesSFQuadro
 	dx = kron(speye(ysz),Dx);
 	dx = filterMat*dx*filterMat';
 	dx = dx.*~(sum(dx,2)~=0);
-	
+
 	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
 	Dy(1,:) = 0;
 	Dy(end,:) = 0;
@@ -136,20 +105,52 @@ function StokesSFQuadro
 	
 	u = dy*psi;
 	v = -dx*psi;
-	
+
 	umesh = filterMat'*u;
 	Umesh = reshape(umesh,[xsz,ysz])';
-	
+
 	vmesh = filterMat'*v;
 	Vmesh = reshape(vmesh,[xsz,ysz])';
-	
+
 	psimesh = filterMat'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
-	
+
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+
+	figs = Plot(mat,vec,par.toPlot,par.filter);
+	drawnow;
 	
-	Plot(mat,vec,par.toPlot,par.filter);
+	for i=1:1000
+		vecn1 = -Dinv*(L + U)*vecn + Dinv*rhs;
+		disp(norm(vecn-vecn1))
+		vecn = vecn1;
+	
+		psi = vecn(1:sz);
+		psi = filterMat*psi;
+
+		%make some derivative operator matrices
+		%TODO: just make these into a function in the path
+
+		u = dy*psi;
+		v = -dx*psi;
+
+		umesh = filterMat'*u;
+		Umesh = reshape(umesh,[xsz,ysz])';
+
+		vmesh = filterMat'*v;
+		Vmesh = reshape(vmesh,[xsz,ysz])';
+
+		psimesh = filterMat'*psi;
+		Psimesh = reshape(psimesh,[xsz,ysz])';
+
+		mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
+		vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+
+		Plot(mat,vec,par.toPlot,par.filter,figs);
+		drawnow;
+	
+	end
 	
 end
 

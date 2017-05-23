@@ -4,7 +4,6 @@ function StokesSFSpectral
 	
 	par = Parameters;
 	h = par.h;
-	toPlot = par.toPlot;
 	
 	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
 	
@@ -112,7 +111,7 @@ function StokesSFSpectral
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
 	
-	Plot(mat,vec,toPlot);
+	Plot(mat,vec,par.toPlot,par.filter);
 	
 end
 

@@ -128,7 +128,7 @@ function StokesSFDuo
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
 	
-	Plot(mat,vec,toPlot);
+	Plot(mat,vec,par.toPlot,par.filter);
 	
 end
 
