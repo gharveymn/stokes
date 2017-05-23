@@ -77,13 +77,12 @@ function StokesSF
 %	bih = ~(bcw&bce&bcn&bcs).*bih + spdiags(bcw&bce&bcs&bcn,0,sz,sz);
 	
 	bih = ~onpf.*bih + spdiags(onpf,0,sz,sz);
-	condest(bih)
 	
+	disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
 	psi = bih\rhs;
 	
 	on = on|circshift(on,-1)|circshift(on,1)|circshift(on,-xsz)|circshift(on,xsz);
-	
 	
 	valindinner = valind&~on;
 	filterMatinner = spdiags(valindinner,0,xsz*ysz,xsz*ysz);
@@ -126,37 +125,10 @@ function StokesSF
 	psimesh = filterMatinner'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
 	
-	if(toPlot == "surf")
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Umesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Vmesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Psimesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-	else
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,u,10,'.')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,v,10,'.')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,psi,10,'.')
-		axis(ax)
-	end
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	
+	Plot(mat,vec,toPlot);
 	
 end
 

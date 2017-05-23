@@ -1,7 +1,6 @@
-function StokesSF
+function StokesSFSpectral
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
-	
 	
 	par = Parameters;
 	h = par.h;
@@ -110,43 +109,10 @@ function StokesSF
 	psimesh = filterMat'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
 	
-	Xmesh = Xmesh(2:end-1,2:end-1);
-	Ymesh = Ymesh(2:end-1,2:end-1);
-	Umesh = Umesh(2:end-1,2:end-1);
-	Vmesh = Vmesh(2:end-1,2:end-1);
-	Psimesh = Psimesh(2:end-1,2:end-1);
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
 	
-	if(toPlot == "surf")
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Umesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Vmesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Psimesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-	else
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,u,10,'.')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,v,10,'.')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,psi,10,'.')
-		axis(ax)
-	end
+	Plot(mat,vec,toPlot);
 	
 end
 

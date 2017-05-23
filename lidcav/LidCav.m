@@ -2,7 +2,6 @@ function LidCav
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	
-	
 	par = Parameters;
 	h = par.h;
 	toPlot = par.toPlot;
@@ -19,15 +18,13 @@ function LidCav
 	%make right hand side for Dirichlet BCs
 	rhs = 0*xmesh;
 	in = 0*xmesh;
-	out = 0*xmesh;
 	bcinds = rhs;
 	
-	%inflow
-	
-	inflowx = zeros(numel(xmesh),1);
-	for i=1:numel(yinit)
-		ind = (xmesh==inflowx & ymesh==yinit(i));
-		in(ind) = yinit(i)./4 - yinit(i).^3./3 + 1/12;
+	%driver
+	drivery = ymax;
+	for i=1:numel(xinit)
+		ind = (xmesh == xinit(i) & ymesh==drivery-h);
+		in(ind) = 1;
 		bcinds = bcinds | ind;
 	end
 	
@@ -39,34 +36,9 @@ function LidCav
 	end
 	
 	
-	%outflow
-	
-	outwidth = ymax-ymin;
-	outflowx = max(xmesh)*ones(numel(xmesh),1);
-	for i=1:numel(yinit)
-		ind = (xmesh==outflowx & ymesh==yinit(i));
-		out(ind) = 1/(outwidth^3)*(1/4*outwidth^2*yinit(i) - yinit(i)^3/3) + 1/12;
-		bcinds = bcinds | ind;
-	end
-	rhs = rhs + out;
-	
-	for i=1:0
-		rhs = rhs + circshift(out,-i);
-		bcinds = bcinds | circshift(bcinds,-i);
-	end
-	
 	
 	xsz = numel(xinit);
 	ysz = numel(yinit);
-	
-	
-	rmesh = filterMat'*rhs;
-	Rmesh = reshape(rmesh,[xsz,ysz])';
-	
-	figure(1)
-	ax = MakeAxis(Xmesh,Ymesh);
-	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp')
-	axis(ax)
 	
 	%make derivative matrices
 	bih = biharmonic2(xsz,ysz,h);
@@ -77,66 +49,6 @@ function LidCav
 	bcn = 0*on;
 	bcc = 0*on;
 	
-	%impose Neumann conditions -- along all boundaries
-	%unfortunately I think we need to use loops for this
-	
-% 	%TODO: think about corners
-% 	for i=1:numel(on)
-% 		if(on(i))
-% 			w = xmeshfull(i)==xmin;
-% 			e = xmeshfull(i)==xmax;
-% 			s = ymeshfull(i)==ymin;
-% 			n = ymeshfull(i)==ymax;
-% 			
-% 			if(~w)
-% 				w = ~valind(i-1);
-% 			end
-% 			
-% 			if(~e)
-% 				e = ~valind(i+1);
-% 			end
-% 			
-% 			if(~s)
-% 				s = ~valind(i-xsz);
-% 			end
-% 			
-% 			if(~n)
-% 				n = ~valind(i+xsz);
-% 			end
-% 			
-% 			%if two of these are satisfied then we have a corner
-% 			%cannot be three since Lipschitz, cannot be w&e or n&s for the same reason
-% 			%if all false then its on surrounded by all but one side (since it's on the boundary), so corner
-% 			
-% 			if((w&&n)||(w&&s)||(e&&n)||(e&&s)||~(w||e||s||n))
-% 				%corner boundary
-% 				bcc(i) = 1;
-% 			elseif(w)
-% 				%west boundary
-% 				bcw(i) = 1;
-% 			elseif(e)
-% 				%east boundary
-% 				bce(i) = 1;
-% 			elseif(s)
-% 				%south boundary
-% 				bcs(i) = 1;
-% 			elseif(n)
-% 				%north boundary
-% 				bcn(i) = 1;
-% 			else
-% 				%debugging
-% 				throw(MException('onLoop:boundaryError','entry is on the boundary but not sorted'))
-% 			end
-% 		end
-% 	end
-% 	
-% 	bcsz = numel(bcw);
-% 	o = ones(bcsz,1);
-% 	bih = ~bcw.*bih + (o+0.1*rand(bcsz,1)).*bcw.*circshift(bih,-1);
-% 	bih = ~bce.*bih + (o+0.1*rand(bcsz,1)).*bce.*circshift(bih,1);
-% 	bih = ~bcs.*bih + (o+0.1*rand(bcsz,1)).*bcs.*circshift(bih,-xsz);
-% 	bih = ~bcn.*bih + (o+0.1*rand(bcsz,1)).*bcn.*circshift(bih,xsz);
-% 	bih = ~bcc.*bih + (o+0.1*rand(bcsz,1)).*spdiags(bcc,0,xsz*ysz,xsz*ysz);
 	
 	%wipe out invalid indices
 	bih = filterMat*bih*filterMat';
@@ -175,8 +87,8 @@ function LidCav
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	u = dy*psi;
-	v = -dx*psi;
+	u = -dy*psi;
+	v = dx*psi;
 	
 	umesh = filterMat'*u;
 	Umesh = reshape(umesh,[xsz,ysz])';
@@ -187,37 +99,10 @@ function LidCav
 	psimesh = filterMat'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
 	
-	if(toPlot == "surf")
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Umesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Vmesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Psimesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-	else
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,u,10,'.')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,v,10,'.')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,psi,10,'.')
-		axis(ax)
-	end
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	
+	Plot(mat,vec,toPlot);
 	
 end
 

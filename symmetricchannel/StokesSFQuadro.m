@@ -108,6 +108,8 @@ function StokesSFQuadro
 	z = zeros(sz,1);
 	rhs = [rhs;rhs;z;z;rhs;z;z;z];
 	
+	%disp(['lower bound for condition number: ' num2str(condest(M))])
+	
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	vec = M\rhs;
@@ -144,43 +146,10 @@ function StokesSFQuadro
 	psimesh = filterMat'*psi;
 	Psimesh = reshape(psimesh,[xsz,ysz])';
 	
-	Xmesh = Xmesh(3:end-2,3:end-2);
-	Ymesh = Ymesh(3:end-2,3:end-2);
-	Umesh = Umesh(3:end-2,3:end-2);
-	Vmesh = Vmesh(3:end-2,3:end-2);
-	Psimesh = Psimesh(3:end-2,3:end-2);
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
 	
-	if(toPlot == "surf")
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Umesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Vmesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		surf(Xmesh,Ymesh,Psimesh,'edgecolor','none','facecolor','interp')
-		axis(ax)
-	else
-		figure(1)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,u,10,'.')
-		axis(ax)
-
-		figure(2)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,v,10,'.')
-		axis(ax)
-
-		figure(3)
-		ax = MakeAxis(Xmesh,Ymesh);
-		scatter3(xmesh,ymesh,psi,10,'.')
-		axis(ax)
-	end
+	Plot(mat,vec,toPlot);
 	
 end
 
