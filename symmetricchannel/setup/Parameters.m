@@ -8,7 +8,7 @@ function par = Parameters
 	par.initflowfile = 'initflow.txt';
 	par.h = 0.1;
 	par.toPlot = "surf";
-	par.filter = true;
+	par.filter = false;
 	
 end
 
