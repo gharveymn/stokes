@@ -6,8 +6,8 @@ function par = Parameters
 	par.maptype = 'g';
 	par.mapfile = 'graphmap.txt';
 	par.initflowfile = 'initflow.txt';
-	par.h = 0.05;
-	par.toPlot = "sur";
+	par.h = 0.1;
+	par.toPlot = "surf";
 	
 	
 end

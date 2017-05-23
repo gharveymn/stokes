@@ -1,4 +1,4 @@
-function StokesSFDuo
+function StokesSFQuadro
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	

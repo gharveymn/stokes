@@ -68,7 +68,8 @@ function StokesSFDuo
 	
 	%make derivative matrices
 	lap = laplacian2(xsz,ysz,h);
-
+	
+	
 	sz = size(lap,1);
 	
 	nw = lap;
@@ -80,12 +81,13 @@ function StokesSFDuo
 	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
 	nw = ~(bcinds|onpf).*nw + spdiags(bcinds|onpf,0,sz,sz);
 	ne = ~(bcinds|onpf).*ne;
-	se = ~(bcinds|onpf).*se + spdiags(bcinds|onpf,0,sz,sz);
 	
 	M = [nw ne
 		sw se];
 	
 	rhs = [rhs;rhs];
+	
+	condest(M)
 	
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);

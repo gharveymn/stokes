@@ -24,11 +24,11 @@ function StokesSF
 	bcinds = rhs;
 	
 	%inflow
-	
+	outwidth = ymax-ymin;
 	inflowx = xmin*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		ind = (xmesh==inflowx+h & ymesh==yinit(i));
-		in(ind) = yinit(i)./4 - yinit(i).^3./3 + 1/12;
+		in(ind) = 1/outwidth^3*(outwidth^2/4*yinit(i) - yinit(i)^3/3) + 1/12;
 		bcinds = bcinds | ind;
 	end
 	
@@ -66,78 +66,8 @@ function StokesSF
 	xsz = numel(xinit);
 	ysz = numel(yinit);
 	
-	
-	rmesh = filterMat'*rhs;
-	Rmesh = reshape(rmesh,[xsz,ysz])';
-	
-	figure(1)
-	ax = MakeAxis(Xmesh,Ymesh);
-	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp')
-	axis(ax)
-	
 	%make derivative matrices
 	bih = biharmonic2(xsz,ysz,h);
-	
-	bcw = 0&on;
-	bce = 0&on;
-	bcs = 0&on;
-	bcn = 0&on;
-	bcc = 0&on;
-	
-	%impose Neumann conditions -- along all boundaries
-	%unfortunately I think we need to use loops for this
-	
-% 	%TODO: think about corners
-% 	for i=1:numel(on)
-% 		if(on(i))
-% 			w = xmeshfull(i)==xmin;
-% 			e = xmeshfull(i)==xmax;
-% 			s = ymeshfull(i)==ymin;
-% 			n = ymeshfull(i)==ymax;
-% 			
-% 			if(~w)
-% 				w = ~valind(i-1);
-% 			end
-% 			
-% 			if(~e)
-% 				e = ~valind(i+1);
-% 			end
-% 			
-% 			if(~s)
-% 				s = ~valind(i-xsz);
-% 			end
-% 			
-% 			if(~n)
-% 				n = ~valind(i+xsz);
-% 			end
-% 			
-% 			%if two of these are satisfied then we have a corner
-% 			%cannot be three since Lipschitz, cannot be w&e or n&s for the same reason
-% 			%if all false then its on surrounded by all but one side (since it's on the boundary), so corner
-% 			
-% 			if((w&&n)||(w&&s)||(e&&n)||(e&&s)||~(w||e||s||n))
-% 				%corner boundary
-% 				bcc(i) = 1;
-% 			end
-% 			%west boundary
-% 			bcw(i) = w;
-% 			%east boundary
-% 			bce(i) = e;
-% 			%south boundary
-% 			bcs(i) = s;
-% 			%north boundary
-% 			bcn(i) = n;
-% 		end
-% 	end
-	
-	bcsz = numel(bcw);
-	
-	%wipe out invalid indices
-	bih = filterMat*bih*filterMat';
-	bcw = bcw(valind);
-	bce = bce(valind);
-	bcs = bcs(valind);
-	bcn = bcn(valind);
 	
 	sz = size(bih,1);
 	
@@ -146,10 +76,9 @@ function StokesSF
 	bih = ~bcinds.*bih + spdiags(bcinds,0,sz,sz);
 %	bih = ~(bcw&bce&bcn&bcs).*bih + spdiags(bcw&bce&bcs&bcn,0,sz,sz);
 	
-	
 	bih = ~onpf.*bih + spdiags(onpf,0,sz,sz);
+	condest(bih)
 	
-	cond(full(bih))
 	
 	psi = bih\rhs;
 	

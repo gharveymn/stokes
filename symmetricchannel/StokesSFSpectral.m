@@ -73,7 +73,7 @@ function StokesSF
 	A = 1/h^2*sptoeplitz([2 -1],xsz);
 	C = sparse([1,xsz],[1,xsz],[(2/h^4),(2/h^4)],xsz,xsz);
 	
-	[P,D] = eigs(C,A,xsz);
+	[P,D] = eigs(A,xsz);
 	
 	G = P'*reshape(filterMat'*rhs,xsz,xsz)*P;
 	V = G./((4+repmat(diag(D),1,xsz)+repmat(diag(D)',xsz,1)));
