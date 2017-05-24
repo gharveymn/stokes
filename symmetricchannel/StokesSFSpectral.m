@@ -21,20 +21,20 @@ function figs=StokesSFSpectral(figs)
 	out = 0*xmesh;
 	bcinds = rhs;
 	
-	bs = 1:0.1:30;
-	
-	for k=1:1%numel(bs)
 	%inflow
 	H = ymax-ymin;
-	b = bs(k)
-	c = -exp(-H^2/(4*b));
+	bin = 30;
+	bout = 0.31654835420315243867796794501877;
+	c = -exp(-H^2/(4*bin));
+	%func = @(x1,x2) 100*((12.*x1.*exp(-x1.^2./x2))./x2^2 - (8.*x1.^3.*exp(-x1.^2./x2))./x2.^3);
+	infunc = @(x1,x2) (2.*x1.*exp(-x1.^2./x2))./x2;
+	outfunc = @(x1,x2) (2.*x1.*exp(-x1.^2./x2))./x2;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
 	for i=1:numel(yinit)
 		curry = yinit(i);
 		ind = (xmesh==inflowx & ymesh==curry);
-		in(ind) = (12.*curry.*exp(-curry.^2./b))./b^2 - (8.*curry.^3.*exp(-curry.^2./b))./b.^3;
-		%in(ind) = (12*exp(-curry^2/b))/b^2 - (48*curry^2*exp(-curry^2/b))/b^3 + (16*curry^4*exp(-curry^2/b))/b^4;
+		in(ind) = infunc(curry,bin);
 		bcinds = bcinds | ind;
 	end
 	
@@ -51,8 +51,7 @@ function figs=StokesSFSpectral(figs)
 		curry = yinit(i);
 		ind = (xmesh==outflowx & ymesh==curry);
 		%out(ind) = 1/30*yinit(i) + 1/12;
-		out(ind) = (12.*curry.*exp(-curry.^2./b))./b^2 - (8.*curry.^3.*exp(-curry.^2./b))./b.^3;
-		%out(ind) = (12*exp(-curry^2/b))/b^2 - (48*curry^2*exp(-curry^2/b))/b^3 + (16*curry^4*exp(-curry^2/b))/b^4;
+		out(ind) = outfunc(curry,bout);
 		bcinds = bcinds | ind;
 	end
 	
@@ -66,10 +65,10 @@ function figs=StokesSFSpectral(figs)
 	xsz = numel(xinit);
 	ysz = numel(yinit);
 	
-	figure(4)
- 	rmesh = filterMat'*rhs;
- 	Rmesh = reshape(rmesh,[xsz,ysz])';
- 	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp');
+% 	figure(4)
+%  	rmesh = filterMat'*rhs;
+%  	Rmesh = reshape(rmesh,[xsz,ysz])';
+%  	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp');
 
 	%make derivative matrices
 	
@@ -116,13 +115,12 @@ function figs=StokesSFSpectral(figs)
 	Psimesh = reshape(psimesh,[xsz,ysz])';
 	
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	vec = cat(2,xmeshfull,ymeshfull,umesh,vmesh,psimesh);
 	
 	if(nargin == 1)
 		Plot(mat,vec,par.toPlot,par.filter,figs);
 	else
 		figs = Plot(mat,vec,par.toPlot,par.filter);
-	end
 	end
 	
 end

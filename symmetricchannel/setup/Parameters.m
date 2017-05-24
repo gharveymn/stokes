@@ -5,10 +5,10 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'graphmap.txt';
-	par.initflowfile = 'initflow.txt';
 	par.h = 0.05;
 	par.toPlot = "surf";
 	par.filter = false;
+	par.numfilter = 1;
 	
 end
 

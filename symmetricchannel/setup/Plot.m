@@ -25,9 +25,13 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 	ax = MakeAxis(x,y);
 	
 	if(filter)
+		par = Parameters;
+		nf = par.numfilter;
+		
 		[isz,jsz] = size(X);
-		ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
-		jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
+		z = zeros(nf,1);
+		ifil = kron(ones(jsz,1),[z;ones(isz-2*nf,1)-2;z]);
+		jfil = kron([z;ones(jsz-2*nf,1);z],ones(isz,1));
 		fil = ifil&jfil;
 		x = x(fil);
 		y = y(fil);
@@ -35,11 +39,12 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 		v = v(fil);
 		psi = psi(fil);
 		
-		X = X(2:end-1,2:end-1);
-		Y = Y(2:end-1,2:end-1);
-		U = U(2:end-1,2:end-1);
-		V = V(2:end-1,2:end-1);
-		Psi = Psi(2:end-1,2:end-1);
+		
+		X = X(1+nf:end-nf,1+nf:end-nf);
+		Y = Y(1+nf:end-nf,1+nf:end-nf);
+		U = U(1+nf:end-nf,1+nf:end-nf);
+		V = V(1+nf:end-nf,1+nf:end-nf);
+		Psi = Psi(1+nf:end-nf,1+nf:end-nf);
 	end
 	
 	if(toPlot == "surf")
