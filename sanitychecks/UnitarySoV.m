@@ -1,4 +1,4 @@
-function Unitary
+function figs = UnitarySoV(figs)
 	%STOKESSF Calculates Stokes flow using a stream function
 	addpath('setup')
 	
@@ -6,11 +6,14 @@ function Unitary
 	par = Parameters;
 	h = par.h;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[grids,filterMat,valind,on] = ParseValidIndices;
+	
+	xinit = grids{1};
+	yinit = grids{2};
 	
 	%make right hand side for Dirichlet BCs
 	onpf = on(valind);
-	rhs = ones(numel(xmesh),1);
+	rhs = ones(numel(onpf),1);
 	rhs(onpf) = 0;
 	
 	xsz = numel(xinit);
@@ -42,12 +45,12 @@ function Unitary
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	vec = M\rhs;
-	psi = -vec(1:sz);
+	psimesh = -vec(1:sz);
 	
 	if(nargin==1)
-		InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,xsz,ysz,filterMat,h,figs);
+		InPost(grids,psimesh,xsz,ysz,filterMat,par,figs);
 	else
-		figs = InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,xsz,ysz,filterMat,h);
+		figs = InPost(grids,psimesh,xsz,ysz,filterMat,par);
 	end
 	
 end

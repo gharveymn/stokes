@@ -1,14 +1,14 @@
-function figs = Plot(mat,vec,toPlot,filter,figs)
+function figs = Plot(mat,vec,par,figs)
 	
-	if(nargin == 4)
-		figs = InitialPlot(mat,vec,toPlot,filter);
+	if(nargin == 3)
+		figs = InitialPlot(mat,vec,par);
 	else
 		%update if we already initialized the plots
-		Update(mat,vec,toPlot,filter,figs)
+		Update(mat,vec,par,figs)
 	end
 end
 
-function figs=InitialPlot(mat,vec,toPlot,filter)
+function figs=InitialPlot(mat,vec,par)
 	
 	X = mat(:,:,1);
 	Y = mat(:,:,2);
@@ -24,9 +24,9 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 	
 	ax = MakeAxis(x,y);
 	
-	if(filter)
+	if(par.filter)
 		par = Parameters;
-		nf = par.numfilter;
+		nf = par.numpar.filter;
 		
 		[isz,jsz] = size(X);
 		z = zeros(nf,1);
@@ -47,7 +47,7 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 		Psi = Psi(1+nf:end-nf,1+nf:end-nf);
 	end
 	
-	if(toPlot == "surf")
+	if(par.toPlot == "surf")
 		
 		figure(1)
 		f1 = surf(X,Y,U,'edgecolor','none','facecolor','interp');
@@ -63,7 +63,7 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 		
 		figs = {f1,f2,f3};
 		
-	elseif(toPlot == "quiver")
+	elseif(par.toPlot == "quiver")
 		figure(1)
 		ax = MakeAxis(X,Y);
 		f1 = quiver(x,y,u,v);
@@ -98,7 +98,7 @@ function figs=InitialPlot(mat,vec,toPlot,filter)
 	
 end
 
-function Update(mat,vec,toPlot,filter,figs)
+function Update(mat,vec,par,figs)
 	
 	U = mat(:,:,3);
 	V = mat(:,:,4);
@@ -108,7 +108,7 @@ function Update(mat,vec,toPlot,filter,figs)
 	v = vec(:,4);
 	psi = vec(:,5);
 	
-	if(filter)
+	if(par.filter)
 		[isz,jsz] = size(U);
 		ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
 		jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
@@ -122,13 +122,13 @@ function Update(mat,vec,toPlot,filter,figs)
 		Psi = Psi(2:end-1,2:end-1);
 	end
 	
-	if(toPlot == "surf")
+	if(par.toPlot == "surf")
 		
 		set(figs{1},'ZData',U);
 		set(figs{2},'ZData',V);
 		set(figs{3},'ZData',Psi);
 		
-	elseif(toPlot == "quiver")
+	elseif(par.toPlot == "quiver")
 		
 		set(figs{1},'UData',u);
 		set(figs{1},'VData',v);

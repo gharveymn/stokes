@@ -1,4 +1,4 @@
-function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices
+function [grids,filterMat,valind,on] = ParseValidIndices
 	%PARSEVALIDINDICES parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
@@ -44,6 +44,8 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymes
 
      xmesh = filterMat*xmeshfull;
      ymesh = filterMat*ymeshfull;
+	
+	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull};
 
 	fclose('all');
 end

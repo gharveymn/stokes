@@ -5,7 +5,7 @@ function figs=StokesSFDuo(figs)
 	par = Parameters;
 	h = par.h;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[grids,filterMat,valind,on] = ParseValidIndices;
 	
 	%note: numel(psi) = numel(xmesh) = numel(ymesh)
 	onpf = on(valind);
@@ -88,46 +88,12 @@ function figs=StokesSFDuo(figs)
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	vec = M\rhs;
-	psi = vec(1:sz);
+	psimesh = vec(1:sz);
 	
-	psi = filterMat*psi;
-	
-	%make some derivative operator matrices
-	%TODO: just make these into a function in the path
-	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-	Dx(1,:) = 0;
-	Dx(end,:) = 0;
-	dx = kron(speye(ysz),Dx);
-	dx = filterMat*dx*filterMat';
-	dx = dx.*~(sum(dx,2)~=0);
-	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-	Dy(1,:) = 0;
-	Dy(end,:) = 0;
-	dy = kron(Dy,speye(xsz));
-	dy = filterMat*dy*filterMat';
-	dy = dy.*~(sum(dy,2)~=0);
-	
-	u = dy*psi;
-	v = -dx*psi;
-	
-	umesh = filterMat'*u;
-	Umesh = reshape(umesh,[xsz,ysz])';
-	
-	vmesh = filterMat'*v;
-	Vmesh = reshape(vmesh,[xsz,ysz])';
-	
-	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[xsz,ysz])';
-	
-	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-	vec = cat(2,xmeshfull,ymeshfull,umesh,vmesh,psimesh);
-	
-	if(nargin == 1)
-		Plot(mat,vec,par.toPlot,par.filter,figs);
+	if(nargin==1)
+		InPost(grids,psimesh,xsz,ysz,filterMat,par,figs);
 	else
-		figs = Plot(mat,vec,par.toPlot,par.filter);
+		figs = InPost(grids,psimesh,xsz,ysz,filterMat,par);
 	end
 	
 end
