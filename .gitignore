@@ -1,4 +1,4 @@
 symmetricchannel/data/itsasecondorderboundaryissue.mat
 symmetricchannel/data/example.fea
-lidcav/setup
-sanitychecks/setup
+deprecated/lidcav/setup
+deprecated/sanitychecks/setup
