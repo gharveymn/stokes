@@ -1,12 +1,10 @@
-function [grids,filterMat,valind,on] = ParseValidIndices
+function [grids,filterMat,valind,on] = ParseValidIndices(par)
 	%PARSEVALIDINDICES parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
      %Xmesh,Ymesh have NaN wherever invalid -- matrix
      %filterMat filters out invalids when multiplied, inserts zeros when transposed and multiplied -- matrix
      %on holds the indices which are on the boundary -- in vector form, not prefiltered
-	
-	par = Parameters;
 	
 	h = par.h;
 	

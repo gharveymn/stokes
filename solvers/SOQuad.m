@@ -7,13 +7,15 @@ function psimesh = Quad(xsz,ysz,bcinds,rhs,filterMat,h)
 	Dx(1,:) = Dx(2,:);
 	Dx(end,:) = Dx(end-1,:);
 	dx = kron(speye(ysz),Dx);
+	dx = filterMat*dx*filterMat';
 	
 	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
 	Dy(1,:) = Dy(2,:);
 	Dy(end,:) = Dy(end-1,:);
 	dy = kron(Dy,speye(xsz));
+	dy = filterMat*dy*filterMat';
 	
-	sz = xsz*ysz;
+	sz = numel(rhs);
 	
 	Z = sparse(sz,sz);
 	I = speye(sz);

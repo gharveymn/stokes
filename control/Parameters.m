@@ -3,17 +3,21 @@ function par = Parameters
 	%
 	% Definite parameters go here
 	
-	addpath('../functions');
+	addpath('../solvers');
+	addpath('../bcfunctions');
+	addpath('../rhfunctions');
 	addpath('../maps');
 	
 	par.maptype = 'g';
-	par.mapfile = 'Ldomain.txt';
+	par.mapfile = 'symch.txt';
 	par.h = 0.05;
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
-	par.filter = false;
+	par.filter = true;
 	par.numfilter = 1;
 	
-	par.func = @Duo;
+	par.rhfunc = @RHZero;
+	par.bcfunc = @BCSymCh; 
+	par.solver = @SOIter;
 	
 end
 

@@ -7,25 +7,32 @@ end
 function figs = run(figs)
 	
 	par = Parameters;
-	func = par.func;
+	
+	rhfunc = par.rhfunc;
+	bcfunc = par.bcfunc;
+	solver = par.solver;
 	h = par.h;
 	
-	[grids,filterMat,valind,on] = ParseValidIndices;
+	[grids,filterMat,valind,onfull] = ParseValidIndices(par);
 	
 	xinit = grids{1};
 	yinit = grids{2};
-	
-	%make right hand side for Dirichlet BCs
-	onpf = on(valind);
-	rhs = ones(numel(onpf),1);
-	rhs(onpf) = 0;
+	xmesh = grids{3};
+	ymesh = grids{4};
 	
 	xsz = numel(xinit);
 	ysz = numel(yinit);
 	
-	bcinds = onpf;
+	on = onfull(valind);
 	
-	psimesh = func(xsz,ysz,bcinds,rhs,filterMat,h);
+	
+	%implement external force function (on rhs)
+	rhs = rhfunc(xmesh,ymesh);
+	
+	%make right hand side for Dirichlet BCs and get indices for those points
+	[rhs,bcinds] = bcfunc(xmesh,ymesh,rhs,on);
+	
+	psimesh = solver(xsz,ysz,bcinds,rhs,filterMat,h);
 	
 	if(nargin==1)
 		InPost(grids,psimesh,xsz,ysz,filterMat,par,figs);

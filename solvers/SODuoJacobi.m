@@ -1,6 +1,5 @@
-function psimesh = Duo(xsz,ysz,bcinds,rhs,filterMat,h)
-	%STOKESSF Calculates Stokes flow using a stream function
-	
+function psimesh=DuoJacobi(xsz,ysz,bcinds,rhs,filterMat,h)
+		
 	%make derivative matrices
 	lap = laplacian2(xsz,ysz,h);
 	lap = filterMat*lap*filterMat';
@@ -17,18 +16,24 @@ function psimesh = Duo(xsz,ysz,bcinds,rhs,filterMat,h)
 	nw = ~(bcinds).*nw + spdiags(bcinds,0,sz,sz);
 	ne = ~(bcinds).*ne;
 	
-	M = [nw ne
+	M = [-nw -ne
 		sw se];
+	
+	[L,D,U] = ldu(M);
+	
+	Dinv = D^(-1);
 	
 	rhs = [rhs;rhs];
 	
 	disp(['lower bound for condition number: ' num2str(condest(M))])
 	
- 	%[L,U] = ilu(M);
- 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
-	vec = M\rhs;
-	psimesh = vec(1:sz);
+	vecn = M\rhs;
 	
+	for i=1:1000
+		vecn = -Dinv*(L + U)*vecn + Dinv*rhs;
+	end
+	
+	psimesh = vecn(1:sz);
 	
 end
 
