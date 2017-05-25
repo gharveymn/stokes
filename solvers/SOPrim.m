@@ -4,8 +4,6 @@ function psimesh = Prim(xsz,ysz,bcinds,rhs,filterMat,h)
 	bih = biharmonic2(xsz,ysz,h);
 	bih = filterMat*bih*filterMat';
 	
-	
-	
 	sz = size(bih,1);
 	
 	%impose Dirichlet conditions
