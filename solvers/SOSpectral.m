@@ -1,4 +1,4 @@
-function psimesh = Spectral(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SOSpectral(xsz,ysz,bcinds,rhs,filterMat,h)
 
 	%make derivative matrices
 	

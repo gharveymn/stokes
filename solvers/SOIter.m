@@ -1,4 +1,4 @@
-function psimesh = Iter(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SOIter(xsz,ysz,bcinds,rhs,filterMat,h)
 	
 	%make derivative matrices
 	bih = biharmonic2(xsz,ysz,h);
