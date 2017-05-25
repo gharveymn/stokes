@@ -1,4 +1,4 @@
-function psimesh = Quad(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SOQuad(xsz,ysz,bcinds,rhs,filterMat,h)
 	
 	
 	%make derivative matrices

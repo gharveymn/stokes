@@ -1,4 +1,4 @@
-function psimesh=DuoJacobi(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SODuoJacobi(xsz,ysz,bcinds,rhs,filterMat,h)
 		
 	%make derivative matrices
 	lap = laplacian2(xsz,ysz,h);

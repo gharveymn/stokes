@@ -1,5 +1,5 @@
-function psimesh = Duo(xsz,ysz,bcinds,rhs,filterMat,h)
-	%STOKESSF Calculates Stokes flow using a stream function
+function psimesh = SODuo(xsz,ysz,bcinds,rhs,filterMat,h)
+	
 	
 	%make derivative matrices
 	lap = laplacian2(xsz,ysz,h);
