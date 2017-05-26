@@ -10,8 +10,9 @@ AA=kron(A,A)+kron(C,A)+kron(A,C);
 f=ones(n12,1);
 %G=(P\(A\reshape(f,n1,n1)))*P;
 G=P'*reshape(f,n1,n1)*P;
-Z=G./(1+repmat(diag(D),1,n1)+repmat(diag(D)',n1,1));
+V=G./(1+repmat(diag(D),1,n1)+repmat(diag(D)',n1,1));
 %y=reshape(P*((Z/P)/A),n1^2,1);
 %y=reshape(P'\(Z/P),n12,1);
-y=reshape(P*Z*P',n12,1);
+U = P*V*P';
+y=reshape(U,n12,1);
 norm(y-AA\f,inf)
