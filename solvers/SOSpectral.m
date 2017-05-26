@@ -14,4 +14,3 @@ function psimesh = SOSpectral(xsz,ysz,bcinds,rhs,filterMat,h)
 	psimesh = filterMat*psi;
 	
 end
-
