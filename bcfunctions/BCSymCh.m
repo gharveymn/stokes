@@ -1,4 +1,4 @@
-function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
+function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on)
 	%for use with symch map
 	bcinds = 0*xmesh;
 	
@@ -14,7 +14,7 @@ function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
 	c = 1/12;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
-	in = a*(h^2.*ymesh - ymesh.^3./3) + c;
+	in = a*(h^2.*(ymesh-h) - (ymesh-h).^3./3) + c;
 	in(~(xmesh==inflowx)) = 0;
 	
 	rhs = rhs + in;
@@ -24,13 +24,13 @@ function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
 		bcinds = bcinds | circshift(bcinds,i);
 	end
 	
-	% outflow
-	H = max(ymesh(xmesh==xmax))-min(ymesh(xmesh==xmax))/2;
+	%outflow
+	H = (max(ymesh(xmesh==xmax))-min(ymesh(xmesh==xmax)))/2;
 	f = 1/12;
 	e = (4*a*h^3/3 + c - f)*3/(4*H^3);
 	
 	outflowx = xmax*ones(numel(xmesh),1);
-	out = e*(H^2.*ymesh + ymesh.^3./3)+f;
+	out = e*(H^2.*(ymesh-H) - (ymesh-H).^3./3) + f;
 	out(~(xmesh==outflowx)) = 0;
 	
 	rhs = rhs + out;
