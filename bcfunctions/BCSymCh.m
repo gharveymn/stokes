@@ -1,16 +1,14 @@
 function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
 	%for use with symch map
-	in = 0*xmesh;
-	out = 0*xmesh;
 	bcinds = 0*xmesh;
 	
-	%add all the the indices which are on the boundary
+	% add all the the indices which are on the boundary
 	bcinds = bcinds | on;
 	
 	xmax = max(xmesh);
 	xmin = min(xmesh);
 	
-	%inflow
+	% inflow
 	h = (max(ymesh(xmesh==0))-min(ymesh(xmesh==0)))/2;
 	a = 1;
 	c = 1/12;
@@ -26,9 +24,7 @@ function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
 		bcinds = bcinds | circshift(bcinds,i);
 	end
 	
-	
-	
-	%outflow
+	% outflow
 	H = max(ymesh(xmesh==xmax))-min(ymesh(xmesh==xmax))/2;
 	f = 1/12;
 	e = (4*a*h^3/3 + c - f)*3/(4*H^3);
@@ -43,6 +39,10 @@ function [rhs,bcinds] = BCInOut(xmesh,ymesh,rhs,on)
 		rhs = rhs + circshift(out,-i);
 		bcinds = bcinds | circshift(bcinds,-i);
 	end
+	
+	% set top
+	% only for square domain for now
+	rhs(ymesh > ymin + H & ~(xmesh==inflowx | xmesh==outflowx)) = max(rhs);
 	
 end
 
