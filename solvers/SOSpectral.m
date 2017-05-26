@@ -14,7 +14,7 @@ function psimesh = SOSpectral(xsz,ysz,bcinds,rhs,filterMat,h)
 	Hjj = Hii';
 	
 	V = G./(1+Hii+Hjj);
-	psi = reshape(P*V*P^-1,xsz*ysz,1);
+	psi = reshape(Q*V*Q'*A,xsz*ysz,1);
 	psimesh = filterMat*psi;
 	
 end
