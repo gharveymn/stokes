@@ -32,7 +32,7 @@ function figs = InPost(grids,psimesh,xsz,ysz,filterMat,par,figs)
 	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
 	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
 	
-	if(nargin == 1)
+	if(nargin == 7)
 		Plot(mat,vec,par,figs);
 	else
 		figs = Plot(mat,vec,par);

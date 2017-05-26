@@ -4,10 +4,15 @@ function psimesh = SOSpectral(xsz,ysz,bcinds,rhs,filterMat,h)
 	
 	%change when switch to rectangular
 	A = 1/h^2*sptoeplitz([2 -1],xsz);
-	%C = sparse([1,xsz],[1,xsz],[2/h^4,2/h^4],xsz,xsz);
+	C = sparse([1,xsz],[1,xsz],[2/h^4,2/h^4],xsz,xsz);
+	A(1,:) = 0;
+	A(:,1) = 0;
+	A(end,:) = 0;
+	A(:,end) = 0;
+	A(1,1) = 1;
+	A(end,end) = 1;
 	
-	AA = sptoeplitz([6/h^4,-4/h^4,1/h^4],xsz);
-	[Q,H] = eigs(AA,A,xsz);
+	[Q,H] = eigs(A^2 + C,A,xsz);
 	
 	G = Q'*reshape(filterMat'*rhs,xsz,xsz)*Q;
 	Hii = H*ones(xsz);

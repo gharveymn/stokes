@@ -3,6 +3,7 @@ function par = Parameters
 	%
 	% Definite parameters go here
 	
+	addpath('control');
 	addpath('solvers');
 	addpath('bcfunctions');
 	addpath('rhfunctions');
@@ -12,12 +13,12 @@ function par = Parameters
 	par.mapfile = 'unit.txt';
 	par.h = 0.05;
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
-	par.filter = true;
+	par.filter = false;
 	par.numfilter = 1;
 	
 	par.rhfunc = @RHOne;
 	par.bcfunc = @BCZero; 
-	par.solver = @SOSpectral;
+	par.solver = @SO;
 	
 end
 
