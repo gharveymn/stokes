@@ -16,9 +16,9 @@ function par = Parameters
 	par.filter = false;
 	par.numfilter = 1;
 	
-	par.rhfunc = @RHOne;
-	par.bcfunc = @BCZero; 
-	par.solver = @SO;
+	par.rhfunc = @RHZero;
+	par.bcfunc = @BCSymCh; 
+	par.solver = @SODuo;
 	
 end
 
