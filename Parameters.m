@@ -10,10 +10,10 @@ function par = Parameters
 	addpath('maps');
 	
 	par.maptype = 'g';
-	par.mapfile = 'symch.txt';
+	par.mapfile = 'unit.txt';
 	par.h = 0.1;
-	par.toPlot = 2;			%1==surf,2==quiver,3==scatter
-	par.filter = true;
+	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
+	par.filter = false;
 	par.numfilter = 1;
 	
 	par.rhfunc = @RHZero;
