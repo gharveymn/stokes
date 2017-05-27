@@ -36,9 +36,14 @@ function [grids,filterMat,valind,on] = ParseValidIndices(par)
 
      filterMat = spdiags(valind,0,xsz*ysz,xsz*ysz);
      filterMat = filterMat(valind,:);
-
-     Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
-     Ymesh = (reshape(ymeshfull./valind,[ysz,xsz]))';
+	
+	if(par.filter)
+		Xmesh = (reshape(xmeshfull./(valind&~on),[xsz,ysz]))';
+		Ymesh = (reshape(ymeshfull./(valind&~on),[ysz,xsz]))';
+	else
+		Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
+		Ymesh = (reshape(ymeshfull./valind,[ysz,xsz]))';
+	end
 
      xmesh = filterMat*xmeshfull;
      ymesh = filterMat*ymeshfull;

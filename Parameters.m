@@ -11,8 +11,8 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.05;
-	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
+	par.h = 0.1;
+	par.toPlot = 2;			%1==surf,2==quiver,3==scatter
 	par.filter = true;
 	par.numfilter = 1;
 	

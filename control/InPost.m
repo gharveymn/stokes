@@ -32,6 +32,14 @@ function figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par,figs)
 	psimeshfull = filterMat'*psimesh;
 	Psimesh = reshape(psimeshfull,[xsz,ysz])';
 	
+	if(par.filter)
+		grids{3} = grids{3}(~on);
+		grids{4} = grids{4}(~on);
+		umesh = umesh(~on);
+		vmesh = vmesh(~on);
+		psimesh = psimesh(~on);		
+	end
+	
 	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
 	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
 	

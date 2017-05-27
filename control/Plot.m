@@ -24,28 +24,6 @@ function figs=InitialPlot(mat,vec,par)
 	
 	ax = MakeAxis(x,y);
 	
-	if(par.filter)
-		nf = par.numfilter;
-		
-% 		[isz,jsz] = size(X);
-% 		z = zeros(nf,1);
-% 		ifil = kron(ones(jsz,1),[z;ones(isz-2*nf,1)-2;z]);
-% 		jfil = kron([z;ones(jsz-2*nf,1);z],ones(isz,1));
-% 		fil = ifil&jfil;
-% 		x = x(fil);
-% 		y = y(fil);
-% 		u = u(fil);
-% 		v = v(fil);
-% 		psi = psi(fil);
-		
-		
-		X = X(1+nf:end-nf,1+nf:end-nf);
-		Y = Y(1+nf:end-nf,1+nf:end-nf);
-		U = U(1+nf:end-nf,1+nf:end-nf);
-		V = V(1+nf:end-nf,1+nf:end-nf);
-		Psi = Psi(1+nf:end-nf,1+nf:end-nf);
-	end
-	
 	if(par.toPlot == 1)
 		
 		figure(1)
