@@ -1,5 +1,5 @@
 if(exist('figs','var'))
-	run(figs);
+	figs = run(figs);
 else
 	figs = run;
 end

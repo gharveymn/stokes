@@ -8,12 +8,13 @@ function par = Parameters
 	addpath('bcfunctions');
 	addpath('rhfunctions');
 	addpath('maps');
+	addpath('utils');
 	
 	par.maptype = 'g';
-	par.mapfile = 'symch.txt';
-	par.h = 0.1;
-	par.toPlot = 2;			%1==surf,2==quiver,3==scatter
-	par.filter = true;
+	par.mapfile = 'unit.txt';
+	par.h = 0.05;
+	par.toPlot = 3;			%1==surf,2==quiver,3==scatter
+	par.filter = false;
 	par.numfilter = 1;
 	
 	par.rhfunc = @RHZero;

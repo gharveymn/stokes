@@ -4,11 +4,11 @@ function figs = Plot(mat,vec,par,figs)
 		figs = InitialPlot(mat,vec,par);
 	else
 		%update if we already initialized the plots
-		Update(mat,vec,par,figs)
+		figs = Update(mat,vec,par,figs);
 	end
 end
 
-function figs=InitialPlot(mat,vec,par)
+function figs = InitialPlot(mat,vec,par)
 	
 	X = mat(:,:,1);
 	Y = mat(:,:,2);
@@ -57,15 +57,18 @@ function figs=InitialPlot(mat,vec,par)
 	elseif(par.toPlot == 3)
 		
 		figure(1)
-		f1 = scatter3(x,y,u,10,'.');
+		clrs = MakeClrs(u);
+		f1 = scatter3(x,y,u,10,clrs,'.');
 		axis(ax)
 
 		figure(2)
-		f2 = scatter3(x,y,v,10,'.');
+		clrs = MakeClrs(v);
+		f2 = scatter3(x,y,v,10,clrs,'.');
 		axis(ax)
 
 		figure(3)
-		f3 = scatter3(x,y,psi,10,'.');
+		clrs = MakeClrs(psi);
+		f3 = scatter3(x,y,psi,10,clrs,'.');
 		axis(ax)
 		
 		figs = {f1,f2,f3};
@@ -75,7 +78,7 @@ function figs=InitialPlot(mat,vec,par)
 	
 end
 
-function Update(mat,vec,par,figs)
+function figs = Update(mat,vec,par,figs)
 	try
 		U = mat(:,:,3);
 		V = mat(:,:,4);
@@ -133,8 +136,8 @@ function Update(mat,vec,par,figs)
 		
 	catch
 		
-		disp('Couldn''t update one of the figures, we''ll try to make new ones')
-		InitialPlot(mat,vec,par);
+		disp('Couldn''t update one of the figures—we''ll try to make new ones')
+		figs = InitialPlot(mat,vec,par);
 		
 	end
 	

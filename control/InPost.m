@@ -37,14 +37,14 @@ function figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par,figs)
 		grids{4} = grids{4}(~on);
 		umesh = umesh(~on);
 		vmesh = vmesh(~on);
-		psimesh = psimesh(~on);		
+		psimesh = psimesh(~on);	
 	end
 	
 	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
 	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
 	
 	if(exist('figs','var'))
-		Plot(mat,vec,par,figs);
+		figs = Plot(mat,vec,par,figs);
 	else
 		figs = Plot(mat,vec,par);
 	end
