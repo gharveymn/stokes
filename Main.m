@@ -13,36 +13,28 @@ function figs = run(figs)
 	solver = par.solver;
 	h = par.h;
 	
-	[grids,filterMat,valind,onfull] = ParseValidIndices(par);
+	[grids,filtering] = ParseValidIndices(par);
 	
-	xinit = grids{1};
-	yinit = grids{2};
-	xmesh = grids{3};
-	ymesh = grids{4};
-	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
-	
-	on = onfull(valind);
-	
+	xsz = numel(grids{1});
+	ysz = numel(grids{2});
 	
 	%implement external force function (on rhs)
-	rhs = rhfunc(xmesh,ymesh);
+	rhs = rhfunc(grids{3},grids{4});
 	
 	%make right hand side for Dirichlet BCs and get indices for those points
-	[rhs,bcinds] = bcfunc(xmesh,ymesh,rhs,on);
+	[rhs,bcinds] = bcfunc(grids{3},grids{4},rhs,filtering{3});
 	
 % 	rmeshfull = filterMat'*rhs;
 % 	Rmesh = reshape(rmeshfull,[xsz,ysz])';
 % 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
 	
-	psimesh = solver(xsz,ysz,bcinds,rhs,filterMat,h);
+	psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
 	
 	if(nargin==1)
-		figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par,figs);
+		figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs);
 	else
-		figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par);
+		figs = InPost(grids,psimesh,xsz,ysz,filtering,par);
 	end
 	
 end

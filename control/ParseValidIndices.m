@@ -1,4 +1,4 @@
-function [grids,filterMat,valind,on] = ParseValidIndices(par)
+function [grids,filtering] = ParseValidIndices(par)
 	%PARSEVALIDINDICES parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
@@ -32,14 +32,16 @@ function [grids,filterMat,valind,on] = ParseValidIndices(par)
      ymeshfull = kron(yinit,ones(xsz,1));
 
      %Credit to Darren Engwirda for inpoly
-     [valind,on] = inpoly(horzcat(xmeshfull,ymeshfull),horzcat(xlimcoords,ylimcoords));
+     [valind,onfull] = inpoly(horzcat(xmeshfull,ymeshfull),horzcat(xlimcoords,ylimcoords));
 
      filterMat = spdiags(valind,0,xsz*ysz,xsz*ysz);
      filterMat = filterMat(valind,:);
 	
+	on = onfull(valind);
+	
 	if(par.filter)
-		Xmesh = (reshape(xmeshfull./(valind&~on),[xsz,ysz]))';
-		Ymesh = (reshape(ymeshfull./(valind&~on),[ysz,xsz]))';
+		Xmesh = (reshape(xmeshfull./(valind&~onfull),[xsz,ysz]))';
+		Ymesh = (reshape(ymeshfull./(valind&~onfull),[ysz,xsz]))';
 	else
 		Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
 		Ymesh = (reshape(ymeshfull./valind,[ysz,xsz]))';
@@ -49,6 +51,7 @@ function [grids,filterMat,valind,on] = ParseValidIndices(par)
      ymesh = filterMat*ymeshfull;
 	
 	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull};
+	filtering = {filterMat,valind,on,onfull};
 
 	fclose('all');
 end
