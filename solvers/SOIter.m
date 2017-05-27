@@ -21,7 +21,6 @@ function psimesh = SOIter(xsz,ysz,bcinds,rhs,filterMat,h)
 	M = filterMat*M*filterMat';
 	M = ~bcinds.*M + spdiags(bcinds,0,sz,sz);
 	
-	
 	psimesh = pcg(bih,rhs,1e-6,100,M);
 	
 end

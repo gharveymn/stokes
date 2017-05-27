@@ -98,60 +98,67 @@ function figs=InitialPlot(mat,vec,par)
 end
 
 function Update(mat,vec,par,figs)
-	
-	U = mat(:,:,3);
-	V = mat(:,:,4);
-	Psi = mat(:,:,5);
-	
-	u = vec(:,3);
-	v = vec(:,4);
-	psi = vec(:,5);
-	
-	if(par.filter)
-		[isz,jsz] = size(U);
-		ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
-		jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
-		fil = ifil&jfil;
-		u = u(fil);
-		v = v(fil);
-		psi = psi(fil);
+	try
+		U = mat(:,:,3);
+		V = mat(:,:,4);
+		Psi = mat(:,:,5);
+
+		u = vec(:,3);
+		v = vec(:,4);
+		psi = vec(:,5);
+
+		if(par.filter)
+			[isz,jsz] = size(U);
+			ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
+			jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
+			fil = ifil&jfil;
+			u = u(fil);
+			v = v(fil);
+			psi = psi(fil);
+
+			U = U(2:end-1,2:end-1);
+			V = V(2:end-1,2:end-1);
+			Psi = Psi(2:end-1,2:end-1);
+		end
+
+		if(par.toPlot == 1)
+
+			set(figs{1},'ZData',U);
+			set(figs{2},'ZData',V);
+			set(figs{3},'ZData',Psi);
+
+		elseif(par.toPlot == 2)
+
+			set(figs{1},'UData',u);
+			set(figs{1},'VData',v);
+
+			clrs = MakeClrs(psi);
+			set(figs{2},'ZData',psi);
+			set(figs{2},'CData',clrs);
+
+		elseif(par.toPlot == 3)
+
+			clrs = MakeClrs(u);
+			set(figs{1},'ZData',u);
+			set(figs{1},'CData',clrs);
+
+			clrs = MakeClrs(v);
+			set(figs{2},'ZData',v);
+			set(figs{2},'CData',clrs);
+
+			clrs = MakeClrs(psi);
+			set(figs{3},'ZData',psi);
+			set(figs{3},'CData',clrs);
+		end
+
+		drawnow;
 		
-		U = U(2:end-1,2:end-1);
-		V = V(2:end-1,2:end-1);
-		Psi = Psi(2:end-1,2:end-1);
+	catch
+		
+		disp('Couldn''t update one of the figures, we''ll try to make new ones')
+		InitialPlot(mat,vec,par);
+		
 	end
-	
-	if(par.toPlot == 1)
-		
-		set(figs{1},'ZData',U);
-		set(figs{2},'ZData',V);
-		set(figs{3},'ZData',Psi);
-		
-	elseif(par.toPlot == 2)
-		
-		set(figs{1},'UData',u);
-		set(figs{1},'VData',v);
-		
-		clrs = MakeClrs(psi);
-		set(figs{2},'ZData',psi);
-		set(figs{2},'CData',clrs);
-		
-	elseif(par.toPlot == 3)
-		
-		clrs = MakeClrs(u);
-		set(figs{1},'ZData',u);
-		set(figs{1},'CData',clrs);
-		
-		clrs = MakeClrs(v);
-		set(figs{2},'ZData',v);
-		set(figs{2},'CData',clrs);
-		
-		clrs = MakeClrs(psi);
-		set(figs{3},'ZData',psi);
-		set(figs{3},'CData',clrs);
-	end
-	
-	drawnow;
 	
 end
 

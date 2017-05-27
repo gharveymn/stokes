@@ -17,7 +17,7 @@ function psimesh = SODuo(xsz,ysz,bcinds,rhs,filterMat,h)
 	nw = ~(bcinds).*nw + spdiags(bcinds,0,sz,sz);
 	ne = ~(bcinds).*ne;
 	
-	M = [-nw -ne
+	M = [nw ne
 		sw se];
 	
 	rhs = [rhs;rhs];

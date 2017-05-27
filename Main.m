@@ -40,9 +40,9 @@ function figs = run(figs)
 	psimesh = solver(xsz,ysz,bcinds,rhs,filterMat,h);
 	
 	if(nargin==1)
-		InPost(grids,psimesh,xsz,ysz,filterMat,par,figs);
+		figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par,figs);
 	else
-		figs = InPost(grids,psimesh,xsz,ysz,filterMat,par);
+		figs = InPost(grids,psimesh,xsz,ysz,filterMat,on,par);
 	end
 	
 end

@@ -7,14 +7,21 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on)
 	
 	xmax = max(xmesh);
 	xmin = min(xmesh);
+	ymax = max(ymesh);
+	ymin = min(ymesh);
+	
 	
 	% inflow
-	h = (max(ymesh(xmesh==0))-min(ymesh(xmesh==0)))/2;
+	inflowmax = max(ymesh(xmesh==0));
+	inflowmin = min(ymesh(xmesh==0));
+	h = (inflowmax-inflowmin)/2;
 	a = 1;
 	c = 1/12;
 	
+	centerin = inflowmin + h;
+	
 	inflowx = xmin*ones(numel(xmesh),1);
-	in = a*(h^2.*(ymesh-h) - (ymesh-h).^3./3) + c;
+	in = a*(h^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + c;
 	in(~(xmesh==inflowx)) = 0;
 	
 	rhs = rhs + in;
@@ -25,12 +32,16 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on)
 	end
 	
 	%outflow
-	H = (max(ymesh(xmesh==xmax))-min(ymesh(xmesh==xmax)))/2;
+	outflowmax = max(ymesh(xmesh==xmax));
+	outflowmin = min(ymesh(xmesh==xmax));
+	H = (outflowmax-outflowmin)/2;
 	f = 1/12;
 	e = (4*a*h^3/3 + c - f)*3/(4*H^3);
 	
+	centerout = outflowmin + H;
+	
 	outflowx = xmax*ones(numel(xmesh),1);
-	out = e*(H^2.*(ymesh-H) - (ymesh-H).^3./3) + f;
+	out = e*(H^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + f;
 	out(~(xmesh==outflowx)) = 0;
 	
 	rhs = rhs + out;
@@ -42,7 +53,7 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on)
 	
 	% set top
 	% only for square domain for now
-	rhs(ymesh > ymin + H & ~(xmesh==inflowx | xmesh==outflowx)) = max(rhs);
+	rhs(ymesh > ymin + H & ~(xmesh==inflowx | xmesh==outflowx) & on) = max(rhs);
 	
 end
 
