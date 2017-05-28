@@ -13,8 +13,8 @@ function par = Parameters
 	par.maptype = 'g';
 	par.mapfile = 'unit.txt';
 	par.h = 0.05;
-	par.toPlot = 3;			%1==surf,2==quiver,3==scatter
-	par.filter = false;
+	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
+	par.filter = true;
 	par.numfilter = 1;
 	
 	par.rhfunc = @RHZero;
