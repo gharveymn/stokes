@@ -1,6 +1,7 @@
 function psimesh = SOSpectral(xsz,ysz,bcinds,rhs,filterMat,h)
 
 	%make derivative matrices
+	%Lui 239,240,241,273,274,281,282
 	
 	%change when switch to rectangular
 	A = 1/h^2*sptoeplitz([2 -1],xsz);

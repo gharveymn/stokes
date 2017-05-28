@@ -30,10 +30,10 @@ function figs = run(figs)
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
 
 	if(par.ddrun)
-		g = Decompose(grids,par.ddbounds);
+		psimesh = @ddsolver(grids,bcinds,rhs,filtering{1},h);
+	else
+		psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
 	end
-	
-	psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
 	
 	if(nargin==1)
 		figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs);

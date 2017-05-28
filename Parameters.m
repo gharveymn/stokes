@@ -3,7 +3,7 @@ function par = Parameters
 	%
 	% Definite parameters go here
 	
-	addpath('control');
+	addpath('ddsolvers');
 	addpath('solvers');
 	addpath('bcfunctions');
 	addpath('rhfunctions');
@@ -27,6 +27,7 @@ function par = Parameters
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymChN; 
 	par.solver = @SODuo;
+	par.ddsolver = @DDASch;
 	
 end
 

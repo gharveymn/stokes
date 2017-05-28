@@ -1,16 +1,17 @@
-function newgrids = Decompose(grids,bounds)
+function [newgrids,newpsis] = Decompose(grids,psimesh,bounds)
 	%DECOMPOSE for use with symch
 	
 	
-	g1 = getGrids(grids,bounds{1});
-	g2 = getGrids(grids,bounds{2});
-	g3 = getGrids(grids,bounds{3});
+	[g1,p1] = getGrids(grids,psimesh,bounds{1});
+	[g2,p2] = getGrids(grids,psimesh,bounds{2});
+	[g3,p3] = getGrids(grids,psimesh,bounds{3});
 	
 	newgrids = {g1,g2,g3};
+	newpsis = {p1,p2,p3};
 	
 end
 
-function g = getGrids(grids,bnds)
+function [g,psimeshnew] = getGrids(grids,psimesh,bnds)
 	
 	xinit = grids{1};
 	yinit = grids{2};
@@ -28,6 +29,7 @@ function g = getGrids(grids,bnds)
 	
 	xmeshnew = xmesh(vinds);
 	ymeshnew = ymesh(vinds);
+	psimeshnew = psimesh(vinds);
 	
 	Xmeshnew = reshape(xmeshnew,[xsznew,ysznew])';
 	Ymeshnew = reshape(ymeshnew,[xsznew,ysznew])';

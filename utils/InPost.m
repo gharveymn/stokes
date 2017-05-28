@@ -120,30 +120,3 @@ function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,v
 	bcc = bcc(valind);
 end
 
-%TODO move this to its own file
-function mat = spdiag(v,k)
-	%SPDIAG implements diag for sparse matrices
-	% why spdiags is different from diag we'll never know...
-	
-	if(nargin == 1 || k == 0)
-		vsz = numel(v);
-		i = (1:vsz)';
-		mat = sparse(i,i,v,vsz,vsz);
-	else
-		vsz = numel(v);
-		absk = abs(k);
-
-		i = (1:vsz)';
-		j = (1:vsz)';
-
-		if(k>0)
-			j = j+k;
-		else
-			i = i+absk;
-		end
-
-		mat = sparse(i,j,v,vsz+absk,vsz+absk);
-	end
-	
-end
-
