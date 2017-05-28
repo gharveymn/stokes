@@ -68,6 +68,7 @@ function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
 end
 
 function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,valind,xsz)
+	%GETWHEREBOUNDARIES I'm somewhat suprised this actually works
 	
 	xmin = min(xmeshfull);
 	xmax = max(xmeshfull);
@@ -119,7 +120,10 @@ function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,v
 	bcc = bcc(valind);
 end
 
+%TODO move this to its own file
 function mat = spdiag(v,k)
+	%SPDIAG implements diag for sparse matrices
+	% why spdiags is different from diag we'll never know...
 	
 	if(nargin == 1 || k == 0)
 		vsz = numel(v);

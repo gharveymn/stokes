@@ -13,7 +13,7 @@ function figs = run(figs)
 	solver = par.solver;
 	h = par.h;
 	
-	[grids,filtering] = ParseValidIndices(par);
+	[grids,filtering,par] = ParseValidIndices(par);
 	
 	xsz = numel(grids{1});
 	ysz = numel(grids{2});
@@ -28,6 +28,10 @@ function figs = run(figs)
 % 	Rmesh = reshape(rmeshfull,[xsz,ysz])';
 % 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
+
+	if(par.ddrun)
+		g = Decompose(grids,par.ddbounds);
+	end
 	
 	psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
 	

@@ -1,4 +1,4 @@
-function [grids,filtering] = ParseValidIndices(par)
+function [grids,filtering,par] = ParseValidIndices(par)
 	%PARSEVALIDINDICES parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
@@ -20,7 +20,26 @@ function [grids,filtering] = ParseValidIndices(par)
      for i=1:2:numel(data)
           xlimcoords((i+1)/2) = data(i);
           ylimcoords((i+1)/2) = data(i+1);
-     end
+	end
+	
+	%make dd bounds (if needed)
+	if(par.ddrun)
+		par.ddbounds{1}{1}(1) = xlimcoords(1);
+		par.ddbounds{1}{2}(1) = xlimcoords(3)+par.ddoverlap;
+		par.ddbounds{1}{1}(2) = ylimcoords(1);
+		par.ddbounds{1}{2}(2) = ylimcoords(3);
+		
+		par.ddbounds{2}{1}(1) = xlimcoords(4);
+		par.ddbounds{2}{2}(1) = par.h*round(1/par.h*(par.ddmidratio*xlimcoords(5)...
+								+(1-par.ddmidratio)*xlimcoords(4))) + par.ddoverlap;
+		par.ddbounds{2}{1}(2) = ylimcoords(7);
+		par.ddbounds{2}{2}(2) = ylimcoords(4);
+							
+		par.ddbounds{3}{1}(1) = par.ddbounds{2}{2}(1) - par.ddoverlap;
+		par.ddbounds{3}{2}(1) = xlimcoords(5);
+		par.ddbounds{3}{1}(2) = ylimcoords(6);
+		par.ddbounds{3}{2}(2) = ylimcoords(5);
+	end
 
      %make grid
      limits = [min(xlimcoords),max(xlimcoords),min(ylimcoords),max(ylimcoords)];
