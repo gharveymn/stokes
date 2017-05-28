@@ -11,9 +11,10 @@ function figs = run(figs)
 	rhfunc = par.rhfunc;
 	bcfunc = par.bcfunc;
 	solver = par.solver;
+	ddsolver = par.ddsolver;
 	h = par.h;
 	
-	[grids,filtering] = ParseValidIndices(par);
+	[grids,filtering,par] = ParseValidIndices(par);
 	
 	xsz = numel(grids{1});
 	ysz = numel(grids{2});
@@ -28,8 +29,12 @@ function figs = run(figs)
 % 	Rmesh = reshape(rmeshfull,[xsz,ysz])';
 % 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
-	
-	psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
+
+	if(par.ddrun)
+		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,h);
+	else
+		psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
+	end
 	
 	if(nargin==1)
 		figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs);

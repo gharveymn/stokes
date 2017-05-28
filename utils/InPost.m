@@ -68,6 +68,7 @@ function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
 end
 
 function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,valind,xsz)
+	%GETWHEREBOUNDARIES I'm somewhat suprised this actually works
 	
 	xmin = min(xmeshfull);
 	xmax = max(xmeshfull);
@@ -117,29 +118,5 @@ function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,v
 	bcs = bcs(valind);
 	bcn = bcn(valind);
 	bcc = bcc(valind);
-end
-
-function mat = spdiag(v,k)
-	
-	if(nargin == 1 || k == 0)
-		vsz = numel(v);
-		i = (1:vsz)';
-		mat = sparse(i,i,v,vsz,vsz);
-	else
-		vsz = numel(v);
-		absk = abs(k);
-
-		i = (1:vsz)';
-		j = (1:vsz)';
-
-		if(k>0)
-			j = j+k;
-		else
-			i = i+absk;
-		end
-
-		mat = sparse(i,j,v,vsz+absk,vsz+absk);
-	end
-	
 end
 

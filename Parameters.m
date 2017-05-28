@@ -3,7 +3,7 @@ function par = Parameters
 	%
 	% Definite parameters go here
 	
-	addpath('control');
+	addpath('ddsolvers');
 	addpath('solvers');
 	addpath('bcfunctions');
 	addpath('rhfunctions');
@@ -18,9 +18,16 @@ function par = Parameters
 	par.numfilter = 1;
 	par.ghostpoints = true;
 	
+	%domain decomposition parameters
+	par.ddrun = true;
+	par.ddbounds = {{[0.0,-0.5],[1.5,0.5]},{[1.0,-1.5],[3.5,1.5]},{[3.0,-1.5],[5.0,1.5]}};
+	par.ddoverlap = 0.5;
+	par.ddmidratio = 0.6;
+	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh; 
 	par.solver = @SODuo;
+	par.ddsolver = @DDASch;
 	
 end
 
