@@ -40,11 +40,11 @@ function [grids,filtering] = ParseValidIndices(par)
 	on = onfull(valind);
 	
 	if(par.filter)
-		Xmesh = (reshape(xmeshfull./(valind&~onfull),[xsz,ysz]))';
-		Ymesh = (reshape(ymeshfull./(valind&~onfull),[ysz,xsz]))';
+		Xmesh = (reshape(xmeshfull./(valind&~on),[xsz,ysz]))';
+		Ymesh = (reshape(ymeshfull./(valind&~on),[xsz,ysz]))';
 	else
 		Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
-		Ymesh = (reshape(ymeshfull./valind,[ysz,xsz]))';
+		Ymesh = (reshape(ymeshfull./valind,[xsz,ysz]))';
 	end
 
      xmesh = filterMat*xmeshfull;

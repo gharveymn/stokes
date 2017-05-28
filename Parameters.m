@@ -8,6 +8,7 @@ function par = Parameters
 	addpath('bcfunctions');
 	addpath('rhfunctions');
 	addpath('maps');
+	addpath('utils');
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
