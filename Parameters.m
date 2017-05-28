@@ -10,14 +10,15 @@ function par = Parameters
 	addpath('maps');
 	
 	par.maptype = 'g';
-	par.mapfile = 'unit.txt';
+	par.mapfile = 'symch.txt';
 	par.h = 0.05;
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
-	par.filter = true;
+	par.filter = false;
 	par.numfilter = 1;
+	par.ghostpoints = false;
 	
 	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymCh; 
+	par.bcfunc = @BCSymChN; 
 	par.solver = @SODuo;
 	
 end

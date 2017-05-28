@@ -22,7 +22,7 @@ function figs = run(figs)
 	rhs = rhfunc(grids{3},grids{4});
 	
 	%make right hand side for Dirichlet BCs and get indices for those points
-	[rhs,bcinds] = bcfunc(grids{3},grids{4},rhs,filtering{3});
+	[rhs,bcinds] = bcfunc(grids{3},grids{4},rhs,filtering{3},h,par);
 	
 % 	rmeshfull = filterMat'*rhs;
 % 	Rmesh = reshape(rmeshfull,[xsz,ysz])';

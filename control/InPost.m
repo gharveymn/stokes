@@ -7,33 +7,34 @@ function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
 	onfull = filtering{4};
 	
 	h = par.h;
-	sz = size(filterMat,1);
 	
 	%TODO change so that derivatives are cool at boundaries
-	%Switch to first order on the boundary
-	[bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(grids{7},grids{8},onfull,valind,xsz);
-	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-	dx = kron(speye(ysz),Dx);
-	dx = filterMat*dx*filterMat';
-	dx = ~bcw.*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
-	dx = ~bce.*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
-	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-	dy = kron(Dy,speye(xsz));
-	dy = filterMat*dy*filterMat';
-	dy = ~bcs.*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-xsz),xsz));
-	dy = ~bcn.*dy + 1/h*(-spdiag(bcn(xsz+1:end),-xsz) + spdiag(bcn));
-	
-	%Use ghost points -- requires setting BC to conform
-% 	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-% 	dx = kron(speye(ysz),Dx);
-% 	dx = filterMat*dx*filterMat';
-% 	
-% 	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-% 	dy = kron(Dy,speye(xsz));
-% 	dy = filterMat*dy*filterMat';
-	
+	if(par.ghostpoints)
+		Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+		dx = kron(speye(ysz),Dx);
+		dx = filterMat*dx*filterMat';
+		dx = ~on.*dx;
+		
+		Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+		dy = kron(Dy,speye(xsz));
+		dy = filterMat*dy*filterMat';
+		dy = ~on.*dy;
+	else
+		%Switch to first order on the boundary
+		[bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(grids{7},grids{8},onfull,valind,xsz);
+
+		Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+		dx = kron(speye(ysz),Dx);
+		dx = filterMat*dx*filterMat';
+		dx = ~bcw.*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
+		dx = ~bce.*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+
+		Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+		dy = kron(Dy,speye(xsz));
+		dy = filterMat*dy*filterMat';
+		dy = ~bcs.*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-xsz),xsz));
+		dy = ~bcn.*dy + 1/h*(-spdiag(bcn(xsz+1:end),-xsz) + spdiag(bcn));
+	end
 	
 	umesh = dy*psimesh;
 	vmesh = -dx*psimesh;

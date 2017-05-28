@@ -1,5 +1,5 @@
-function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
-	%for use with symch map
+function [rhs,bcinds] = BCSymChN(xmesh,ymesh,rhs,on,del,par)
+	%for use with symch map with natural smoothing
 	bcinds = 0*xmesh;
 	
 	% add all the the indices which are on the boundary
@@ -23,8 +23,8 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
 		h = h - del;
 	end
 	
-	a = 1;
-	c = 1/12;
+	a = .2;
+	c = 1/12*a;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
 	in = a*(h^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + c;
@@ -44,30 +44,20 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
 	H = (outflowmax-outflowmin)/2;
 	
 	centerout = outflowmin + H;
-	
-	if(par.ghostpoints)
-		H = H - del;
-	end
-	
-	f = 1/12;
-	e = (4*a*h^3/3 + c - f)*3/(4*H^3);
-	
 	outflowx = xmax*ones(numel(xmesh),1);
-	out = e*(H^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + f;
-	out(~(xmesh==outflowx)) = 0;
 	
-	rhs = rhs + out;
+	bcinds = bcinds&(~(xmesh==xmax)|((xmesh==xmax)&(ymesh==outflowmax)|(ymesh==outflowmin)));
 	
-	for i=1:0
-		rhs = rhs + circshift(out,-i);
-		bcinds = bcinds | circshift(bcinds,-i);
-	end
+	rhs(xmesh==xmax&ymesh==outflowmax) = in(xmesh==xmin&ymesh==inflowmax);
+	rhs(xmesh==xmax&ymesh==outflowmin) = in(xmesh==xmin&ymesh==inflowmin);
 	
 	% set top
-	rhs(ymesh > centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymax);
+	rhs(ymesh > centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = in(xmesh==xmin&ymesh==inflowmax);
 	
 	% set bottom
-	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
+	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = in(xmesh==xmin&ymesh==inflowmin);
+	
+	
 	
 end
 
