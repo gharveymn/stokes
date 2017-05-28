@@ -46,10 +46,14 @@ function [rhs,bcinds] = BCSymChN(xmesh,ymesh,rhs,on,del,par)
 	centerout = outflowmin + H;
 	outflowx = xmax*ones(numel(xmesh),1);
 	
-	bcinds = bcinds&(~(xmesh==xmax)|((xmesh==xmax)&(ymesh==outflowmax)|(ymesh==outflowmin)));
-	
 	rhs(xmesh==xmax&ymesh==outflowmax) = in(xmesh==xmin&ymesh==inflowmax);
+	rhs(xmesh==xmax&ymesh==outflowmax-del) = in(xmesh==xmin&ymesh==inflowmax);
+	
 	rhs(xmesh==xmax&ymesh==outflowmin) = in(xmesh==xmin&ymesh==inflowmin);
+	rhs(xmesh==xmax&ymesh==outflowmin+del) = in(xmesh==xmin&ymesh==inflowmin);
+	
+	bcinds = bcinds&(~(xmesh==xmax)|((xmesh==xmax)&((ymesh==outflowmax)|(ymesh==outflowmax - del)...
+						|(ymesh==outflowmin)|(ymesh==outflowmin+del))));
 	
 	% set top
 	rhs(ymesh > centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = in(xmesh==xmin&ymesh==inflowmax);

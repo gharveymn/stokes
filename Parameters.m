@@ -16,10 +16,10 @@ function par = Parameters
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
 	par.filter = false;
 	par.numfilter = 1;
-	par.ghostpoints = false;
+	par.ghostpoints = true;
 	
 	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymChN; 
+	par.bcfunc = @BCSymCh; 
 	par.solver = @SODuo;
 	
 end
