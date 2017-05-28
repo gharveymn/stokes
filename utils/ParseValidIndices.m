@@ -25,7 +25,7 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	%make dd bounds (if needed)
 	if(par.ddrun)
 		par.ddbounds{1}{1}(1) = xlimcoords(1);
-		par.ddbounds{1}{2}(1) = xlimcoords(3)+par.ddoverlap;
+		par.ddbounds{1}{2}(1) = xlimcoords(3) + par.ddoverlap;
 		par.ddbounds{1}{1}(2) = ylimcoords(1);
 		par.ddbounds{1}{2}(2) = ylimcoords(3);
 		
@@ -71,6 +71,18 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	
 	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull};
 	filtering = {filterMat,valind,on,onfull};
+	
+	%we did some arithmetic up there so just
+	%make sure ddbounds are actually in the grids
+	[~,in] = min(abs(xinit-par.ddbounds{1}{2}(1)));
+	par.ddbounds{1}{2}(1) = xinit(in);
+	
+	[~,in] = min(abs(xinit-par.ddbounds{2}{2}(1)));
+	par.ddbounds{2}{2}(1) = xinit(in);
+	
+	[~,in] = min(abs(xinit-par.ddbounds{3}{1}(1)));
+	par.ddbounds{3}{1}(1) = xinit(in);
+	
 
 	fclose('all');
 end

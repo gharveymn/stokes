@@ -11,6 +11,7 @@ function figs = run(figs)
 	rhfunc = par.rhfunc;
 	bcfunc = par.bcfunc;
 	solver = par.solver;
+	ddsolver = par.ddsolver;
 	h = par.h;
 	
 	[grids,filtering,par] = ParseValidIndices(par);
@@ -30,7 +31,7 @@ function figs = run(figs)
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
 
 	if(par.ddrun)
-		psimesh = @ddsolver(grids,bcinds,rhs,filtering{1},h);
+		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,h);
 	else
 		psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
 	end
