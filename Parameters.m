@@ -28,7 +28,7 @@ function par = Parameters
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh; 
-	par.solver = @SODuo;
+	par.solver = @SOLegPseu;
 	par.ddsolver = @DDASch;
 	
 end

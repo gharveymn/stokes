@@ -1,4 +1,4 @@
-function [newgrids,newpsis,newbcinds] = Decompose(grids,psimesh,filtering,ddbounds)
+function [newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filtering,ddbounds)
 	%DECOMPOSE for use with symch
 	
 	xmesh = grids{3};
@@ -69,8 +69,13 @@ function [newgrids,newpsis,newbcinds] = Decompose(grids,psimesh,filtering,ddboun
 	onouter1 = on((xmesh >= blx11) & (xmesh <= blx12) & (ymesh >= bly11) &(ymesh <= bly12));
 	onouter2 = on((xmesh >= blx21) & (xmesh <= blx22) & (ymesh >= bly21) &(ymesh <= bly22));
 	onouter3 = on((xmesh >= blx31) & (xmesh <= blx32) & (ymesh >= bly31) &(ymesh <= bly32));
+	
+	rhs1 = rhs((xmesh >= blx11) & (xmesh <= blx12) & (ymesh >= bly11) &(ymesh <= bly12));
+	rhs2 = rhs((xmesh >= blx21) & (xmesh <= blx22) & (ymesh >= bly21) &(ymesh <= bly22));
+	rhs3 = rhs((xmesh >= blx31) & (xmesh <= blx32) & (ymesh >= bly31) &(ymesh <= bly32));
 
 	newbcinds = {{bcinds0,on1,onouter1},{bcinds1,on2,onouter2},{bcinds2,on2,onouter2},{bcinds3,on3,onouter3}};
+	newrhss = {rhs1,rhs2,rhs3};
 	
 end
 

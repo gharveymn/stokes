@@ -14,8 +14,8 @@ function psimesh = SODuo(nx,ny,bcinds,rhs,filterMat,h)
 	
 	%impose Dirichlet conditions
 	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-	nw = ~(bcinds).*nw + spdiags(bcinds,0,sz,sz);
-	ne = ~(bcinds).*ne;
+	nw = ~bcinds.*nw + spdiags(bcinds,0,sz,sz);
+	ne = ~bcinds.*ne;
 	
 	M = [nw ne
 		sw se];

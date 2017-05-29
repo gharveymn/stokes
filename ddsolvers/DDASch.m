@@ -4,11 +4,11 @@ function psimesh = DDASch(grids,filtering,rhs,bcinds,par,solver,h)
 	nx = numel(grids{1});
 	ny = numel(grids{2});
 	
-	psimesh = solver(numel(grids{1}),numel(grids{2}),bcinds,rhs,filtering{1},h);
+	psimesh = SODuo(numel(grids{1}),numel(grids{2}),bcinds,rhs,filtering{1},h);
 	figs = InPost(grids,psimesh,nx,ny,filtering,par);
 	
 	%TODO complete the bcinds
-	[newgrids,newpsis,newbcinds] = Decompose(grids,psimesh,filtering,par.ddbounds);
+	[newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filtering,par.ddbounds);
 	
 	p10 = newpsis{1};
 	p20 = newpsis{2};
@@ -32,9 +32,9 @@ function psimesh = DDASch(grids,filtering,rhs,bcinds,par,solver,h)
 	ny3 = numel(newgrids{3}{2});
 	
 	%for memory allocation purposes
-	rhs1 = p10;
-	rhs2 = p20;
-	rhs3 = p30;
+	rhs1 = newrhss{1};
+	rhs2 = newrhss{2};
+	rhs3 = newrhss{3};
 	
 	bcinds0 = newbcinds{1}{1};
 	on1 = newbcinds{1}{2};
