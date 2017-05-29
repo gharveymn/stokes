@@ -45,25 +45,25 @@ function [grids,filtering,par] = ParseValidIndices(par)
      limits = [min(xlimcoords),max(xlimcoords),min(ylimcoords),max(ylimcoords)];
      xinit = (limits(1):h:limits(2))';
      yinit = (limits(3):h:limits(4))';
-     xsz = numel(xinit);
-     ysz = numel(yinit);
-     xmeshfull = kron(ones(ysz,1),xinit);
-     ymeshfull = kron(yinit,ones(xsz,1));
+     nx = numel(xinit);
+     ny = numel(yinit);
+     xmeshfull = kron(ones(ny,1),xinit);
+     ymeshfull = kron(yinit,ones(nx,1));
 
      %Credit to Darren Engwirda for inpoly
      [valind,onfull] = inpoly(horzcat(xmeshfull,ymeshfull),horzcat(xlimcoords,ylimcoords));
 
-     filterMat = spdiags(valind,0,xsz*ysz,xsz*ysz);
+     filterMat = spdiags(valind,0,nx*ny,nx*ny);
      filterMat = filterMat(valind,:);
 	
 	on = onfull(valind);
 	
 	if(par.filter)
-		Xmesh = (reshape(xmeshfull./(valind&~on),[xsz,ysz]))';
-		Ymesh = (reshape(ymeshfull./(valind&~on),[xsz,ysz]))';
+		Xmesh = (reshape(xmeshfull./(valind&~on),[nx,ny]))';
+		Ymesh = (reshape(ymeshfull./(valind&~on),[nx,ny]))';
 	else
-		Xmesh = (reshape(xmeshfull./valind,[xsz,ysz]))';
-		Ymesh = (reshape(ymeshfull./valind,[xsz,ysz]))';
+		Xmesh = (reshape(xmeshfull./valind,[nx,ny]))';
+		Ymesh = (reshape(ymeshfull./valind,[nx,ny]))';
 	end
 
      xmesh = filterMat*xmeshfull;

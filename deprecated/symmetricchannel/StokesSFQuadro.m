@@ -63,8 +63,8 @@ function StokesSFQuadro
 	end
 	
 	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
+	nx = numel(xinit);
+	ny = numel(yinit);
 	
 % 	figure(1)
 % 	ax = MakeAxis(Xmesh,Ymesh);
@@ -73,17 +73,17 @@ function StokesSFQuadro
 	
 	%make derivative matrices
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = Dx(2,:);
 	Dx(end,:) = Dx(end-1,:);
-	dx = kron(speye(ysz),Dx);
+	dx = kron(speye(ny),Dx);
 	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+	Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 	Dy(1,:) = Dy(2,:);
 	Dy(end,:) = Dy(end-1,:);
-	dy = kron(Dy,speye(xsz));
+	dy = kron(Dy,speye(nx));
 	
-	sz = xsz*ysz;
+	sz = nx*ny;
 	
 	Z = sparse(sz,sz);
 	I = speye(sz);
@@ -120,17 +120,17 @@ function StokesSFQuadro
 	%make some derivative operator matrices
 	%TODO: just make these into a function in the path
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = 0;
 	Dx(end,:) = 0;
-	dx = kron(speye(ysz),Dx);
+	dx = kron(speye(ny),Dx);
 	dx = filterMat*dx*filterMat';
 	dx = dx.*~(sum(dx,2)~=0);
 	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+	Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 	Dy(1,:) = 0;
 	Dy(end,:) = 0;
-	dy = kron(Dy,speye(xsz));
+	dy = kron(Dy,speye(nx));
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
@@ -138,13 +138,13 @@ function StokesSFQuadro
 	v = -dx*psi;
 	
 	umesh = filterMat'*u;
-	Umesh = reshape(umesh,[xsz,ysz])';
+	Umesh = reshape(umesh,[nx,ny])';
 	
 	vmesh = filterMat'*v;
-	Vmesh = reshape(vmesh,[xsz,ysz])';
+	Vmesh = reshape(vmesh,[nx,ny])';
 	
 	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[xsz,ysz])';
+	Psimesh = reshape(psimesh,[nx,ny])';
 	
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);

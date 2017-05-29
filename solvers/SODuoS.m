@@ -1,15 +1,16 @@
-function psimesh = SODuoJacobi(nx,ny,bcinds,rhs,filterMat,h)
-		
+function psimesh = SODuoS(nx,ny,bcinds,rhs,filterMat,h)
+	
+	
 	%make derivative matrices
 	lap = laplacian2(nx,ny,h);
 	lap = filterMat*lap*filterMat';
 	
 	sz = size(lap,1);
 	
-	nw = -lap;
-	ne = (speye(sz,sz) + lap);
+	nw = lap;
+	ne = -(speye(sz,sz) + lap);
 	sw = sparse(sz,sz);
-	se = -lap;
+	se = lap;
 	
 	%impose Dirichlet conditions
 	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
@@ -19,21 +20,14 @@ function psimesh = SODuoJacobi(nx,ny,bcinds,rhs,filterMat,h)
 	M = [nw ne
 		sw se];
 	
-	[L,D,U] = ldu(M);
-	
-	Dinv = D^(-1);
-	
 	rhs = [rhs;rhs];
 	
-	disp(['lower bound for condition number: ' num2str(condest(M))])
+	%disp(['lower bound for condition number: ' num2str(condest(M))])
 	
-	vecn = M\rhs;
+ 	%[L,U] = ilu(M);
+ 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
+	vec = M\rhs;
+	psimesh = vec(1:sz);
 	
-	for i=1:1000
-		vecn = -Dinv*(L + U)*vecn + Dinv*rhs;
-	end
-	
-	psimesh = vecn(1:sz);
 	
 end
-

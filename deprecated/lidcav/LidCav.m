@@ -37,11 +37,11 @@ function LidCav
 	
 	
 	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
+	nx = numel(xinit);
+	ny = numel(yinit);
 	
 	%make derivative matrices
-	bih = biharmonic2(xsz,ysz,h);
+	bih = biharmonic2(nx,ny,h);
 	
 	bcw = 0*on;
 	bce = 0*on;
@@ -73,17 +73,17 @@ function LidCav
 	%make some derivative operator matrices
 	%TODO: just make these into a function in the path
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = 0;
 	Dx(end,:) = 0;
-	dx = kron(speye(ysz),Dx);
+	dx = kron(speye(ny),Dx);
 	dx = filterMat*dx*filterMat';
 	dx = dx.*~(sum(dx,2)~=0);
 	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+	Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 	Dy(1,:) = 0;
 	Dy(end,:) = 0;
-	dy = kron(Dy,speye(xsz));
+	dy = kron(Dy,speye(nx));
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
@@ -91,13 +91,13 @@ function LidCav
 	v = dx*psi;
 	
 	umesh = filterMat'*u;
-	Umesh = reshape(umesh,[xsz,ysz])';
+	Umesh = reshape(umesh,[nx,ny])';
 	
 	vmesh = filterMat'*v;
-	Vmesh = reshape(vmesh,[xsz,ysz])';
+	Vmesh = reshape(vmesh,[nx,ny])';
 	
 	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[xsz,ysz])';
+	Psimesh = reshape(psimesh,[nx,ny])';
 	
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);

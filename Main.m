@@ -16,8 +16,8 @@ function figs = run(figs)
 	
 	[grids,filtering,par] = ParseValidIndices(par);
 	
-	xsz = numel(grids{1});
-	ysz = numel(grids{2});
+	nx = numel(grids{1});
+	ny = numel(grids{2});
 	
 	%implement external force function (on rhs)
 	rhs = rhfunc(grids{3},grids{4});
@@ -26,20 +26,20 @@ function figs = run(figs)
 	[rhs,bcinds] = bcfunc(grids{3},grids{4},rhs,filtering{3},h,par);
 	
 % 	rmeshfull = filterMat'*rhs;
-% 	Rmesh = reshape(rmeshfull,[xsz,ysz])';
+% 	Rmesh = reshape(rmeshfull,[nx,ny])';
 % 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
 % 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
 
 	if(par.ddrun)
-		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,h);
+		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,solver,h);
 	else
-		psimesh = solver(xsz,ysz,bcinds,rhs,filtering{1},h);
+		psimesh = solver(nx,ny,bcinds,rhs,filtering{1},h);
 	end
 	
 	if(nargin==1)
-		figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs);
+		figs = InPost(grids,psimesh,nx,ny,filtering,par,figs);
 	else
-		figs = InPost(grids,psimesh,xsz,ysz,filtering,par);
+		figs = InPost(grids,psimesh,nx,ny,filtering,par);
 	end
 	
 end

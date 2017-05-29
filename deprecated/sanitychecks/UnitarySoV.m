@@ -16,11 +16,11 @@ function figs = UnitarySoV(figs)
 	rhs = ones(numel(onpf),1);
 	rhs(onpf) = 0;
 	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
+	nx = numel(xinit);
+	ny = numel(yinit);
 	
 	%make derivative matrices
-	lap = laplacian2(xsz,ysz,h);
+	lap = laplacian2(nx,ny,h);
 	lap = filterMat*lap*filterMat';
 	
 	sz = size(lap,1);
@@ -48,9 +48,9 @@ function figs = UnitarySoV(figs)
 	psimesh = -vec(1:sz);
 	
 	if(nargin==1)
-		InPost(grids,psimesh,xsz,ysz,filterMat,par,figs);
+		InPost(grids,psimesh,nx,ny,filterMat,par,figs);
 	else
-		figs = InPost(grids,psimesh,xsz,ysz,filterMat,par);
+		figs = InPost(grids,psimesh,nx,ny,filterMat,par);
 	end
 	
 end

@@ -1,12 +1,12 @@
-function laplacian = LaplacianFactory(xsz,ysz,h,neumann)
+function laplacian = LaplacianFactory(nx,ny,h,neumann)
 	% LAPLACIANFACTORY
 	%	Produces a sparse nmxnm Laplacian operating on a discrete distribution with spacing h.
 	%	This is for form v = [... v_{i,j} v_{i+1,j} v_{i+2,j} ...].
      
      %neumann is not neccessary
 	
-	Dxx = sptoeplitz([-2 1],xsz)./h.^2;
-	Dyy = sptoeplitz([-2 1],ysz)./h.^2;
+	Dxx = sptoeplitz([-2 1],nx)./h.^2;
+	Dyy = sptoeplitz([-2 1],ny)./h.^2;
 	
 	if(nargin == 4 && neumann)
 		Dxx(1,:) = Dxx(2,:);
@@ -18,7 +18,7 @@ function laplacian = LaplacianFactory(xsz,ysz,h,neumann)
 		
 	end
 	
-	laplacian = kron(speye(ysz),Dxx) + kron(Dyy,speye(xsz));
+	laplacian = kron(speye(ny),Dxx) + kron(Dyy,speye(nx));
 	
 end
 

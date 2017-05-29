@@ -62,43 +62,43 @@ function figs=StokesSFSpectral(figs)
 		bcinds = bcinds | circshift(bcinds,-i);
 	end
 	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
+	nx = numel(xinit);
+	ny = numel(yinit);
 	
 % 	figure(4)
 %  	rmesh = filterMat'*rhs;
-%  	Rmesh = reshape(rmesh,[xsz,ysz])';
+%  	Rmesh = reshape(rmesh,[nx,ny])';
 %  	surf(Xmesh,Ymesh,Rmesh,'edgecolor','none','facecolor','interp');
 
 	%make derivative matrices
 	
 	%change when switch to rectangular
-	A = 1/h^2*sptoeplitz([2 -1],xsz);
-	C = sparse([1,xsz],[1,xsz],[2/h^4,2/h^4],xsz,xsz);
+	A = 1/h^2*sptoeplitz([2 -1],nx);
+	C = sparse([1,nx],[1,nx],[2/h^4,2/h^4],nx,nx);
 	
 	
-	[P,D] = eigs(C,A,xsz);
+	[P,D] = eigs(C,A,nx);
 	
-	G = P'*reshape(filterMat'*rhs,xsz,xsz)*P;
-	V = G./(4+repmat(diag(D),1,xsz)+repmat(diag(D)',xsz,1));
-	psi = reshape(P*V*P',xsz*ysz,1);
+	G = P'*reshape(filterMat'*rhs,nx,nx)*P;
+	V = G./(4+repmat(diag(D),1,nx)+repmat(diag(D)',nx,1));
+	psi = reshape(P*V*P',nx*ny,1);
 	
 	psi = filterMat*psi;
 	
 	%make some derivative operator matrices
 	%TODO: just make these into a function in the path
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = 0;
 	Dx(end,:) = 0;
-	dx = kron(speye(ysz),Dx);
+	dx = kron(speye(ny),Dx);
 	dx = filterMat*dx*filterMat';
 	dx = dx.*~(sum(dx,2)~=0);
 	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+	Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 	Dy(1,:) = 0;
 	Dy(end,:) = 0;
-	dy = kron(Dy,speye(xsz));
+	dy = kron(Dy,speye(nx));
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
@@ -106,13 +106,13 @@ function figs=StokesSFSpectral(figs)
 	v = -dx*psi;
 	
 	umesh = filterMat'*u;
-	Umesh = reshape(umesh,[xsz,ysz])';
+	Umesh = reshape(umesh,[nx,ny])';
 	
 	vmesh = filterMat'*v;
-	Vmesh = reshape(vmesh,[xsz,ysz])';
+	Vmesh = reshape(vmesh,[nx,ny])';
 	
 	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[xsz,ysz])';
+	Psimesh = reshape(psimesh,[nx,ny])';
 	
 	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
 	vec = cat(2,xmeshfull,ymeshfull,umesh,vmesh,psimesh);

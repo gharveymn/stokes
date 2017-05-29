@@ -1,18 +1,18 @@
-function psimesh = SOQuad(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SOQuad(nx,ny,bcinds,rhs,filterMat,h)
 	
 	
 	%make derivative matrices
 	
-	Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
+	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = Dx(2,:);
 	Dx(end,:) = Dx(end-1,:);
-	dx = kron(speye(ysz),Dx);
+	dx = kron(speye(ny),Dx);
 	dx = filterMat*dx*filterMat';
 	
-	Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
+	Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 	Dy(1,:) = Dy(2,:);
 	Dy(end,:) = Dy(end-1,:);
-	dy = kron(Dy,speye(xsz));
+	dy = kron(Dy,speye(nx));
 	dy = filterMat*dy*filterMat';
 	
 	sz = numel(rhs);

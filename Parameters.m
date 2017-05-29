@@ -16,13 +16,15 @@ function par = Parameters
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
 	par.filter = false;
 	par.numfilter = 1;
-	par.ghostpoints = true;
+	par.ghostpoints = false;
+	par.zeroout = true;
 	
 	%domain decomposition parameters
 	par.ddrun = true;
 	par.ddbounds = {{[0.0,-0.5],[1.5,0.5]},{[1.0,-1.5],[3.5,1.5]},{[3.0,-1.5],[5.0,1.5]}};
 	par.ddoverlap = 0.5;
 	par.ddmidratio = 0.6;
+	par.dditer = 10;
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh; 

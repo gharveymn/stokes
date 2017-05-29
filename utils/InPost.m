@@ -1,4 +1,4 @@
-function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
+function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
 	filterMat = filtering{1};
@@ -10,43 +10,53 @@ function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
-		Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-		dx = kron(speye(ysz),Dx);
+		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
+		dx = kron(speye(ny),Dx);
 		dx = filterMat*dx*filterMat';
 		dx = ~on.*dx;
 		
-		Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-		dy = kron(Dy,speye(xsz));
+		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
+		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
 		dy = ~on.*dy;
 	else
 		%Switch to first order on the boundary
-		[bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(grids{7},grids{8},onfull,valind,xsz);
+		[bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(grids{7},grids{8},onfull,valind,nx);
 
-		Dx = sptoeplitz([0 -1],[0 1],xsz)./(2*h);
-		dx = kron(speye(ysz),Dx);
+		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
+		dx = kron(speye(ny),Dx);
 		dx = filterMat*dx*filterMat';
-		dx = ~bcw.*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
-		dx = ~bce.*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+		
+		if(par.zeroout)
+			dx = ~(bcw|bce|bcc).*dx;
+		else
+			dx = ~bcw.*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
+			dx = ~bce.*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+		end
 
-		Dy = sptoeplitz([0 -1],[0 1],ysz)./(2*h);
-		dy = kron(Dy,speye(xsz));
+		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
+		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
-		dy = ~bcs.*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-xsz),xsz));
-		dy = ~bcn.*dy + 1/h*(-spdiag(bcn(xsz+1:end),-xsz) + spdiag(bcn));
+		
+		if(par.zeroout)
+			dy = ~(bcs|bcn|bcc).*dy;
+		else
+			dy = ~bcs.*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
+			dy = ~bcn.*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
+		end
 	end
 	
 	umesh = dy*psimesh;
 	vmesh = -dx*psimesh;
 	
 	umeshfull = filterMat'*umesh;
-	Umesh = reshape(umeshfull,[xsz,ysz])';
+	Umesh = reshape(umeshfull,[nx,ny])';
 	
 	vmeshfull = filterMat'*vmesh;
-	Vmesh = reshape(vmeshfull,[xsz,ysz])';
+	Vmesh = reshape(vmeshfull,[nx,ny])';
 	
 	psimeshfull = filterMat'*psimesh;
-	Psimesh = reshape(psimeshfull,[xsz,ysz])';
+	Psimesh = reshape(psimeshfull,[nx,ny])';
 	
 	if(par.filter)
 		grids{3} = grids{3}(~on);
@@ -67,7 +77,7 @@ function figs = InPost(grids,psimesh,xsz,ysz,filtering,par,figs)
 	
 end
 
-function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,valind,xsz)
+function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,valind,nx)
 	%GETWHEREBOUNDARIES I'm somewhat suprised this actually works
 	
 	xmin = min(xmeshfull);
@@ -92,8 +102,8 @@ function [bcw,bce,bcs,bcn,bcc] = getWhereBoundaries(xmeshfull,ymeshfull,onfull,v
 	
 	r = circshift(valind&~xmaxb,1);
 	l = circshift(valind&~xminb,-1);
-	u = circshift(valind&~ymaxb,xsz);
-	d = circshift(valind&~yminb,-xsz);
+	u = circshift(valind&~ymaxb,nx);
+	d = circshift(valind&~yminb,-nx);
 	
 	bcw = bcw|onfull&~r;
 	bce = bce|onfull&~l;

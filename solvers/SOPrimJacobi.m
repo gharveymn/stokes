@@ -1,7 +1,7 @@
-function psimesh = SOPrimJacobi(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SOPrimJacobi(nx,ny,bcinds,rhs,filterMat,h)
 	
 	%make derivative matrices
-	bih = biharmonic2(xsz,ysz,h);
+	bih = biharmonic2(nx,ny,h);
 	bih = filterMat*bih*filterMat';
 	
 	sz = size(bih,1);

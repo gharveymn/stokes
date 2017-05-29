@@ -13,11 +13,11 @@ function Unitary
 	rhs = ones(numel(xmesh),1);
 	rhs(onpf) = 0;
 	
-	xsz = numel(xinit);
-	ysz = numel(yinit);
+	nx = numel(xinit);
+	ny = numel(yinit);
 	
 	%make derivative matrices
-	lap = laplacian2(xsz,ysz,h);
+	lap = laplacian2(nx,ny,h);
 	lap = filterMat*lap*filterMat';
 	
 	sz = size(lap,1);
@@ -45,9 +45,9 @@ function Unitary
 	psi = -vec(1:sz);
 	
 	if(nargin==1)
-		InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,xsz,ysz,filterMat,h,figs);
+		InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,nx,ny,filterMat,h,figs);
 	else
-		figs = InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,xsz,ysz,filterMat,h);
+		figs = InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,nx,ny,filterMat,h);
 	end
 	
 end

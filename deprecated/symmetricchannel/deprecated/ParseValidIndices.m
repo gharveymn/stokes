@@ -69,20 +69,20 @@ function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
 		limits = [min(xlimcoords),max(xlimcoords),min(ylimcoords),max(ylimcoords)];
 		xinit = (limits(1):h:limits(2))';
 		yinit = (limits(3):h:limits(4))';
-		xsz = numel(xinit);
-		ysz = numel(yinit);
-		xmesh = kron(ones(ysz,1),xinit);
-		ymesh = kron(yinit,ones(xsz,1));
+		nx = numel(xinit);
+		ny = numel(yinit);
+		xmesh = kron(ones(ny,1),xinit);
+		ymesh = kron(yinit,ones(nx,1));
 		
 		%Credit to Darren Engwirda for inpoly
 		[valInd,on] = inpoly(horzcat(xmesh,ymesh),horzcat(xlimcoords,ylimcoords));
 		
-		filterMat = spdiags(valInd,0,xsz*ysz,xsz*ysz);
+		filterMat = spdiags(valInd,0,nx*ny,nx*ny);
 		filterMat = filterMat(valInd,:);
 		on = on(valInd);
 		
-		Xmesh = (reshape(xmesh./valInd,[xsz,ysz]))';
-		Ymesh = flipud((reshape(ymesh./valInd,[xsz,ysz]))');
+		Xmesh = (reshape(xmesh./valInd,[nx,ny]))';
+		Ymesh = flipud((reshape(ymesh./valInd,[nx,ny]))');
 		
 		xmesh = filterMat*xmesh;
 		ymesh = filterMat*ymesh;

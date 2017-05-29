@@ -1,14 +1,14 @@
-function psimesh = SODuo(xsz,ysz,bcinds,rhs,filterMat,h)
+function psimesh = SODuo(nx,ny,bcinds,rhs,filterMat,h)
 	
 	
 	%make derivative matrices
-	lap = laplacian2(xsz,ysz,h);
+	lap = laplacian2(nx,ny,h);
 	lap = filterMat*lap*filterMat';
 	
 	sz = size(lap,1);
 	
 	nw = lap;
-	ne = speye(sz,sz) + lap;
+	ne = (speye(sz,sz) + lap);
 	sw = sparse(sz,sz);
 	se = lap;
 	
@@ -22,7 +22,7 @@ function psimesh = SODuo(xsz,ysz,bcinds,rhs,filterMat,h)
 	
 	rhs = [rhs;rhs];
 	
-	disp(['lower bound for condition number: ' num2str(condest(M))])
+	%disp(['lower bound for condition number: ' num2str(condest(M))])
 	
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
