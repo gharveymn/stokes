@@ -1,27 +1,41 @@
-function psimesh = SODuoJacobi(nx,ny,bcinds,rhs,filterMat,h)
+function [psimesh,mats] = SODuoJacobi(nx,ny,bcinds,rhs,filterMat,h,mats)
+	
+	
+	if(nargin == 7)
+		%express lane!
+		M = mats{1};
+		L = mats{2};
+		Dinv = mats{3};
+		U = mats{4};
+	else
 		
-	%make derivative matrices
-	lap = laplacian2(nx,ny,h);
-	lap = filterMat*lap*filterMat';
-	
-	sz = size(lap,1);
-	
-	nw = -lap;
-	ne = (speye(sz,sz) + lap);
-	sw = sparse(sz,sz);
-	se = -lap;
-	
-	%impose Dirichlet conditions
-	%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-	nw = ~(bcinds).*nw + spdiags(bcinds,0,sz,sz);
-	ne = ~(bcinds).*ne;
-	
-	M = [nw ne
-		sw se];
-	
-	[L,D,U] = ldu(M);
-	
-	Dinv = D^(-1);
+		%make derivative matrices
+		lap = laplacian2(nx,ny,h);
+		lap = filterMat*lap*filterMat';
+		
+		sz = size(lap,1);
+		
+		nw = -lap;
+		ne = (speye(sz,sz) + lap);
+		sw = sparse(sz,sz);
+		se = -lap;
+		
+		%impose Dirichlet conditions
+		%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
+		nw = ~(bcinds).*nw + spdiags(bcinds,0,sz,sz);
+		ne = ~(bcinds).*ne;
+		
+		M = [nw ne
+			sw se];
+		
+		
+		[L,D,U] = ldu(M);
+		
+		Dinv = D^(-1);
+		
+		mats = {M,L,Dinv,U};
+		
+	end
 	
 	rhs = [rhs;rhs];
 	

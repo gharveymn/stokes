@@ -1,5 +1,6 @@
-function psimesh = SOSpectral(nx,ny,bcinds,rhs,filterMat,h)
-
+function [psimesh,mats] = SOSpectral(nx,ny,bcinds,rhs,filterMat,h,mats)
+	
+	
 	%make derivative matrices
 	%Lui 239,240,241,273,274,281,282
 	

@@ -20,16 +20,16 @@ function par = Parameters
 	par.zeroout = true;
 	
 	%domain decomposition parameters
-	par.ddrun = true;
+	par.ddrun = false;
 	par.ddbounds = {{[0.0,-0.5],[1.5,0.5]},{[1.0,-1.5],[3.5,1.5]},{[3.0,-1.5],[5.0,1.5]}};
 	par.ddoverlap = 0.5;
 	par.ddmidratio = 0.6;
-	par.dditer = 10;
+	par.dditer = 5;
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh; 
-	par.solver = @SOLegPseu;
-	par.ddsolver = @DDASch;
+	par.solver = @SOPrim;
+	par.ddsolver = @DDMSch;
 	
 end
 

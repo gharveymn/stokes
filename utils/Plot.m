@@ -35,7 +35,7 @@ function figs = InitialPlot(mat,vec,par)
 		axis(ax)
 		
 		figure(3)
-		f3 = surf(X,Y,Psi,'edgecolor','none','facecolor','interp');
+		f3 = contour(X,Y,Psi);%,'edgecolor','none','facecolor','interp');
 		axis(ax)
 		
 		figs = {f1,f2,f3};

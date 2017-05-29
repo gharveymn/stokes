@@ -1,9 +1,9 @@
-function [psimesh,M,Q] = SOLegPseu(nx,ny,bcinds,rhs,M,Q)
+function [psimesh,mats] = SOLegPseu(nx,ny,bcinds,rhs,filterMat,h,mats)
 	%SOLEGPSEU utilizes a symmetric Legendre pseudospectral method
 	
-	if(nargin >= 7)
-		G = Q*rhs;
-		psimesh = M\G;
+	if(nargin == 7)
+		M = mats{1};
+		Q = mats{2};
 	else
 		[xx,rhox,Wx] = lglnodes(nx+1);
 		Dx = lpdmat(nx+1,xx);
@@ -20,19 +20,21 @@ function [psimesh,M,Q] = SOLegPseu(nx,ny,bcinds,rhs,M,Q)
 
 		Qx = Wx(2:end-1,2:end-1);
 		Qy = Wy(2:end-1,2:end-1);
-		Q = kron(Qx,Qy);
-		Q(bcinds,bcinds) = 1;
+		Q = kron(Qy,Qx);
+		Q(logical(diag(bcinds))) = 1;
 
 		Rx = Bx(2:end-1,2:end-1);
 		Ry = By(2:end-1,2:end-1);
 
-		G = Q*rhs;
+		M = kron(Py,Qx) + kron(Qy,Px) + 2*kron(Ry,Rx);
+		M = ~bcinds.*M + spdiags(bcinds,0,nx*ny,nx*ny);
+		
+		mats = {M,Q};
 
-		M = kron(Px,Qy) + kron(Qx,Py) + 2*kron(Rx,Ry);
-		M = ~bcinds.*M + spdiags(bcinds,0,sz,sz);
-
-		psimesh = M\G;
 	end
+	
+	G = Q*rhs;
+	psimesh = M\G;
 	
 	
 end
