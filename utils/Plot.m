@@ -25,6 +25,7 @@ function figs = InitialPlot(mat,vec,par)
 	ax = MakeAxis(x,y);
 	
 	if(par.toPlot == 1)
+		%surf
 		
 		figure(1)
 		f1 = surf(X,Y,U,'edgecolor','none','facecolor','interp');
@@ -35,12 +36,15 @@ function figs = InitialPlot(mat,vec,par)
 		axis(ax)
 		
 		figure(3)
-		f3 = contour(X,Y,Psi);%,'edgecolor','none','facecolor','interp');
+		f3 = surf(X,Y,Psi,'edgecolor','none','facecolor','interp');
+		%f3 = contour(X,Y,Psi);
 		axis(ax)
 		
 		figs = {f1,f2,f3};
 		
 	elseif(par.toPlot == 2)
+		%quiver
+		
 		figure(1)
 		ax = MakeAxis(X,Y);
 		f1 = quiver(x,y,u,v);
@@ -55,6 +59,7 @@ function figs = InitialPlot(mat,vec,par)
 		figs = {f1,f2};
 		
 	elseif(par.toPlot == 3)
+		%scatter
 		
 		figure(1)
 		clrs = MakeClrs(u);
@@ -72,6 +77,24 @@ function figs = InitialPlot(mat,vec,par)
 		axis(ax)
 		
 		figs = {f1,f2,f3};
+		
+	elseif(par.toPlot == 4)
+		%contour
+		
+		figure(1)
+		f1 = contour(X,Y,U);
+		axis(ax)
+
+		figure(2)
+		f2 = contour(X,Y,V);
+		axis(ax)
+		
+		figure(3)
+		f3 = contour(X,Y,Psi);
+		axis(ax)
+		
+		figs = {f1,f2,f3};
+		
 	end
 	
 	drawnow;
@@ -130,6 +153,11 @@ function figs = Update(mat,vec,par,figs)
 			clrs = MakeClrs(psi);
 			set(figs{3},'ZData',psi);
 			set(figs{3},'CData',clrs);
+			
+		elseif(par.toPlot == 4)
+			set(figs{1},'ZData',U);
+			set(figs{2},'ZData',V);
+			set(figs{3},'ZData',Psi);
 		end
 
 		drawnow;

@@ -13,11 +13,11 @@ function par = Parameters
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
 	par.h = 0.05;
-	par.toPlot = 1;			%1==surf,2==quiver,3==scatter
-	par.filter = false;
+	par.toPlot = 4;			%1==surf,2==quiver,3==scatter,4==contour
+	par.filter = true;
 	par.numfilter = 1;
-	par.ghostpoints = false;
-	par.zeroout = true;
+	par.ghostpoints = true;
+	par.zeroout = false;
 	
 	%domain decomposition parameters
 	par.ddrun = false;
@@ -28,7 +28,7 @@ function par = Parameters
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh; 
-	par.solver = @SOPrim;
+	par.solver = @SOLap;
 	par.ddsolver = @DDMSch;
 	
 end

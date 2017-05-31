@@ -25,10 +25,11 @@ function figs = run(figs)
 	%make right hand side for Dirichlet BCs and get indices for those points
 	[rhs,bcinds] = bcfunc(grids{3},grids{4},rhs,filtering{3},h,par);
 	
-% 	rmeshfull = filterMat'*rhs;
-% 	Rmesh = reshape(rmeshfull,[nx,ny])';
-% 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
-% 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
+	filterMat = filtering{1};
+ 	rmeshfull = filterMat'*rhs;
+ 	Rmesh = reshape(rmeshfull,[nx,ny])';
+ 	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
+ 	scatter3(grids{7},grids{8},rmeshfull,[],'.');
 
 	if(par.ddrun)
 		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,solver,h);
