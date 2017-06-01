@@ -23,7 +23,7 @@ function [psimesh,mats] = SOSpectral(nx,ny,bcinds,rhs,filterMat,h,mats)
 	V = G./(1+Hii+Hjj);
 	
 	
-	psi = reshape(Q*V*Q'*A,nx*ny,1);
+	psi = reshape(Q*V*Q'*A,nx*ny,1);	%NOTE: NORMALLY WE WANT TO TRANSPOSE FIRST SINCE WE ARE ITERATING ALONG X
 	psimesh = filterMat*psi;
 	
 end

@@ -1,15 +1,20 @@
 function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
-	filterMat = filtering{1};
-	valind = filtering{2};
-	on = filtering{3};
-	onfull = filtering{4};
-	
 	h = par.h;
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
+		
+		[~,grids,filtering] = closure(grids{7},grids{8},filtering{4},filtering{2},nx,ny,h,'inner');
+		[~,grids,filtering] = closure(grids{7},grids{8},filtering{4},filtering{2},nx,ny,h,'inner');
+		
+		%TODO figure out how to get back our psi at the right size
+		filterMat = filtering{1};
+		valind = filtering{2};
+		on = filtering{3};
+		onfull = filtering{4};
+		
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);
 		dx = filterMat*dx*filterMat';
@@ -20,8 +25,18 @@ function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 		dy = filterMat*dy*filterMat';
 		dy = ~on.*dy;
 	else
+		filterMat = filtering{1};
+		valind = filtering{2};
+		on = filtering{3};
+		onfull = filtering{4};
+		
 		%Switch to first order on the boundary
-		[bcw,bce,bcs,bcn,bcc] = boundarysides(grids{7},grids{8},onfull,valind,nx);
+		bc = boundarysides(grids{7},grids{8},onfull,valind,nx);
+		bcw = bc{1};
+		bce = bc{2};
+		bcs = bc{3};
+		bcn = bc{4};
+		bcc = bc{5};
 
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);

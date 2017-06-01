@@ -81,7 +81,7 @@ function figs=StokesSFSpectral(figs)
 	
 	G = P'*reshape(filterMat'*rhs,nx,nx)*P;
 	V = G./(4+repmat(diag(D),1,nx)+repmat(diag(D)',nx,1));
-	psi = reshape(P*V*P',nx*ny,1);
+	psi = reshape(P*V*P',nx*ny,1);	%NOTE: NORMALLY WE WANT TO TRANSPOSE FIRST SINCE WE ARE ITERATING ALONG X
 	
 	psi = filterMat*psi;
 	
