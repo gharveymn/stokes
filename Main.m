@@ -40,9 +40,9 @@ function figs = run(figs)
 	end
 	
 	if(nargin==1)
-		figs = InPost(grids,psimesh,nx,ny,filtering,par,figs);
+		figs = InPost(psimesh,bcinds,grids,filtering,par,figs);
 	else
-		figs = InPost(grids,psimesh,nx,ny,filtering,par);
+		figs = InPost(psimesh,bcinds,grids,filtering,par);
 	end
 	
 end

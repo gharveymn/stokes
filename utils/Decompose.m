@@ -4,9 +4,9 @@ function [newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filt
 	xmesh = grids{3};
 	ymesh = grids{4};
 	
-	[g1,p1,on1] = getGrids(grids,psimesh,ddbounds{1});
-	[g2,p2,on2] = getGrids(grids,psimesh,ddbounds{2});
-	[g3,p3,on3] = getGrids(grids,psimesh,ddbounds{3});
+	[g1,p1,on1] = getGrid(grids,psimesh,ddbounds{1});
+	[g2,p2,on2] = getGrid(grids,psimesh,ddbounds{2});
+	[g3,p3,on3] = getGrid(grids,psimesh,ddbounds{3});
 	
 	newgrids = {g1,g2,g3};
 	newpsis = {p1,p2,p3};
@@ -65,7 +65,7 @@ function [newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filt
 	bcinds3{2} = on2 & (xmesh2 >= blx31) & (ymesh2 >= bly31) & (ymesh2 <= bly32);
 	
 	
-	on = filtering{3};
+	on = filtering{3}{1};
 	onouter1 = on((xmesh >= blx11) & (xmesh <= blx12) & (ymesh >= bly11) &(ymesh <= bly12));
 	onouter2 = on((xmesh >= blx21) & (xmesh <= blx22) & (ymesh >= bly21) &(ymesh <= bly22));
 	onouter3 = on((xmesh >= blx31) & (xmesh <= blx32) & (ymesh >= bly31) &(ymesh <= bly32));
@@ -79,7 +79,7 @@ function [newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filt
 	
 end
 
-function [g,psimeshnew,onnew] = getGrids(grids,psimesh,bnds)
+function [g,psimeshnew,onnew] = getGrid(grids,psimesh,bnds)
 	
 	xinit = grids{1};
 	yinit = grids{2};

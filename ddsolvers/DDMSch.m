@@ -1,11 +1,12 @@
 function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver,h)
-	%DDASCH additive schwarz
+	%DDASCH multiplicative schwarz
 	
-	nx = numel(grids{1});
-	ny = numel(grids{2});
+	nx = grids{9};
+	ny = grids{10};
+	filterMat = filtering{1};
 	
-	psimesh = SODuo(numel(grids{1}),numel(grids{2}),bcinds,rhs,filtering{1},h);
-	figs = InPost(grids,psimesh,nx,ny,filtering,par);
+	psimesh = SODuo(nx,ny,bcinds,rhs,filterMat,h);
+	figs = InPost(psimesh,bcinds,grids,filtering,par);
 	
 	%TODO complete the bcinds
 	[newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filtering,par.ddbounds);
@@ -110,7 +111,7 @@ function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver,h)
 		
 		%now repeat
 		psimesh = Recompose(grids,{p11,p21,p31},par.ddbounds);
-		figs = InPost(grids,psimesh,nx,ny,filtering,par,figs);
+		figs = InPost(psimesh,bcinds,grids,filtering,par,figs);
 		
 		disp(['Iteration ' num2str(i)])
 		

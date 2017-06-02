@@ -167,10 +167,6 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		
 		onnew = onfullnew(valindouternew);
 		
-		gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew};
-		
-		filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
-		
 		if(exist('vect','var'))
 			Ret = newmat;
 			Ret(i1:i2,j1:j2) = reshape(vect,[nx,ny])';
@@ -328,8 +324,6 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		
 		onnew = onfullnew(valindouternew);
 		
-		gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew};		
-		filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
 		
 		if(exist('vect','var'))
 			Ret = newmat;
@@ -345,6 +339,11 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		throw(ME)
 	end
 	
+	
+	gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew};		
+	filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
+	[bc,bcfull] = boundarysides(gridsnew,filteringnew);
+	filteringnew{4} = {bc,bcfull};
 	
 	
 	

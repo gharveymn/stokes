@@ -25,7 +25,7 @@ function [psimesh,mats] = SOIter(nx,ny,bcinds,rhs,filterMat,h,mats)
 		
 		M = kron(Bx,Iy) + kron(Ix,By) + 2*kron(Ax,Ay);
 		M = filterMat*M*filterMat';
-		M = ~bcinds.*M + spdiags(bcinds,0,sz,sz);
+		%M = ~bcinds.*M + spdiags(bcinds,0,sz,sz);
 		
 		mats = {M};
 		

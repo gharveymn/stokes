@@ -105,6 +105,9 @@ function figs = InitialPlot(mat,vec,par)
 end
 
 function figs = Update(mat,vec,par,figs)
+	
+	lastwarn('')
+	
 	try
 		U = mat(:,:,3);
 		V = mat(:,:,4);
@@ -153,6 +156,10 @@ function figs = Update(mat,vec,par,figs)
 		
 	catch ME
 		disp('Couldn''t update one of the figures—we''ll try to make new ones')
+		figs = InitialPlot(mat,vec,par);
+	end
+	
+	if(~isempty(lastwarn))
 		figs = InitialPlot(mat,vec,par);
 	end
 	
