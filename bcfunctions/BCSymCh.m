@@ -1,4 +1,22 @@
-function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
+function [rhs,bcinds] = BCSymCh(grids,filtering,rhs,par)
+	
+	xmesh = grids{3};
+	ymesh = grids{4};
+	nx = grids{9};
+	valind = filtering{2}{2};
+	
+	on = filtering{3}{1};
+	bcfull = filtering{4}{2};
+	bcw = bcfull{1};
+	bce = bcfull{2};
+	bcs = bcfull{3};
+	bcn = bcfull{4};
+	
+	gp1 = filtering{5}{1};
+	gp2 = filtering{5}{2};
+	
+	del = par.h;
+	
 	%for use with symch map
 	bcinds = 0*xmesh;
 	
@@ -29,11 +47,6 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
 	
 	rhs = rhs + in;
 	
-	for i=1:0
-		rhs = rhs + circshift(in,i);
-		bcinds = bcinds | circshift(bcinds,i);
-	end
-	
 	%outflow
 	outflowmax = max(ymesh(xmesh==xmax & on));
 	outflowmin = min(ymesh(xmesh==xmax & on));
@@ -51,10 +64,6 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
 	
 	rhs = rhs + out;
 	
-	for i=1:0
-		rhs = rhs + circshift(out,-i);
-		bcinds = bcinds | circshift(bcinds,-i);
-	end
 	
 	% set top
 	rhs(ymesh > centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymax);
@@ -62,5 +71,60 @@ function [rhs,bcinds] = BCSymCh(xmesh,ymesh,rhs,on,del,par)
 	% set bottom
 	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
 	
+	%set outer regions
+	
+	%west
+	bcw1 = circshift(bcw,-1);
+	bcw2 = circshift(bcw,-2);
+	rhs(bcw1(valind)) = rhs(bcw(valind));
+	rhs(bcw2(valind)) = rhs(bcw(valind));
+	
+	%east
+	bce1 = circshift(bce,1);
+	bce2 = circshift(bce,2);
+	rhs(bce1(valind)) = rhs(bce(valind));
+	rhs(bce2(valind)) = rhs(bce(valind));
+	
+	%south
+	bcs1 = circshift(bcs,-nx);
+	bcs2 = circshift(bcs,-2*nx);
+	rhs(bcs1(valind)) = rhs(bcs(valind));
+	rhs(bcs2(valind)) = rhs(bcs(valind));
+	
+	%north
+	bcn1 = circshift(bcn,nx);
+	bcn2 = circshift(bcn,2*nx);
+	rhs(bcn1(valind)) = rhs(bcn(valind));
+	rhs(bcn2(valind)) = rhs(bcn(valind));
+	
+	%corners (first order)
+	%rhs = makecorners(rhs,bcc,nx,gp1,valind,1);
+	
+	%corners (second order)
+	%rhs = makecorners(rhs,bcc,nx,gp2,valind,2);	
+	
+	bcinds = bcinds|gp1(valind)|gp2(valind);
+	
+	
+end
+
+function rhs = makecorners(rhs,bcc,nx,gp,valind,i)
+	%input i for the order
+	bccsw = circshift(circshift(bcc,-i),-i*nx) & gp;
+	bccswr = circshift(circshift(bccsw,i*nx),i);
+	
+	bccnw = circshift(circshift(bcc,-i),i*nx) & gp;
+	bccnwr = circshift(circshift(bccsw,-i*nx),i);
+	
+	bccse = circshift(circshift(bcc,i),-i*nx) & gp;
+	bccser = circshift(circshift(bccsw,i*nx),-i);
+	
+	bccne = circshift(circshift(bcc,i),i*nx) & gp;
+	bccner = circshift(circshift(bccsw,-i*nx),-i);
+	
+	rhs(bccsw(valind)) = rhs(bccswr(valind));
+	rhs(bccnw(valind)) = rhs(bccnwr(valind));
+	rhs(bccse(valind)) = rhs(bccser(valind));
+	rhs(bccne(valind)) = rhs(bccner(valind));
 end
 

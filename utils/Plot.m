@@ -82,15 +82,18 @@ function figs = InitialPlot(mat,vec,par)
 		%contour
 		
 		figure(1)
-		f1 = contour(X,Y,U);
+		[C1,h1] = contour(X,Y,U);
+		f1 = {C1,h1};
 		axis(ax)
 
 		figure(2)
-		f2 = contour(X,Y,V);
+		[C2,h2] = contour(X,Y,V);
+		f2 = {C2,h2};
 		axis(ax)
 		
 		figure(3)
-		f3 = contour(X,Y,Psi);
+		[C3,h3] = contour(X,Y,Psi);
+		f3 = {C3,h3};
 		axis(ax)
 		
 		figs = {f1,f2,f3};
@@ -110,20 +113,6 @@ function figs = Update(mat,vec,par,figs)
 		u = vec(:,3);
 		v = vec(:,4);
 		psi = vec(:,5);
-
-		if(par.filter)
-			[isz,jsz] = size(U);
-			ifil = kron(ones(jsz,1),[0;ones(isz-2,1)-2;0]);
-			jfil = kron([0;ones(jsz-2,1);0],ones(isz,1));
-			fil = ifil&jfil;
-			u = u(fil);
-			v = v(fil);
-			psi = psi(fil);
-
-			U = U(2:end-1,2:end-1);
-			V = V(2:end-1,2:end-1);
-			Psi = Psi(2:end-1,2:end-1);
-		end
 
 		if(par.toPlot == 1)
 
@@ -155,18 +144,16 @@ function figs = Update(mat,vec,par,figs)
 			set(figs{3},'CData',clrs);
 			
 		elseif(par.toPlot == 4)
-			set(figs{1},'ZData',U);
-			set(figs{2},'ZData',V);
-			set(figs{3},'ZData',Psi);
+			set(figs{1}{2},'ZData',U);
+			set(figs{2}{2},'ZData',V);
+			set(figs{3}{2},'ZData',Psi);
 		end
 
 		drawnow;
 		
-	catch
-		
+	catch ME
 		disp('Couldn''t update one of the figures—we''ll try to make new ones')
 		figs = InitialPlot(mat,vec,par);
-		
 	end
 	
 end

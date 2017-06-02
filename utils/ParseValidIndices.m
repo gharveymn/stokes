@@ -64,15 +64,20 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	xmesh = filterMat*xmeshfull;
 	ymesh = filterMat*ymeshfull;
 	
-	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull};
-	filtering = {filterMat,valind,on,onfull};
+	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull,nx,ny};
+	
+	%filterMat,{valindinner,valindouter},{on,onfull},{bc,bcfull},{gp1,gp2}
+	filtering = {filterMat,{valind,valind},{on,onfull},{[],[]},{[],[]}};
 	
 	if(par.ghostpoints)
-		[gp1,gridsnew1,filteringnew1] = closure(xmeshfull,ymeshfull,onfull,valind,nx,ny,h);
-		[gp2,gridsnew2,filteringnew2] = closure(gridsnew1{7},gridsnew1{8},filteringnew1{4},filteringnew1{2},numel(gridsnew1{1}),numel(gridsnew1{2}),h,'outer',gp1);
-		grids = gridsnew2;
-		filtering = [filteringnew2,{gp2}];
+		[gp1,grids,filtering] = closure(grids,filtering,h);
+		[gp2,grids,filtering,gp1] = closure(grids,filtering,h,'outer',gp1,gp1);
+		filtering = [filtering,{gp2}];
 	end
+	
+	[bc,bcfull] = boundarysides(grids{7},grids{8},filtering{3}{2},filtering{2}{1},grids{9});
+	filtering{4} = {bc,bcfull};
+	filtering{5} = {gp1,gp2};
 	
 	%we did some arithmetic up there so just
 	%make sure ddbounds are actually in the grids

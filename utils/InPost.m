@@ -2,18 +2,20 @@ function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
 	h = par.h;
+	psimeshfull = filtering{1}'*psimesh;
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
 		
-		[~,grids,filtering] = closure(grids{7},grids{8},filtering{4},filtering{2},nx,ny,h,'inner');
-		[~,grids,filtering] = closure(grids{7},grids{8},filtering{4},filtering{2},nx,ny,h,'inner');
+		[~,grids,filtering,psimeshfull] = closure(grids,filtering,h,'inner',[],psimeshfull);
+		[~,grids,filtering,psimeshfull] = closure(grids,filtering,h,'inner',[],psimeshfull);
 		
 		%TODO figure out how to get back our psi at the right size
 		filterMat = filtering{1};
-		valind = filtering{2};
-		on = filtering{3};
-		onfull = filtering{4};
+		valind = filtering{2}{1};
+		on = filtering{3}{1};
+		onfull = filtering{3}{2};
+		psimesh = filterMat*psimeshfull;
 		
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);

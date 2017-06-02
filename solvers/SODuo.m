@@ -35,7 +35,7 @@ function [psimesh,mats] = SODuo(nx,ny,bcinds,rhs,filterMat,h,mats)
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
 	vec = M\rhs;
-	psimesh = -vec(1:numel(bcinds));
+	psimesh = vec(1:numel(bcinds));
 	
 	
 end
