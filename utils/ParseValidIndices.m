@@ -75,7 +75,7 @@ function [grids,filtering,par] = ParseValidIndices(par)
 		filtering = [filtering,{gp2}];
 	end
 	
-	[bc,bcfull] = boundarysides(grids{7},grids{8},filtering{3}{2},filtering{2}{1},grids{9});
+	[bc,bcfull] = boundarysides(grids,filtering);
 	filtering{4} = {bc,bcfull};
 	filtering{5} = {gp1,gp2};
 	

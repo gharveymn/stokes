@@ -11,7 +11,7 @@ function par = Parameters
 	addpath('utils');
 	
 	par.maptype = 'g';
-	par.mapfile = 'symch.txt';
+	par.mapfile = 'rect.txt';
 	par.h = 0.05;
 	par.toPlot = 1;			%1==surf,2==quiver,3==scatter,4==contour
 	par.filter = true;

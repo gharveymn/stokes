@@ -1,5 +1,21 @@
-function [bc,bcfull] = boundarysides(xmeshfull,ymeshfull,onfull,valind,nx)
+function [bc,bcfull] = boundarysides(grids,filtering,gp,side)
 	%GETWHEREBOUNDARIES I'm somewhat suprised this actually works
+	
+	if(~exist('side','var'))
+		side = 'inner';
+	end
+	
+	xmeshfull = grids{7};
+	ymeshfull = grids{8};
+	
+	if(strcmp(side,'outer'))
+		onfull = gp;
+	else
+		onfull = filtering{3}{2};
+	end
+	valindinner = filtering{2}{1};
+	valindouter = filtering{2}{2};
+	nx = grids{9};
 	
 	xmin = min(xmeshfull);
 	xmax = max(xmeshfull);
@@ -25,10 +41,21 @@ function [bc,bcfull] = boundarysides(xmeshfull,ymeshfull,onfull,valind,nx)
 	bcn = bcn&ymaxb;
 	
 	%make shifted index matrices, filter out those indices at the max values since circshift loops
-	r = circshift(valind&~xmaxb,1);
-	l = circshift(valind&~xminb,-1);
-	u = circshift(valind&~ymaxb,nx);
-	d = circshift(valind&~yminb,-nx);
+	
+	if(strcmp(side,'outer'))
+		r = circshift(valindouter&~xmaxb,1);
+		l = circshift(valindouter&~xminb,-1);
+		u = circshift(valindouter&~ymaxb,nx);
+		d = circshift(valindouter&~yminb,-nx);
+	elseif(strcmp(side,'inner'))
+		r = circshift(valindinner&~xmaxb,1);
+		l = circshift(valindinner&~xminb,-1);
+		u = circshift(valindinner&~ymaxb,nx);
+		d = circshift(valindinner&~yminb,-nx);
+	else
+		ME = MException('boundarysides:invalidParameterException','Invalid value for side');
+		throw(ME)
+	end
 	
 	%if the shift makes it go off the boundary then we have a direction
 	bcw = bcw|(onfull&~r);
@@ -51,11 +78,11 @@ function [bc,bcfull] = boundarysides(xmeshfull,ymeshfull,onfull,valind,nx)
 	bcfull = {bcw,bce,bcs,bcn,bcc};
 	
 	%wipe out invalid indices
-	bcw = bcw(valind);
-	bce = bce(valind);
-	bcs = bcs(valind);
-	bcn = bcn(valind);
-	bcc = bcc(valind);
+	bcw = bcw(valindouter);
+	bce = bce(valindouter);
+	bcs = bcs(valindouter);
+	bcn = bcn(valindouter);
+	bcc = bcc(valindouter);
 	
 	bc = {bcw,bce,bcs,bcn,bcc};
 end

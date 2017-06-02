@@ -6,9 +6,12 @@ function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
+				
+		[~,~,~,psimeshfull] = closure(grids,filtering,h,'inner',filtering{5}{2},psimeshfull);
+		[~,newgrids,newfiltering,gp] = closure(grids,filtering,h,'inner',filtering{5}{2},filtering{5}{1});
 		
-		[~,grids,filtering,psimeshfull] = closure(grids,filtering,h,'inner',[],psimeshfull);
-		[~,grids,filtering,psimeshfull] = closure(grids,filtering,h,'inner',[],psimeshfull);
+		[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
+		[~,grids,filtering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
 		
 		%TODO figure out how to get back our psi at the right size
 		filterMat = filtering{1};
@@ -16,6 +19,8 @@ function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 		on = filtering{3}{1};
 		onfull = filtering{3}{2};
 		psimesh = filterMat*psimeshfull;
+		nx = grids{9};
+		ny = grids{10};
 		
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);
@@ -26,6 +31,7 @@ function figs = InPost(grids,psimesh,nx,ny,filtering,par,figs)
 		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
 		dy = ~on.*dy;
+		
 	else
 		filterMat = filtering{1};
 		valind = filtering{2};

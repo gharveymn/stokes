@@ -44,7 +44,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 	
 	if(strcmp(side,'outer'))
 		
-		[bc,bcfull] = boundarysides(xmeshfull,ymeshfull,gp,valindouter,nx);
+		[bc,bcfull] = boundarysides(grids,filtering,gp,'outer');
 		bcw = bcfull{1};
 		bce = bcfull{2};
 		bcs = bcfull{3};
@@ -185,7 +185,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		%clomeshfull should be wrt the original mesh
 		%everything else should be converted to the smaller size
 		
-		[bc,bcfull] = boundarysides(xmeshfull,ymeshfull,gp,valindinner,nx);
+		[bc,bcfull] = boundarysides(grids,filtering,gp,'outer');
 		bcw = bcfull{1};
 		bce = bcfull{2};
 		bcs = bcfull{3};
@@ -193,10 +193,10 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		bcc = bcfull{5};
 		
 		% how much to increase the grid size in NSEW directions
-		incw = ~isempty(xmeshfull(xmeshfull==xmin & valindinner));
-		ince = ~isempty(xmeshfull(xmeshfull==xmax & valindinner));
-		incs = ~isempty(ymeshfull(ymeshfull==ymin & valindinner));
-		incn = ~isempty(ymeshfull(ymeshfull==ymax & valindinner));
+		incw = ~isempty(xmeshfull(xmeshfull==xmin & valindouter));
+		ince = ~isempty(xmeshfull(xmeshfull==xmax & valindouter));
+		incs = ~isempty(ymeshfull(ymeshfull==ymin & valindouter));
+		incn = ~isempty(ymeshfull(ymeshfull==ymax & valindouter));
 		
 		newmat = zeros(ny+incs+incn,nx+incw+ince);
 		newmatl = logical(newmat);
@@ -205,6 +205,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		%Ymeshnew = reshape(ymeshfull,[nx,ny])';
 		%Onfull = reshape(onfull,[nx,ny])';
 		Valindinner = reshape(valindinner,[nx,ny])';
+		Valindouter = reshape(valindouter,[nx,ny])';
 		
 		%NOTE: "SOUTH" INDICES ARE ACTUALLY AT THE TOP OF THE MATRIX
 		
@@ -246,6 +247,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		Ymeshnew = newmat;
 		Clomeshfull = newmatl;
 		Valindinnernew = newmatl;
+		Valindouternew = newmatl;
 		Onfullnew = newmatl;
 		Bcw = newmatl;
 		Bce = newmatl;
@@ -254,11 +256,13 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		Bcc = newmatl;
 		Origmatinds = newmatl;
 		Innermatinds = newmatl;
+		Gpmatinds = newmatl;
 		
 		Xmeshnew(i1:i2,j1:j2) = reshape(xmeshfull,[nx,ny])';
 		Ymeshnew(i1:i2,j1:j2) = reshape(ymeshfull,[nx,ny])';
 		Valindinnernew(i1:i2,j1:j2) = Valindinner;
-		Valindouternew = Valindinnernew;
+		Valindouternew(i1:i2,j1:j2) = Valindouter;
+		Gpmatinds(i1:i2,j1:j2) = reshape(gp,[nx,ny])';
 		Onfullnew(i1:i2,j1:j2) = reshape(onfull,[nx,ny])';
 		Bcw(i1:i2,j1:j2) = reshape(bcw,[nx,ny])';
 		Bce(i1:i2,j1:j2) = reshape(bce,[nx,ny])';
@@ -284,19 +288,19 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 			| circshift(circshift(Bcc,-1),1,2)...
 			| circshift(circshift(Bcc,-1),-1,2);
 		
-		Valindinnernew = Valindinnernew & ~Onfullnew;
+		Valindinnernew = Valindinnernew & ~Gpmatinds;
+		Valindouternew = Valindouternew & ~Gpmatinds;
 		
 		%& Valindnew wipes out shifted indices which are outside the polgon
 		Clomeshfull = Clomeshfull & Valindinnernew;
-		Onmeshfull = Clomeshfull;
 		
 		Xmeshnew = Xmeshnew./Valindinnernew;
 		Ymeshnew = Ymeshnew./Valindinnernew;
 		
 		Clomeshfull = reshape(Clomeshfull(Origmatinds),[ny,nx]);
 		Valindinnernew = reshape(Valindinnernew(Innermatinds),[nynew,nxnew]);
-		Valindouternew = reshape(Valindouternew(Origmatinds),[ny,nx]);
-		Onmeshfull = reshape(Onmeshfull(Innermatinds),[nynew,nxnew]);
+		Valindouternew = reshape(Valindouternew(Innermatinds),[nynew,nxnew]);
+		Onmeshfull = reshape(Onfullnew(Innermatinds),[nynew,nxnew]);
 		Xmeshnew = reshape(Xmeshnew(Innermatinds),[nynew,nxnew]);
 		Ymeshnew = reshape(Ymeshnew(Innermatinds),[nynew,nxnew]);
 		
@@ -314,8 +318,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		
 		Valindinnernew = Valindinnernew | Onmeshfull;
 		valindinnernew = reshape(Valindinnernew',[nxnew*nynew,1]);
-		valindouternew = reshape(Valindouternew',[nx*ny,1]);
-		
+		valindouternew = reshape(Valindouternew',[nxnew*nynew,1]);
 		
 		filterMatnew = spdiag(valindinnernew);
 		filterMatnew = filterMatnew(valindinnernew,:);
@@ -323,7 +326,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 		xmeshnew = filterMatnew*xmeshfullnew;
 		ymeshnew = filterMatnew*ymeshfullnew;
 		
-		onnew = onfullnew(valindinnernew);
+		onnew = onfullnew(valindouternew);
 		
 		gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew};		
 		filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
