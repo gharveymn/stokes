@@ -18,6 +18,7 @@ function par = Parameters
 	par.numfilter = 1;
 	par.ghostpoints = true;
 	par.zeroout = false;
+	par.plot = false;
 	
 	%domain decomposition parameters
 	par.ddrun = false;
