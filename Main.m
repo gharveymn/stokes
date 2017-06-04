@@ -42,25 +42,65 @@ function [figs,mat,vec] = run(par,figs)
 	%make right hand side for Dirichlet BCs and get indices for those points
 	[rhs,bcinds] = bcfunc(grids,filtering,rhs,par);
 	
-%  	filterMat = filtering{1};
-%   	rmeshfull = filterMat'*rhs;
-%   	Rmesh = reshape(rmeshfull,[nx,ny])';
-%   	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
-% 	clr = abs(rmeshfull)./norm(rmeshfull(isfinite(rmeshfull)),inf);
-% 	clrs = [clr zeros(numel(clr),1) 1-clr];
-%   	scatter3(grids{7},grids{8},rmeshfull,[],clrs,'.');
-
-	if(par.ddrun)
-		psimesh = ddsolver(grids,filtering,rhs,bcinds,par,solver,h);
+	%  	filterMat = filtering{1};
+	%   	rmeshfull = filterMat'*rhs;
+	%   	Rmesh = reshape(rmeshfull,[nx,ny])';
+	%   	surf(grids{5},grids{6},Rmesh,'edgecolor','none','facecolor','interp');
+	% 	clr = abs(rmeshfull)./norm(rmeshfull(isfinite(rmeshfull)),inf);
+	% 	clrs = [clr zeros(numel(clr),1) 1-clr];
+	%   	scatter3(grids{7},grids{8},rmeshfull,[],clrs,'.');
+	
+	filterMat = filtering{1};
+	
+	if(par.streamfunction)
+		if(par.ddrun)
+			psimesh = ddsolver(grids,filtering,rhs,bcinds,par,solver,h);
+		else
+			psimesh = solver(nx,ny,bcinds,rhs,filterMat,h);
+		end
+		
+		if(exist('figs','var'))
+			[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs);
+		else
+			[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par);
+		end
 	else
-		psimesh = solver(nx,ny,bcinds,rhs,filtering{1},h);
+		
+		[umesh,vmesh,pmesh] = solver(nx,ny,bcinds,rhs,filterMat,h);
+		
+		umeshfull = filterMat'*umesh;
+		Umesh = reshape(umeshfull,[nx,ny])';
+		
+		vmeshfull = filterMat'*vmesh;
+		Vmesh = reshape(vmeshfull,[nx,ny])';
+		
+		psimeshfull = filterMat'*pmesh;
+		Pmesh = reshape(psimeshfull,[nx,ny])';
+		
+		if(par.filter)
+			on = filtering{3}{1};
+			grids{3} = grids{3}(~on);
+			grids{4} = grids{4}(~on);
+			umesh = umesh(~on);
+			vmesh = vmesh(~on);
+			pmesh = pmesh(~on);
+		end
+		
+		mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Pmesh);
+		vec = cat(2,grids{3},grids{4},umesh,vmesh,pmesh);
+		
+		if(par.plot)
+			if(exist('figs','var'))
+				figs = Plot(mat,vec,par,figs);
+			else
+				figs = Plot(mat,vec,par);
+			end
+		else
+			figs = [];
+		end
+		
 	end
 	
-	if(exist('figs','var'))
-		[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs);
-	else
-		[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par);
-	end
 	
 end
 

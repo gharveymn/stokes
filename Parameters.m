@@ -18,7 +18,8 @@ function par = Parameters
 	par.numfilter = 1;
 	par.ghostpoints = true;
 	par.zeroout = false;
-	par.plot = false;
+	par.plot = true;
+	par.streamfunction = false;
 	
 	%domain decomposition parameters
 	par.ddrun = false;
@@ -27,9 +28,9 @@ function par = Parameters
 	par.ddmidratio = 0.6;
 	par.dditer = 5;
 	
-	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymChC;
-	par.solver = @SODuo;
+	par.rhfunc = @RHZeroP;
+	par.bcfunc = @BCSymChP;
+	par.solver = @SOPrim;
 	par.ddsolver = @DDMSch;
 	
 end

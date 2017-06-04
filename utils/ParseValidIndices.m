@@ -73,11 +73,8 @@ function [grids,filtering,par] = ParseValidIndices(par)
 		[gp1,grids,filtering] = closure(grids,filtering,h);
 		[gp2,grids,filtering,gp1] = closure(grids,filtering,h,'outer',gp1,gp1);
 		filtering = [filtering,{gp2}];
+		filtering{5} = {gp1,gp2};
 	end
-	
-	%[bc,bcfull] = boundarysides(grids,filtering);
-	%filtering{4} = {bc,bcfull};
-	filtering{5} = {gp1,gp2};
 	
 	%we did some arithmetic up there so just
 	%make sure ddbounds are actually in the grids
