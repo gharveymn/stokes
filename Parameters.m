@@ -14,13 +14,14 @@ function par = Parameters
 	par.mapfile = 'symch.txt';
 	par.h = 0.05;
 	par.toPlot = 3;						%1==surf,2==quiver,3==scatter,4==contour
-	par.filter = false;
+	par.filter = true;
 	par.numfilter = 1;
 	par.ghostpoints = true;
 	par.zeroout = false;
+	par.plot = false;
 	
 	%domain decomposition parameters
-	par.ddrun = true;
+	par.ddrun = false;
 	par.ddbounds = {{[0.0,-0.5],[1.5,0.5]},{[1.0,-1.5],[3.5,1.5]},{[3.0,-1.5],[5.0,1.5]}};
 	par.ddoverlap = 0.5;
 	par.ddmidratio = 0.6;

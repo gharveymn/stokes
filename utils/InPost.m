@@ -1,4 +1,4 @@
-function figs = InPost(psimesh,bcinds,grids,filtering,par,figs)
+function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
 	h = par.h;
@@ -137,13 +137,16 @@ function figs = InPost(psimesh,bcinds,grids,filtering,par,figs)
 % 	Vmesh = reshape(vmeshfull,[nx,ny])';
 % 	Psimesh = reshape(psimeshfull,[nx,ny])';
 	
+	% use matrices rather than cell arrays so they throw a dimension error if we have a bug mismatched
 	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
 	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
 	
-	if(exist('figs','var'))
-		figs = Plot(mat,vec,par,figs);
-	else
-		figs = Plot(mat,vec,par);
+	if(par.plot)
+		if(exist('figs','var'))
+			figs = Plot(mat,vec,par,figs);
+		else
+			figs = Plot(mat,vec,par);
+		end
 	end
 	
 end

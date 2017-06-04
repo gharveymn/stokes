@@ -6,7 +6,7 @@ function [psimesh,mats] = SODuo(nx,ny,bcinds,rhs,filterMat,h,mats)
 	else
 		
 		%make derivative matrices
-		lap = laplacian2(nx,ny,h);
+		lap = laplacian2(nx,ny,h,4);
 		lap = filterMat*lap*filterMat';
 		
 		sz = size(lap,1);

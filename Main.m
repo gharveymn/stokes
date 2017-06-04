@@ -1,12 +1,29 @@
-if(exist('figs','var'))
-	figs = run(figs);
-else
-	figs = run;
+
+if(~exist('par','var'))
+	par = Parameters;
 end
 
-function figs = run(figs)
-	
-	par = Parameters;
+if(~exist('figs','var'))
+	[figs,mat,vec] = run(par);
+else
+	[figs,mat,vec] = run(par,figs);
+end
+
+X = mat(:,:,1);
+Y = mat(:,:,2);
+U = mat(:,:,3);
+V = mat(:,:,4);
+Psi = mat(:,:,5);
+
+x = vec(:,1);
+y = vec(:,2);
+u = vec(:,3);
+v = vec(:,4);
+psi = vec(:,5);
+
+clear mat vec
+
+function [figs,mat,vec] = run(par,figs)
 	
 	rhfunc = par.rhfunc;
 	bcfunc = par.bcfunc;
@@ -39,10 +56,10 @@ function figs = run(figs)
 		psimesh = solver(nx,ny,bcinds,rhs,filtering{1},h);
 	end
 	
-	if(nargin==1)
-		figs = InPost(psimesh,bcinds,grids,filtering,par,figs);
+	if(exist('figs','var'))
+		[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs);
 	else
-		figs = InPost(psimesh,bcinds,grids,filtering,par);
+		[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par);
 	end
 	
 end
