@@ -19,6 +19,9 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 	%	clomeshfull	the closure (note that this is not added to the grid)
 	%	gridsnew		{xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew}
 	%	filteringnew	filtering matrices
+	%
+	% none of this is true, this is a HACK
+	% THIS SHOULDNT EVEN WORKKKK
 	
 	xmeshfull = grids{7};
 	ymeshfull = grids{8};
