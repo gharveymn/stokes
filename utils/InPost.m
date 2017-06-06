@@ -13,18 +13,18 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 	if(par.ghostpoints)
 		
 		if(par.filter)
-			[~,~,~,bcindsfull] = closure(grids,filtering,h,'inner',filtering{5}{2},bcindsfull);
-			[~,~,~,psimeshfull] = closure(grids,filtering,h,'inner',filtering{5}{2},psimeshfull);
-			[~,newgrids,newfiltering,gp] = closure(grids,filtering,h,'inner',filtering{5}{2},filtering{5}{1});
+			[~,~,~,bcindsfull] = closure(grids,filtering,'inner',filtering{5}{2},bcindsfull);
+			[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{2},psimeshfull);
+			[~,newgrids,newfiltering,gp] = closure(grids,filtering,'inner',filtering{5}{2},filtering{5}{1});
 			
 		% 	[~,~,~,umeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
 		% 	[~,~,~,vmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
 		% 	[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
 		% 	[~,newgrids,newfiltering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
 		
-			[~,~,~,bcindsfull] = closure(newgrids,newfiltering,h,'inner',gp,bcindsfull);
-			[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-			[~,grids,filtering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
+			[~,~,~,bcindsfull] = closure(newgrids,newfiltering,'inner',gp,bcindsfull);
+			[~,~,~,psimeshfull] = closure(newgrids,newfiltering,'inner',gp,psimeshfull);
+			[~,grids,filtering,gp] = closure(newgrids,newfiltering,'inner',gp,gp);
 		end
 		
 		%TODO figure out how to get back our psi at the right size

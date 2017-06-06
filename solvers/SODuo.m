@@ -1,4 +1,4 @@
-function [psimesh,mats] = SODuo(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		%express lane!

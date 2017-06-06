@@ -1,4 +1,4 @@
-function [rhs,bcinds] = BCSymCh(grids,filtering,rhs,par)
+function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	
 	xmeshfull = grids{7};
 	ymeshfull = grids{8};
@@ -15,10 +15,10 @@ function [rhs,bcinds] = BCSymCh(grids,filtering,rhs,par)
 	del = par.h;
 	
 	%for use with symch map
-	bcinds = 0*xmesh;
+	bc = 0*xmesh;
 	
 	% add all the the indices which are on the boundary
-	bcinds = bcinds | on;
+	bc = bc | on;
 	
 	xmax = max(xmesh(on));
 	xmin = min(xmesh(on));
@@ -68,7 +68,7 @@ function [rhs,bcinds] = BCSymCh(grids,filtering,rhs,par)
 	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
 	
 	rhs = extendgp(rhs,bcfull,valindouter,gpca,nx);
-	bcinds = bcinds|gpca{1}(valindouter)|gpca{2}(valindouter);
+	bc = bc|gpca{1}(valindouter)|gpca{2}(valindouter);
 	
 end
 

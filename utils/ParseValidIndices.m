@@ -5,9 +5,7 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	%Xmesh,Ymesh have NaN wherever invalid -- matrix
 	%filterMat filters out invalids when multiplied, inserts zeros when transposed and multiplied -- matrix
 	%on holds the indices which are on the boundary -- in vector form, not prefiltered
-	
-	h = par.h;
-	
+		
 	file = fopen(par.mapfile, 'r');
 	
 	formatSpec = '%f';
@@ -43,8 +41,8 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	
 	%make grid
 	limits = [min(xlimcoords),max(xlimcoords),min(ylimcoords),max(ylimcoords)];
-	xinit = (limits(1):h:limits(2))';
-	yinit = (limits(3):h:limits(4))';
+	xinit = (limits(1):par.h:limits(2))';
+	yinit = (limits(3):par.h:limits(4))';
 	nx = numel(xinit);
 	ny = numel(yinit);
 	xmeshfull = kron(ones(ny,1),xinit);
@@ -64,17 +62,21 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	xmesh = filterMat*xmeshfull;
 	ymesh = filterMat*ymeshfull;
 	
-	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull,nx,ny};
+	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull,nx,ny,par.h};
 	
+		
 	%filterMat,{valindinner,valindouter},{on,onfull},{bc,bcfull},{gp1,gp2}
-	filtering = {filterMat,{valind,valind},{on,onfull},{[],[]},{[],[]}};
+	filtering = {filterMat,{valind,valind},{on,onfull},{on,onfull},{[],[]}};
 	
 	if(par.ghostpoints)
-		[gp1,grids,filtering] = closure(grids,filtering,h);
-		[gp2,grids,filtering,gp1] = closure(grids,filtering,h,'outer',gp1,gp1);
+		[gp1,grids,filtering] = closure(grids,filtering);
+		[gp2,grids,filtering,gp1] = closure(grids,filtering,'outer',gp1,gp1);
 		filtering = [filtering,{gp2}];
 		filtering{5} = {gp1,gp2};
 	end
+	
+	%NOTE: filtering{4} ie {bc,bcfull} will change to become 2x2 dimensional
+	%		this is a hack because I really do not want to touch closure since that is also a hack
 	
 	%we did some arithmetic up there so just
 	%make sure ddbounds are actually in the grids

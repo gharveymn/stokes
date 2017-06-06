@@ -1,17 +1,22 @@
-function [psimesh,mats] = SOBih(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
+	
+	nx = grids{9};
+	ny = grids{10};
+	h = grids{11};
+	filterMat = filtering{1};
 	
 	if(nargin == 7)
 		bih = mats{1};
 	else
 		%make derivative matrices
-		bih = biharmonic2(nx,ny,h);
+		bih = biharmonic2(nx,ny,h,logical(filterMat'*(1*bc)),logical(filterMat'*(1*bc)));
 		bih = filterMat*bih*filterMat';
 		
 		sz = size(bih,1);
 		
 		%impose Dirichlet conditions
 		%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-		bih = ~bcinds.*bih + spdiags(bcinds,0,sz,sz);
+		%bih = ~bc.*bih + spdiag(bc);
 		
 		mats = {bih};
 	end

@@ -12,14 +12,17 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.05;
-	par.toPlot = 1;						%1==surf,2==quiver,3==scatter,4==contour
+	par.h = 0.02;
+	par.ghostpoints = true;
+	par.streamfunction = true;
+	
+	%plotting parameters
+	par.toPlot = 4;						%1==surf,2==quiver,3==scatter,4==contour
 	par.filter = true;
 	par.numfilter = 1;
-	par.ghostpoints = true;
+	par.conlines = 30;
 	par.zeroout = false;
 	par.plot = true;
-	par.streamfunction = false;
 	
 	%domain decomposition parameters
 	par.ddrun = false;
@@ -28,9 +31,9 @@ function par = Parameters
 	par.ddmidratio = 0.6;
 	par.dditer = 5;
 	
-	par.rhfunc = @RHZeroP;
-	par.bcfunc = @BCSymChP;
-	par.solver = @SOPrim;
+	par.rhfunc = @RHZero;
+	par.bcfunc = @BCSymCh;
+	par.solver = @SOBih;
 	par.ddsolver = @DDMSch;
 	
 end

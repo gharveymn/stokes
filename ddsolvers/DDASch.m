@@ -1,6 +1,7 @@
-function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver,h)
+function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 	%DDMSCH work in progress
 	
+	h = grids{11};
 	ddbounds = par.ddbounds;
 	
 	%bounding lines

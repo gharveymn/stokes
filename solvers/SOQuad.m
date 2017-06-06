@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOQuad(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SOQuad(grids,filtering,rhs,bc,mats)
 	
 	
 	if(nargin == 7)

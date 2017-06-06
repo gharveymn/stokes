@@ -1,8 +1,9 @@
-function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver,h)
+function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 	%DDASCH multiplicative schwarz
 	
 	nx = grids{9};
 	ny = grids{10};
+	h = grids{11};
 	filterMat = filtering{1};
 	
 	psimesh = SODuo(nx,ny,bcinds,rhs,filterMat,h);

@@ -67,7 +67,7 @@ function [rhs,bcinds] = BCSymChP(grids,filtering,rhs,par)
 		bcinds{3} = bcinds{1};
 	end
 	bcinds{1} = bcinds{1}&((xmesh<=inflowx & ymesh <= inflowmax & ymesh >= inflowmin)...
-						|(xmesh>=outflowx & ymesh <= outflowmax & ymesh >= outflowmin));
+						|(xmesh>=outflowx & ymesh <= outflowmax & ymesh >= outflowmin));				
 	
 	if(par.ghostpoints)
 		bcinds{2} = (~bcinds{1}&(gpca{1}(valindouter)|gpca{2}(valindouter)|on))...

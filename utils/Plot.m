@@ -30,15 +30,18 @@ function figs = InitialPlot(mat,vec,par)
 		figure(1)
 		f1 = surf(X,Y,U,'edgecolor','none','facecolor','interp');
 		axis(ax)
+		title('$u$','interpreter','latex','FontSize',20)
 
 		figure(2)
 		f2 = surf(X,Y,V,'edgecolor','none','facecolor','interp');
 		axis(ax)
+		title('$v$','interpreter','latex','FontSize',20)
 		
 		figure(3)
 		f3 = surf(X,Y,Psi,'edgecolor','none','facecolor','interp');
 		%f3 = contour(X,Y,Psi);
 		axis(ax)
+		title('$\psi$','interpreter','latex','FontSize',20)
 		
 		figs = {f1,f2,f3};
 		
@@ -49,12 +52,14 @@ function figs = InitialPlot(mat,vec,par)
 		ax = MakeAxis(X,Y);
 		f1 = quiver(x,y,u,v);
 		axis(ax)
+		title('velocity vector field')
 
 		figure(2)
 		ax = MakeAxis(X,Y);
 		clrs = abs(psi)./max(abs(psi(isfinite(psi))));
 		f2 = scatter3(x,y,psi,10,[clrs zeros(numel(clrs),1) 1-clrs], '.');
 		axis(ax)
+		title('$\psi$','interpreter','latex','FontSize',20)
 		
 		figs = {f1,f2};
 		
@@ -65,16 +70,19 @@ function figs = InitialPlot(mat,vec,par)
 		clrs = MakeClrs(u);
 		f1 = scatter3(x,y,u,10,clrs,'.');
 		axis(ax)
+		title('$u$','interpreter','latex','FontSize',20)
 
 		figure(2)
 		clrs = MakeClrs(v);
 		f2 = scatter3(x,y,v,10,clrs,'.');
 		axis(ax)
+		title('$v$','interpreter','latex','FontSize',20)
 
 		figure(3)
 		clrs = MakeClrs(psi);
 		f3 = scatter3(x,y,psi,10,clrs,'.');
 		axis(ax)
+		title('$\psi$','interpreter','latex','FontSize',20)
 		
 		figs = {f1,f2,f3};
 		
@@ -82,19 +90,22 @@ function figs = InitialPlot(mat,vec,par)
 		%contour
 		
 		figure(1)
-		[C1,h1] = contour(X,Y,U);
+		[C1,h1] = contour(X,Y,U,par.conlines);
 		f1 = {C1,h1};
 		axis(ax)
+		title('$u$','interpreter','latex','FontSize',20)
 
 		figure(2)
-		[C2,h2] = contour(X,Y,V);
+		[C2,h2] = contour(X,Y,V,par.conlines);
 		f2 = {C2,h2};
 		axis(ax)
+		title('$v$','interpreter','latex','FontSize',20)
 		
 		figure(3)
-		[C3,h3] = contour(X,Y,Psi);
+		[C3,h3] = contour(X,Y,Psi,par.conlines);
 		f3 = {C3,h3};
 		axis(ax)
+		title('$\psi$','interpreter','latex','FontSize',20)
 		
 		figs = {f1,f2,f3};
 		
@@ -147,9 +158,8 @@ function figs = Update(mat,vec,par,figs)
 			set(figs{3},'CData',clrs);
 			
 		elseif(par.toPlot == 4)
-			set(figs{1}{2},'ZData',U);
-			set(figs{2}{2},'ZData',V);
-			set(figs{3}{2},'ZData',Psi);
+			disp('Couldn''t update one of the figures—we''ll try to make new ones')
+			figs = InitialPlot(mat,vec,par);
 		end
 
 		drawnow;

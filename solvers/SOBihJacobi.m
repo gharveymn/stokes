@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOBihJacobi(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		bih = mats{1};

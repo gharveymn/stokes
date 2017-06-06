@@ -1,4 +1,4 @@
-function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,side,gp,vect)
+function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,gp,vect)
 	%CLOSURE surrounds the input grid with a closure
 	% expects vector containing x coordinates and vector containing y coordinates of form
 	% 11,21,31,41,12,22,32,42,etc.
@@ -7,26 +7,30 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 	% note: expects both x and y to iterate increasing
 	%
 	% args:
-	%	xmeshfull		the x coordinates of the grid to be operated upon
-	%	ymeshfull		the y coordinates of the grid to be operated upon
-	%	onfull		logical indices of grid points which are on the polygon boundary
-	%	valind		logical indices of valid grid points, ie. those inside or on the boundary of the polygon
-	%	nx			the number of indices in the x direction
-	%	h			the grid differencing
-	%	side			specified 'inner' or 'outer' (optional, default 'outer')
+	%	grids		the grids cell array
+	%	filtering		the filtering cell array
+	%	side			specifies whether to surround the polygon or to get one grid in from the boundary
+	%	gp			specifies the boundary we want to use (since <code>on</code> might not be the actual boundary)
+	%	vect			specifies a vector to transform (must be a meshfull)
 	%
 	%return:
 	%	clomeshfull	the closure (note that this is not added to the grid)
 	%	gridsnew		{xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew}
 	%	filteringnew	filtering matrices
+	%	ret			vect adjusted to the new domain
 	%
 	% none of this is true, this is a HACK
 	% THIS SHOULDNT EVEN WORKKKK
+	
+	%TODO: specify the boundary with gp, cut down required arguments to h and gp
+	%		then use a varargin for mesh, meshfull, CAPSmesh etc.
+	%		That should generalize the program for other use
 	
 	xmeshfull = grids{7};
 	ymeshfull = grids{8};
 	nx = grids{9};
 	ny = grids{10};
+	h = grids{11};
 	
 	valindinner = filtering{2}{1};
 	valindouter = filtering{2}{2};
@@ -343,7 +347,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,h,sid
 	end
 	
 	
-	gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew};		
+	gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew,h};		
 	filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
 	[bc,bcfull] = boundarysides(gridsnew,filteringnew);
 	filteringnew{4} = {bc,bcfull};

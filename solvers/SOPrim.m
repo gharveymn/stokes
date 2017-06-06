@@ -1,4 +1,4 @@
-function [umesh,vmesh,pmesh] = SOPrim(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [umesh,vmesh,pmesh] = SOPrim(grids,filtering,rhs,bc,mats)
 	
 	fu = rhs{1};
 	fv = rhs{2};

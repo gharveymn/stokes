@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOIter(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SOIter(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		

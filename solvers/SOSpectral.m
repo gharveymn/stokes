@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOSpectral(nx,ny,bcinds,rhs,filterMat,h,mats)
+function [psimesh,mats] = SOSpectral(grids,filtering,rhs,bc,mats)
 	
 	
 	%make derivative matrices

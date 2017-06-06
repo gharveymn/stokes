@@ -1,4 +1,3 @@
-
 if(~exist('par','var'))
 	par = Parameters;
 end
@@ -23,13 +22,16 @@ psi = vec(:,5);
 
 clear mat vec
 
+if(~exist('testrun','var') || ~testrun)
+	clear par
+end
+
 function [figs,mat,vec] = run(par,figs)
 	
 	rhfunc = par.rhfunc;
 	bcfunc = par.bcfunc;
 	solver = par.solver;
 	ddsolver = par.ddsolver;
-	h = par.h;
 	
 	[grids,filtering,par] = ParseValidIndices(par);
 	
@@ -40,7 +42,7 @@ function [figs,mat,vec] = run(par,figs)
 	rhs = rhfunc(grids{3},grids{4});
 	
 	%make right hand side for Dirichlet BCs and get indices for those points
-	[rhs,bcinds] = bcfunc(grids,filtering,rhs,par);
+	[rhs,bc] = bcfunc(grids,filtering,rhs,par);
 	
 	%  	filterMat = filtering{1};
 	%   	rmeshfull = filterMat'*rhs;
@@ -54,19 +56,19 @@ function [figs,mat,vec] = run(par,figs)
 	
 	if(par.streamfunction)
 		if(par.ddrun)
-			psimesh = ddsolver(grids,filtering,rhs,bcinds,par,solver,h);
+			psimesh = ddsolver(grids,filtering,rhs,bc,par,solver);
 		else
-			psimesh = solver(nx,ny,bcinds,rhs,filterMat,h);
+			psimesh = solver(grids,filtering,rhs,bc);
 		end
 		
 		if(exist('figs','var'))
-			[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs);
+			[figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs);
 		else
-			[figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par);
+			[figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par);
 		end
 	else
 		
-		[umesh,vmesh,pmesh] = solver(nx,ny,bcinds,rhs,filterMat,h);
+		[umesh,vmesh,pmesh] = solver(nx,ny,bc,rhs,filterMat,h);
 		
 		umeshfull = filterMat'*umesh;
 		Umesh = reshape(umeshfull,[nx,ny])';
