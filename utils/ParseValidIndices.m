@@ -65,7 +65,7 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	grids = {xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,xmeshfull,ymeshfull,nx,ny,par.h};
 	
 		
-	%filterMat,{valindinner,valindouter},{on,onfull},{bc,bcfull},{gp1,gp2}
+	%filterMat,{valindinner,valindouter},{on,onfull},{dbc,dbcfull},{gp1,gp2}
 	filtering = {filterMat,{valind,valind},{on,onfull},{on,onfull},{[],[]}};
 	
 	if(par.ghostpoints)

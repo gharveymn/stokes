@@ -51,12 +51,12 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 	
 	if(strcmp(side,'outer'))
 		
-		[bc,bcfull] = boundarysides(grids,filtering,gp,'outer');
-		bcw = bcfull{1};
-		bce = bcfull{2};
-		bcs = bcfull{3};
-		bcn = bcfull{4};
-		bcc = bcfull{5};
+		[dbc,dbcfull] = boundarysides(grids,filtering,gp,'outer');
+		bcw = dbcfull{1};
+		bce = dbcfull{2};
+		bcs = dbcfull{3};
+		bcn = dbcfull{4};
+		bcc = dbcfull{5};
 		
 		% how much to increase the grid size in NSEW directions
 		incw = ~isempty(xmeshfull(xmeshfull==xmin & valindouter));
@@ -188,12 +188,12 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 		%clomeshfull should be wrt the original mesh
 		%everything else should be converted to the smaller size
 		
-		[bc,bcfull] = boundarysides(grids,filtering,gp,'outer');
-		bcw = bcfull{1};
-		bce = bcfull{2};
-		bcs = bcfull{3};
-		bcn = bcfull{4};
-		bcc = bcfull{5};
+		[dbc,dbcfull] = boundarysides(grids,filtering,gp,'outer');
+		bcw = dbcfull{1};
+		bce = dbcfull{2};
+		bcs = dbcfull{3};
+		bcn = dbcfull{4};
+		bcc = dbcfull{5};
 		
 		% how much to increase the grid size in NSEW directions
 		incw = ~isempty(xmeshfull(xmeshfull==xmin & valindouter));
@@ -348,9 +348,9 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 	
 	
 	gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew,h};		
-	filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{bc,bcfull}};
-	[bc,bcfull] = boundarysides(gridsnew,filteringnew);
-	filteringnew{4} = {bc,bcfull};
+	filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{dbc,dbcfull}};
+	[dbc,dbcfull] = boundarysides(gridsnew,filteringnew);
+	filteringnew{4} = {dbc,dbcfull};
 	
 	
 	

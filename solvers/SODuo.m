@@ -5,8 +5,10 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 		M = mats{1};
 	else
 		
+		filterMat = filtering{1};
+		
 		%make derivative matrices
-		lap = laplacian2(nx,ny,h,4);
+		lap = laplacian2(grids{9},grids{10},grids{11},[],[],bc{2}{1},bc{2}{2});
 		lap = filterMat*lap*filterMat';
 		
 		sz = size(lap,1);
@@ -18,8 +20,8 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 		
 		%impose Dirichlet conditions
 		%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
-		nw = ~bcinds.*nw + spdiags(bcinds,0,sz,sz);
-		ne = ~bcinds.*ne;
+		%nw = ~bcinds.*nw + spdiags(bcinds,0,sz,sz);
+		ne = ~(bc{1}{1}|bc{1}{2}).*ne;
 		
 		M = [nw ne
 			sw se];
@@ -35,7 +37,7 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
 	vec = M\rhs;
-	psimesh = vec(1:numel(bcinds));
+	psimesh = -vec(1:numel(bc{1}{1}));
 	
 	
 end

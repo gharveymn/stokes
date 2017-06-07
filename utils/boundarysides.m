@@ -1,4 +1,4 @@
-function [bc,bcfull] = boundarysides(grids,filtering,gp,side)
+function [dbc,dbcfull] = boundarysides(grids,filtering,gp,side)
 	%GETWHEREBOUNDARIES I'm somewhat suprised this actually works
 	
 	if(~exist('side','var'))
@@ -75,7 +75,7 @@ function [bc,bcfull] = boundarysides(grids,filtering,gp,side)
 	%bcn = bcn|bcci;
 	bcc = bcc|bcci;
 	
-	bcfull = {bcw,bce,bcs,bcn,bcc};
+	dbcfull = {bcw,bce,bcs,bcn,bcc};
 	
 	%wipe out invalid indices
 	bcw = bcw(valindouter);
@@ -84,6 +84,6 @@ function [bc,bcfull] = boundarysides(grids,filtering,gp,side)
 	bcn = bcn(valindouter);
 	bcc = bcc(valindouter);
 	
-	bc = {bcw,bce,bcs,bcn,bcc};
+	dbc = {bcw,bce,bcs,bcn,bcc};
 end
 
