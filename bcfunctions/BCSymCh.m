@@ -9,37 +9,34 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	valindouter = filtering{2}{2};
 	
 	on = filtering{3}{1};
-	bcfull = filtering{4}{2};
+	onfull = filtering{3}{2};
+	dbcfull = filtering{4}{2};
 	gpca = filtering{5};
 	
-	del = par.h;
-	
-	%for use with symch map
-	bc = 0*xmesh;
+	h = par.h;
 	
 	% add all the the indices which are on the boundary
-	bc = bc | on;
+	bc = {{on,on},{onfull,onfull}};
 	
 	xmax = max(xmesh(on));
 	xmin = min(xmesh(on));
 	ymax = max(ymesh(on));
 	ymin = min(ymesh(on));
 	
-	
 	% inflow
 	inflowmax = max(ymesh(xmesh==xmin & on));
 	inflowmin = min(ymesh(xmesh==xmin & on));
 	
-	h = (inflowmax-inflowmin)/2;
+	d = (inflowmax-inflowmin)/2;
 	
-	centerin = inflowmin + h;
+	centerin = inflowmin + d;
 	
 	
 	a = 1;
 	c = 1/12;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
-	in = a*(h^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + c;
+	in = a*(d^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + c;
 	in(~(xmesh==inflowx) | ~on) = 0;
 	
 	rhs = rhs + in;
@@ -48,15 +45,15 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	outflowmax = max(ymesh(xmesh==xmax & on));
 	outflowmin = min(ymesh(xmesh==xmax & on));
 	
-	H = (outflowmax-outflowmin)/2;
+	D = (outflowmax-outflowmin)/2;
 	
-	centerout = outflowmin + H;
+	centerout = outflowmin + D;
 	
 	f = 1/12;
-	e = (4*a*h^3/3 + c - f)*3/(4*H^3);
+	e = (4*a*d^3/3 + c - f)*3/(4*D^3);
 	
 	outflowx = xmax*ones(numel(xmesh),1);
-	out = e*(H^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + f;
+	out = e*(D^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + f;
 	out(~(xmesh==outflowx) | ~on) = 0;
 	
 	rhs = rhs + out;
@@ -67,8 +64,11 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	% set bottom
 	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
 	
-	rhs = extendgp(rhs,bcfull,valindouter,gpca,nx);
-	bc = bc|gpca{1}(valindouter)|gpca{2}(valindouter);
+	rhs = extendgp(rhs,dbcfull,valindouter,gpca,nx);
+	bc{1}{1} = bc{1}{1}|gpca{1}(valindouter)|gpca{2}(valindouter);
+	bc{1}{2} = bc{1}{1};
+	bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
+	bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
 	
 end
 

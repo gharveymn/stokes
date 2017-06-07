@@ -11,13 +11,13 @@ function par = Parameters
 	addpath('utils');
 	
 	par.maptype = 'g';
-	par.mapfile = 'symch.txt';
+	par.mapfile = 'unit.txt';
 	par.h = 0.02;
 	par.ghostpoints = true;
 	par.streamfunction = true;
 	
 	%plotting parameters
-	par.toPlot = 4;						%1==surf,2==quiver,3==scatter,4==contour
+	par.toPlot = 1;						%1==surf,2==quiver,3==scatter,4==contour
 	par.filter = true;
 	par.numfilter = 1;
 	par.conlines = 30;
@@ -31,8 +31,8 @@ function par = Parameters
 	par.ddmidratio = 0.6;
 	par.dditer = 5;
 	
-	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymCh;
+	par.rhfunc = @RHOne;
+	par.bcfunc = @BCZero;
 	par.solver = @SOBih;
 	par.ddsolver = @DDMSch;
 	

@@ -1,4 +1,4 @@
-function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
+function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
 	h = par.h;
@@ -7,13 +7,15 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 	nx = grids{9};
 	ny = grids{10};
 	
-	bcindsfull = logical(filtering{1}'*(1*bcinds));
+	bcxfull = bc{2}{1};
+	bcyfull = bc{2}{2};
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
 		
 		if(par.filter)
-			[~,~,~,bcindsfull] = closure(grids,filtering,'inner',filtering{5}{2},bcindsfull);
+			[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{2},bcxfull);
+			[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{2},bcyfull);
 			[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{2},psimeshfull);
 			[~,newgrids,newfiltering,gp] = closure(grids,filtering,'inner',filtering{5}{2},filtering{5}{1});
 			
@@ -22,7 +24,8 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 		% 	[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
 		% 	[~,newgrids,newfiltering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
 		
-			[~,~,~,bcindsfull] = closure(newgrids,newfiltering,'inner',gp,bcindsfull);
+			[~,~,~,bcxfull] = closure(newgrids,newfiltering,'inner',gp,bcxfull);
+			[~,~,~,bcyfull] = closure(newgrids,newfiltering,'inner',gp,bcyfull);
 			[~,~,~,psimeshfull] = closure(newgrids,newfiltering,'inner',gp,psimeshfull);
 			[~,grids,filtering,gp] = closure(newgrids,newfiltering,'inner',gp,gp);
 		end
@@ -34,7 +37,8 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 		on = filtering{3}{1};
 		onfull = filtering{3}{2};
 		
-		bcinds = logical(filterMat*(1*bcindsfull));
+		bcx = logical(filterMat*(1*bcxfull));
+		bcy = logical(filterMat*(1*bcyfull));
 		psimesh = filterMat*psimeshfull;
 		nx = grids{9};
 		ny = grids{10};
@@ -42,12 +46,12 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);
 		dx = filterMat*dx*filterMat';
-		dx = ~(bc{1}|bc{2}).*dx;
+		dx = ~(bcx|bcy).*dx;
 		
 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
-		dy = ~(bc{3}|bc{4}).*dy;
+		dy = ~(bcx|bcy).*dy;
 		
 	else
 		filterMat = filtering{1};
@@ -56,12 +60,12 @@ function [figs,mat,vec] = InPost(psimesh,bcinds,grids,filtering,par,figs)
 		onfull = filtering{4};
 		
 		%Switch to first order on the boundary
-		bc = boundarysides(grids{7},grids{8},onfull,valind,nx);
-		bcw = bc{1};
-		bce = bc{2};
-		bcs = bc{3};
-		bcn = bc{4};
-		bcc = bc{5};
+		dbc = boundarysides(grids{7},grids{8},onfull,valind,nx);
+		bcw = dbc{1};
+		bce = dbc{2};
+		bcs = dbc{3};
+		bcn = dbc{4};
+		bcc = dbc{5};
 
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);
