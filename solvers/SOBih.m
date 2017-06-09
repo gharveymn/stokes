@@ -21,7 +21,7 @@ function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
 		mats = {bih};
 	end
 	
-	disp(['lower bound for condition number: ' num2str(condest(bih))])
+	%disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
 	psimesh = bih\rhs;
 	

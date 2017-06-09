@@ -15,7 +15,7 @@ for j=1:size(nn,2)
 end;
 figure(1); plot(nn,er,'o-'); xlabel('n'); ylabel('error');
 figure(2); surf(X,Y,reshape(uh,n1,n1)); xlabel('x'); ylabel('y'); zlabel('z');
-
+return
 % Solve L u = f where L is -Laplacian + random (sym) perturbation using PCG
 clear X Y uh u
 A=toeplitz([2 -1 zeros(1,n-3)])*n^2; % 1D Laplacian
