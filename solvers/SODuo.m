@@ -21,7 +21,7 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 		%impose Dirichlet conditions
 		%we do this by just wiping out the row by row multiplication and adding back a diagonal of ones
 		%nw = ~bcinds.*nw + spdiags(bcinds,0,sz,sz);
-		ne = ~(bc{1}{1}|bc{1}{2}).*ne;
+		ne = spdiag(~(bc{1}{1}|bc{1}{2}))*ne;
 		
 		M = [nw ne
 			sw se];
@@ -29,7 +29,7 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 		
 	end
 	
-	rhs = [rhs;rhs];
+	rhs = [rhs;zeros(numel(rhs),1)];
 	
 	%disp(['lower bound for condition number: ' num2str(condest(M))])
 		
@@ -37,7 +37,7 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
 	vec = M\rhs;
-	psimesh = -vec(1:numel(bc{1}{1}));
+	psimesh = vec(1:numel(bc{1}{1}));
 	
 	
 end

@@ -46,12 +46,12 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 		dx = kron(speye(ny),Dx);
 		dx = filterMat*dx*filterMat';
-		dx = ~(bcx|bcy).*dx;
+		dx = spdiag(~(bcx|bcy))*dx;
 		
 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
 		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
-		dy = ~(bcx|bcy).*dy;
+		dy = spdiag(~(bcx|bcy))*dy;
 		
 	else
 		filterMat = filtering{1};

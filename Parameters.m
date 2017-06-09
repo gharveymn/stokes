@@ -11,7 +11,7 @@ function par = Parameters
 	addpath('utils');
 	
 	par.maptype = 'g';
-	par.mapfile = 'unit.txt';
+	par.mapfile = 'symch.txt';
 	par.h = 0.02;
 	par.ghostpoints = true;
 	par.streamfunction = true;
@@ -31,9 +31,9 @@ function par = Parameters
 	par.ddmidratio = 0.6;
 	par.dditer = 5;
 	
-	par.rhfunc = @RHOne;
-	par.bcfunc = @BCZero;
-	par.solver = @SOBih;
+	par.rhfunc = @RHZero;
+	par.bcfunc = @BCSymCh;
+	par.solver = @SODuo;
 	par.ddsolver = @DDMSch;
 	
 end
