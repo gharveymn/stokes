@@ -36,7 +36,7 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 	valindouter = filtering{2}{2};
 	onfull = filtering{3}{2};
 	
-	if(~exist('side','var'))
+	if(~exist('side','var') || isempty(side))
 		side = 'outer';
 	end
 	
@@ -345,7 +345,6 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 		ME = MException('closure:invalidParameterException','Invalid value for side');
 		throw(ME)
 	end
-	
 	
 	gridsnew = {xinitnew,yinitnew,xmeshnew,ymeshnew,Xmeshnew,Ymeshnew,xmeshfullnew,ymeshfullnew,nxnew,nynew,h};		
 	filteringnew = {filterMatnew,{valindinnernew,valindouternew},{onnew,onfullnew},{dbc,dbcfull}};

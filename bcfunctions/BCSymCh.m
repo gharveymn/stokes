@@ -31,7 +31,6 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	
 	centerin = inflowmin + d;
 	
-	
 	a = 1;
 	c = 1/12;
 	
@@ -64,11 +63,16 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	% set bottom
 	rhs(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
 	
-	rhs = extendgp(rhs,dbcfull,valindouter,gpca,nx);
-	bc{1}{1} = bc{1}{1}|gpca{1}(valindouter)|gpca{2}(valindouter);
-	bc{1}{2} = bc{1}{1};
-	bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
-	bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
+	if(par.order > 1)
+		rhs = extendgp(rhs,dbcfull,valindouter,gpca,nx);
+	end
+	
+	for i=1:par.order-1
+		bc{1}{1} = bc{1}{1}|gpca{i}(valindouter);
+		bc{1}{2} = bc{1}{1};
+		bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
+		bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
+	end
 	
 end
 

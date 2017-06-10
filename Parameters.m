@@ -12,9 +12,10 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.02;
+	par.h = 0.05;
 	par.ghostpoints = true;
 	par.streamfunction = true;
+	par.order = 2;
 	
 	%plotting parameters
 	par.toPlot = 1;						%1==surf,2==quiver,3==scatter,4==contour

@@ -1,4 +1,4 @@
-function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
+function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 	%DDASCH multiplicative schwarz
 	
 	nx = grids{9};
@@ -6,79 +6,66 @@ function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 	h = grids{11};
 	filterMat = filtering{1};
 	
-	psimesh = SODuo(nx,ny,bcinds,rhs,filterMat,h);
-	figs = InPost(psimesh,bcinds,grids,filtering,par);
+	psimesh = SOBih(grids,filtering,rhs,bc);
+	figs = InPost(psimesh,bc,grids,filtering,par);
 	
-	%TODO complete the bcinds
-	[newgrids,newpsis,newbcinds,newrhss] = Decompose(grids,psimesh,rhs,filtering,par.ddbounds);
+	%TODO complete the bc
+	[gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,psimesh,rhs,par);
 	
-	p10 = newpsis{1};
-	p20 = newpsis{2};
-	p30 = newpsis{3};
+	p10 = psimeshnew{1};
+	p20 = psimeshnew{2};
+	p30 = psimeshnew{3};
 	
-	p11 = 0*newpsis{1};
-	p21 = 0*newpsis{2};
-	p31 = 0*newpsis{3};
+	p11 = 0*psimeshnew{1};
+	p21 = 0*psimeshnew{2};
+	p31 = 0*psimeshnew{3};
+	
+	filterMat1 = filteringnew{1};
+	filterMat2 = filteringnew{2};
+	filterMat3 = filteringnew{3};
+	
 	
 	% p21 <- f(p10,p30)
 	% p11 <- f(p20)
 	% p21 <- f(p30)
 	
-	nx1 = numel(newgrids{1}{1});
-	ny1 = numel(newgrids{1}{2});
+	nx1 = gridsnew{1}{9};
+	ny1 = gridsnew{1}{10};
 	
-	nx2 = numel(newgrids{2}{1});
-	ny2 = numel(newgrids{2}{2});
+	nx2 = gridsnew{2}{9};
+	ny2 = gridsnew{2}{10};
 	
-	nx3 = numel(newgrids{3}{1});
-	ny3 = numel(newgrids{3}{2});
+	nx3 = gridsnew{3}{9};
+	ny3 = gridsnew{3}{10};
 	
 	%for memory allocation purposes
-	rhs1 = newrhss{1};
-	rhs2 = newrhss{2};
-	rhs3 = newrhss{3};
-	
-	bcinds0 = newbcinds{1}{1};
-	on1 = newbcinds{1}{2};
-	onouter1 = newbcinds{1}{3};
-	
-	bcinds1 = newbcinds{2}{1};
-	on2 = newbcinds{2}{2};
-	onouter2 = newbcinds{2}{3};
-	
-	bcinds2 = newbcinds{3}{1};
-	%on2 = newbcinds{3}{2};
-	%onouter2 = newbcinds{3}{3};
-	
-	bcinds3 = newbcinds{4}{1};
-	on3 = newbcinds{4}{2};
-	onouter3 = newbcinds{4}{3};
-	
-	filterMat1 = speye(nx1*ny1);
-	filterMat2 = speye(nx2*ny2);
-	filterMat3 = speye(nx3*ny3);
-	
-	%notation: bcindsx{y} means boundary x (from 0,1,2,3) with respect to the grid y (from 1,2,3)
-	
-	bcin1 = bcinds1{1} | onouter1;
-	bcin2 = bcinds0{2} | bcinds3{2} | onouter2;
-	bcin3 = bcinds2{3} | onouter3;
-	
-	
+	rhs1 = rhsnew{1};
+	rhs2 = rhsnew{2};
+	rhs3 = rhsnew{3};
+
+	bc1 = bcnew{1};
+	bc2 = bcnew{2};
+	bc3 = bcnew{3};
+
+	bcb0 = bcb{1};
+	bcb1 = bcb{2};
+	bcb2 = bcb{3};
+	bcb3 = bcb{4};
+
 	%initial calculation
 	
 	%solve for region 2
-	rhs2(bcinds0{2}) = p10(bcinds0{1});
-	rhs2(bcinds3{2}) = p30(bcinds3{3});
-	[p21,mats2] = solver(nx2,ny2,bcin2,rhs2,filterMat2,h);
+	rhs2(bcb0{2}) = p10(bcb0{1});
+	rhs2(bcb3{2}) = p30(bcb3{3});
+	[p21,mats2] = solver(nx2,ny2,bc2,rhs2,filterMat2,h);
 
 	%use solution to get regions 1...
-	rhs1(bcinds1{1}) = p21(bcinds1{2});
-	[p11,mats1] = solver(nx1,ny1,bcin1,rhs1,filterMat1,h);
+	rhs1(bcb1{1}) = p21(bcb1{2});
+	[p11,mats1] = solver(nx1,ny1,bc1,rhs1,filterMat1,h);
 
 	%...and 3
-	rhs3(bcinds2{3}) = p21(bcinds2{2});
-	[p31,mats3] = solver(nx3,ny3,bcin3,rhs3,filterMat3,h);
+	rhs3(bcb2{3}) = p21(bcb2{2});
+	[p31,mats3] = solver(nx3,ny3,bc3,rhs3,filterMat3,h);
 
 	%probably put some convergence check here
 	p10 = p11;
@@ -87,21 +74,21 @@ function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 
 	%now repeat
 	psimesh = Recompose(grids,{p11,p21,p31},par.ddbounds);
-	figs = InPost(grids,psimesh,nx,ny,filtering,par,figs);
+	figs = InPost(psimesh,bc,grids,filtering,par,figs);
 	
 	for i = 1:par.dditer
 		
 		%solve for region 2
-		rhs2(bcinds0{2}) = p10(bcinds0{1});
-		rhs2(bcinds3{2}) = p30(bcinds3{3});
+		rhs2(bcb0{2}) = p10(bcb0{1});
+		rhs2(bcb3{2}) = p30(bcb3{3});
 		p21 = solver(nx2,ny2,bcin2,rhs2,filterMat2,h,mats2);
 		
 		%use solution to get regions 1...
-		rhs1(bcinds1{1}) = p21(bcinds1{2});
+		rhs1(bcb1{1}) = p21(bcb1{2});
 		p11 = solver(nx1,ny1,bcin1,rhs1,filterMat1,h,mats1);
 	
 		%...and 3
-		rhs3(bcinds2{3}) = p21(bcinds2{2});
+		rhs3(bcb2{3}) = p21(bcb2{2});
 		p31 = solver(nx3,ny3,bcin3,rhs3,filterMat3,h,mats3);
 		
 		
@@ -112,7 +99,7 @@ function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 		
 		%now repeat
 		psimesh = Recompose(grids,{p11,p21,p31},par.ddbounds);
-		figs = InPost(psimesh,bcinds,grids,filtering,par,figs);
+		figs = InPost(psimesh,bc,grids,filtering,par,figs);
 		
 		disp(['Iteration ' num2str(i)])
 		

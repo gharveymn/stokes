@@ -14,20 +14,36 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	if(par.ghostpoints)
 		
 		if(par.filter)
-			[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{2},bcxfull);
-			[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{2},bcyfull);
-			[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{2},psimeshfull);
-			[~,newgrids,newfiltering,gp] = closure(grids,filtering,'inner',filtering{5}{2},filtering{5}{1});
 			
-		% 	[~,~,~,umeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-		% 	[~,~,~,vmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-		% 	[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-		% 	[~,newgrids,newfiltering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
-		
-			[~,~,~,bcxfull] = closure(newgrids,newfiltering,'inner',gp,bcxfull);
-			[~,~,~,bcyfull] = closure(newgrids,newfiltering,'inner',gp,bcyfull);
-			[~,~,~,psimeshfull] = closure(newgrids,newfiltering,'inner',gp,psimeshfull);
-			[~,grids,filtering,gp] = closure(newgrids,newfiltering,'inner',gp,gp);
+			%again we're setting a hard limit of order 3
+			switch par.order
+				case 1
+					%do nothing
+				case 2
+					[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{1},bcxfull);
+					[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{1},bcyfull);
+					[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{1},psimeshfull);
+					[~,grids,filtering] = closure(grids,filtering,'inner',filtering{5}{1},filtering{5}{1});
+				case 3
+					[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{2},bcxfull);
+					[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{2},bcyfull);
+					[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{2},psimeshfull);
+					[~,newgrids,newfiltering,gp] = closure(grids,filtering,'inner',filtering{5}{2},filtering{5}{1});
+
+				% 	[~,~,~,umeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
+				% 	[~,~,~,vmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
+				% 	[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
+				% 	[~,newgrids,newfiltering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
+
+					[~,~,~,bcxfull] = closure(newgrids,newfiltering,'inner',gp,bcxfull);
+					[~,~,~,bcyfull] = closure(newgrids,newfiltering,'inner',gp,bcyfull);
+					[~,~,~,psimeshfull] = closure(newgrids,newfiltering,'inner',gp,psimeshfull);
+					[~,grids,filtering] = closure(newgrids,newfiltering,'inner',gp,gp);
+				otherwise
+					ME = MException('closure:invalidParameterException','Invalid value for par.order');
+					throw(ME)
+			end
+			
 		end
 		
 		%TODO figure out how to get back our psi at the right size
@@ -72,10 +88,10 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		dx = filterMat*dx*filterMat';
 		
 		if(par.zeroout)
-			dx = ~(bcw|bce|bcc).*dx;
+			dx = spdiag(~(bcw|bce|bcc))*dx;
 		else
-			dx = ~bcw.*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
-			dx = ~bce.*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+			dx = spdiag(~bcw)*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
+			dx = spdiag(~bce)*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
 		end
 
 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
@@ -83,10 +99,10 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		dy = filterMat*dy*filterMat';
 		
 		if(par.zeroout)
-			dy = ~(bcs|bcn|bcc).*dy;
+			dy = spdiag(~(bcs|bcn|bcc))*dy;
 		else
-			dy = ~bcs.*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
-			dy = ~bcn.*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
+			dy = spdiag(~bcs)*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
+			dy = spdiag(~bcn)*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
 		end
 	end
 	

@@ -68,11 +68,24 @@ function [grids,filtering,par] = ParseValidIndices(par)
 	%filterMat,{valindinner,valindouter},{on,onfull},{dbc,dbcfull},{gp1,gp2}
 	filtering = {filterMat,{valind,valind},{on,onfull},{on,onfull},{[],[]}};
 	
+	%we're going to hard set a max of 3 for now, otherwise it gets needlessly complex.
 	if(par.ghostpoints)
-		[gp1,grids,filtering] = closure(grids,filtering);
-		[gp2,grids,filtering,gp1] = closure(grids,filtering,'outer',gp1,gp1);
-		filtering = [filtering,{gp2}];
-		filtering{5} = {gp1,gp2};
+		switch par.order
+			case 1
+				%do nothing
+			case 2
+				[gp1,grids,filtering] = closure(grids,filtering);
+				filtering = [filtering,{{gp1}}];
+			case 3
+				[gp1,grids,filtering] = closure(grids,filtering);
+				[gp2,grids,filtering,gp1] = closure(grids,filtering,'outer',gp1,gp1);
+				filtering = [filtering,{gp2}];
+				filtering{5} = {gp1,gp2};
+			otherwise
+				ME = MException('closure:invalidParameterException','Invalid value for par.order');
+				throw(ME)
+		end
+			
 	end
 	
 	%NOTE: filtering{4} ie {bc,bcfull} will change to become 2x2 dimensional
