@@ -4,20 +4,26 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 	ddbounds = par.ddbounds;
 	xmesh = grids{3};
 	ymesh = grids{4};
-	del = par.h+eps;
-	del2 = 2*par.h+eps;
+	del = (par.order-1)*par.h+par.h/2; %the half h is for for floating point arithmetic errors
 	
-	[g1,f1,p1] = getGrid(grids,filtering,psimesh,ddbounds{1},par);
-	[g2,f2,p2] = getGrid(grids,filtering,psimesh,ddbounds{2},par);
-	[g3,f3,p3] = getGrid(grids,filtering,psimesh,ddbounds{3},par);
+	[g1,f1,p1] = getGrid(grids,filtering,psimesh,ddbounds{1},par,del);
+	[g2,f2,p2] = getGrid(grids,filtering,psimesh,ddbounds{2},par,del);
+	[g3,f3,p3] = getGrid(grids,filtering,psimesh,ddbounds{3},par,del);
 	
 	gridsnew = {g1,g2,g3};
 	filteringnew = {f1,f2,f3};
 	psimeshnew = {p1,p2,p3};
 	
-	on1 = f1{3}{1};
-	on2 = f2{3}{1};
-	on3 = f3{3}{1};
+	bc1 = f1{3}{1};
+	bc2 = f2{3}{1};
+	bc3 = f3{3}{1};
+	
+	for i=1:par.order-1
+		bc1 = bc1 | f1{5}{i};
+		bc2 = bc2 | f2{5}{i};
+		bc3 = bc3 | f3{5}{i};
+	end
+	
 	
 	%bounding lines
 	blx11 = ddbounds{1}{1}(1);		%inlet
@@ -51,44 +57,38 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 	
 	
 	%bc0 is all with x <= b1 inside R1 on boundary of R2
-	bcb0{1} = (xmesh1 >= blx21) & (ymesh1 >= bly21) & (ymesh1 <= bly22) ...
-							& ((ymesh1 == bly21) | (ymesh1 == bly22) | (xmesh1 == blx21));
-	bcb0{2} = on2 & (xmesh2 <= blx12) & (ymesh2 >= bly11) & (ymesh2 <= bly12);
+	bcb0{1} = (xmesh1 >= blx21-del) & (xmesh1 <= blx21) & (ymesh1 >= bly21-del) & (ymesh1 <= bly22+del) ...
+											  & (ymesh1 >= bly11-del) & (ymesh1 <= bly12+del);
+	bcb0{2} = bc2 & (xmesh2 <= blx21+eps) & (ymesh2 >= bly11-del) & (ymesh2 <= bly12+del);
 	
 	%belong to R2
 	%bc1 is all with x >= b0 inside R2 on boundary of R1
-	bcb1{2} = (xmesh2 <= blx12) & (ymesh2 >= bly11) & (ymesh2 <= bly12) ...
-						& ((ymesh2 == bly11) | (ymesh2 == bly12) | (xmesh2 == blx12));
-	bcb1{1} = on1 & (xmesh1 >= blx21) & (ymesh1 >= bly21) & (ymesh1 <= bly22);
+	bcb1{2} = ((xmesh2 <= blx12+del) & (xmesh2 >= blx12) & (ymesh2 >= bly11-del) & (ymesh2 <= bly12+del)) ...
+						| ((xmesh2 <= blx12+del) & (((ymesh2 >= bly11-del) & (ymesh2 <= bly11)) ...
+											 | ((ymesh2 >= bly12) & (ymesh2 <= bly12+del))));
+	bcb1{1} = bc1 & (xmesh1 >= blx21-del) & (ymesh1 >= bly21-del) & (ymesh1 <= bly22+del);
 	
 	%bc2 is all with x <= b3 inside R2 on boundary of R3
-	bcb2{2} = (xmesh2 >= blx31) & (ymesh2 >= bly31) & (ymesh2 <= bly32) ...
-							& ((ymesh2 == bly31) | (ymesh2 == bly32) | (xmesh2 == blx31));
-	bcb2{3} = on3 & (xmesh3 <= blx22) & (ymesh3 >= bly21) & (ymesh3 <= bly22);
+	bcb2{2} = (xmesh2 >= blx31-del) & (xmesh2 <= blx31) & (ymesh2 >= bly31-del) & (ymesh2 <= bly32+del);
+	bcb2{3} = bc3 & (xmesh3 <= blx31+eps) & (ymesh3 >= bly21-del) & (ymesh3 <= bly22+del);
 	
 	%bc3 is all with x >= b2 inside R3 on boundary of R2
-	bcb3{3} = (xmesh3 <= blx22) & (ymesh3 >= bly21) & (ymesh3 <= bly22) ...
-						& ((ymesh3 == bly21) | (ymesh3 == bly22) | (xmesh3 == blx22));
-	bcb3{2} = on2 & (xmesh2 >= blx31) & (ymesh2 >= bly31) & (ymesh2 <= bly32);
+	bcb3{3} = (xmesh3 >= blx22-del) & (xmesh3 <= blx22) & (ymesh3 >= bly21-del) & (ymesh3 <= bly22+del);
+	bcb3{2} = bc2 & (xmesh2 >= blx22-eps) & (ymesh2 >= bly21-del) & (ymesh2 <= bly22+del);
 	
-	bcsur = filtering{3}{1} | filtering{5}{1}(filtering{2}{2}) | filtering{5}{2}(filtering{2}{2});
-	if(par.ghostpoints)
-		onouter1 = bcsur((xmesh >= blx11-del2) & (xmesh <= blx12+del2) & (ymesh >= bly11-del2) & (ymesh <= bly12+del2));
-		onouter2 = bcsur((xmesh >= blx21-del2) & (xmesh <= blx22+del2) & (ymesh >= bly21-del2) & (ymesh <= bly22+del2));
-		onouter3 = bcsur((xmesh >= blx31-del2) & (xmesh <= blx32+del2) & (ymesh >= bly31-del2) & (ymesh <= bly32+del2));
-		
-		rhs1 = rhs((xmesh >= blx11-del2) & (xmesh <= blx12+del2) & (ymesh >= bly11-del2) & (ymesh <= bly12+del2));
-		rhs2 = rhs((xmesh >= blx21-del2) & (xmesh <= blx22+del2) & (ymesh >= bly21-del2) & (ymesh <= bly22+del2));
-		rhs3 = rhs((xmesh >= blx31-del2) & (xmesh <= blx32+del2) & (ymesh >= bly31-del2) & (ymesh <= bly32+del2));		
-	else
-		onouter1 = bcsur((xmesh >= blx11) & (xmesh <= blx12) & (ymesh >= bly11) & (ymesh <= bly12));
-		onouter2 = bcsur((xmesh >= blx21) & (xmesh <= blx22) & (ymesh >= bly21) & (ymesh <= bly22));
-		onouter3 = bcsur((xmesh >= blx31) & (xmesh <= blx32) & (ymesh >= bly31) & (ymesh <= bly32));
-		
-		rhs1 = rhs((xmesh >= blx11) & (xmesh <= blx12) & (ymesh >= bly11) &(ymesh <= bly12));
-		rhs2 = rhs((xmesh >= blx21) & (xmesh <= blx22) & (ymesh >= bly21) &(ymesh <= bly22));
-		rhs3 = rhs((xmesh >= blx31) & (xmesh <= blx32) & (ymesh >= bly31) &(ymesh <= bly32));
+	bcsur = filtering{3}{1};
+	for i=1:par.order-1
+		bcsur = bcsur | filtering{5}{i}(filtering{2}{2});
 	end
+	
+	onouter1 = bcsur((xmesh >= blx11-del) & (xmesh <= blx12+del) & (ymesh >= bly11-del) & (ymesh <= bly12+del));
+	onouter2 = bcsur((xmesh >= blx21-del) & (xmesh <= blx22+del) & (ymesh >= bly21-del) & (ymesh <= bly22+del));
+	onouter3 = bcsur((xmesh >= blx31-del) & (xmesh <= blx32+del) & (ymesh >= bly31-del) & (ymesh <= bly32+del));
+
+	rhs1 = rhs((xmesh >= blx11-del) & (xmesh <= blx12+del) & (ymesh >= bly11-del) & (ymesh <= bly12+del));
+	rhs2 = rhs((xmesh >= blx21-del) & (xmesh <= blx22+del) & (ymesh >= bly21-del) & (ymesh <= bly22+del));
+	rhs3 = rhs((xmesh >= blx31-del) & (xmesh <= blx32+del) & (ymesh >= bly31-del) & (ymesh <= bly32+del));		
+	
 
 	bc1 = bcb1{1} | onouter1;
 	bc2 = bcb0{2} | bcb3{2} | onouter2;
@@ -108,19 +108,19 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 
 end
 
-function [g,f,psimeshnew] = getGrid(grids,filtering,psimesh,bnds,par)
+function [g,f,psimeshnew] = getGrid(grids,filtering,psimesh,bnds,par,del)
 	
 	xinit = grids{1};
 	yinit = grids{2};
 	xmesh = grids{3};
 	ymesh = grids{4};
 	
-	vinds = (xmesh >= bnds{1}(1)-eps) & (xmesh <= bnds{2}(1)+eps) ...
-				& (ymesh >= bnds{1}(2)-eps) & (ymesh <= bnds{2}(2)+eps);
+	vinds = (xmesh >= bnds{1}(1)-del) & (xmesh <= bnds{2}(1)+del) ...
+				& (ymesh >= bnds{1}(2)-del) & (ymesh <= bnds{2}(2)+del);
 	
 	%minds = (Xmesh <= bnds{1}(1)) & (Xmesh <= bnds{2}(1)) & (Ymesh <= bnds{1}(2)) & (Ymesh <= bnds{2}(2));
-	xinitnew = xinit((xinit >= bnds{1}(1)-eps)&(xinit <= bnds{2}(1)+eps));
-	yinitnew = yinit((yinit >= bnds{1}(2)-eps)&(yinit <= bnds{2}(2)+eps));
+	xinitnew = xinit((xinit >= bnds{1}(1)-del)&(xinit <= bnds{2}(1)+del));
+	yinitnew = yinit((yinit >= bnds{1}(2)-del)&(yinit <= bnds{2}(2)+del));
 	
 	nxnew = numel(xinitnew);
 	nynew = numel(yinitnew);
@@ -146,14 +146,29 @@ function [g,f,psimeshnew] = getGrid(grids,filtering,psimesh,bnds,par)
 	%[dbc,dbcfull] = boundarysides(grids,filtering,gp,'outer');
 
 	if(par.ghostpoints)
-		[gp1,gnew,fnew] = closure(g,f);
-		[~,~,~,psimeshnew] = closure(g,f,[],[],psimeshnew);
 		
-		[~,~,~,psimeshnew] = closure(gnew,fnew,[],gp1,psimeshnew);
-		[gp2,g,f,gp1] = closure(gnew,fnew,[],gp1,gp1);
-		f = [f,{gp2}];
-		f{5} = {gp1,gp2};
+		switch par.order
+			case 1
+				%do nothing
+			case 2
+				gp1 = f{3}{1};
+				on = closure(g,f,'inner');
+				f{5} = {gp1};
+				f{3} = {on,on};
+			case 3
+				[gp1,gtmp,ftmp] = closure(g,f,'inner');
+				[gp2,gtmp,ftmp] = closure(gtmp,ftmp,'inner');
+				[~,~,~,gp2] = closure(gtmp,ftmp,[],[],gp2,gp2);
+				f = [f,{gp2}];
+				f{5} = {gp1,gp2};
+			otherwise
+				ME = MException('closure:invalidParameterException','Invalid value for par.order');
+				throw(ME)
+		end
+		
 	end
+	
+	
 	
 end
 
