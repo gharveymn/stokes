@@ -307,8 +307,8 @@ function [clomeshfull,gridsnew,filteringnew,ret] = closure(grids,filtering,side,
 		Xmeshnew = reshape(Xmeshnew(Innermatinds),[nynew,nxnew]);
 		Ymeshnew = reshape(Ymeshnew(Innermatinds),[nynew,nxnew]);
 		
-		xinitnew = (xminnew:h:xmaxnew)';
-		yinitnew = (yminnew:h:ymaxnew)';
+		xinitnew = (xminnew-eps:h:xmaxnew+eps)';
+		yinitnew = (yminnew-eps:h:ymaxnew+eps)';
 		
 		xmeshfullnew = kron(ones(nynew,1),xinitnew);
 		ymeshfullnew = kron(yinitnew,ones(nxnew,1));

@@ -57,23 +57,23 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 	
 	
 	%bc0 is all with x <= b1 inside R1 on boundary of R2
-	bcb0{1} = (xmesh1 >= blx21-del) & (xmesh1 <= blx21) & (ymesh1 >= bly21-del) & (ymesh1 <= bly22+del) ...
+	bcb0{1} = (xmesh1 >= blx21-del) & (xmesh1 <= blx21+eps) & (ymesh1 >= bly21-del) & (ymesh1 <= bly22+del) ...
 											  & (ymesh1 >= bly11-del) & (ymesh1 <= bly12+del);
 	bcb0{2} = bc2 & (xmesh2 <= blx21+eps) & (ymesh2 >= bly11-del) & (ymesh2 <= bly12+del);
 	
 	%belong to R2
 	%bc1 is all with x >= b0 inside R2 on boundary of R1
-	bcb1{2} = ((xmesh2 <= blx12+del) & (xmesh2 >= blx12) & (ymesh2 >= bly11-del) & (ymesh2 <= bly12+del)) ...
-						| ((xmesh2 <= blx12+del) & (((ymesh2 >= bly11-del) & (ymesh2 <= bly11)) ...
-											 | ((ymesh2 >= bly12) & (ymesh2 <= bly12+del))));
+	bcb1{2} = ((xmesh2 <= blx12+del) & (xmesh2 >= blx12-eps) & (ymesh2 >= bly11-del) & (ymesh2 <= bly12+del)) ...
+						| ((xmesh2 <= blx12+del) & (((ymesh2 >= bly11-del) & (ymesh2 <= bly11+eps)) ...
+											 | ((ymesh2 >= bly12-eps) & (ymesh2 <= bly12+del))));
 	bcb1{1} = bc1 & (xmesh1 >= blx21-del) & (ymesh1 >= bly21-del) & (ymesh1 <= bly22+del);
 	
 	%bc2 is all with x <= b3 inside R2 on boundary of R3
-	bcb2{2} = (xmesh2 >= blx31-del) & (xmesh2 <= blx31) & (ymesh2 >= bly31-del) & (ymesh2 <= bly32+del);
+	bcb2{2} = (xmesh2 >= blx31-del) & (xmesh2 <= blx31+eps) & (ymesh2 >= bly31-del) & (ymesh2 <= bly32+del);
 	bcb2{3} = bc3 & (xmesh3 <= blx31+eps) & (ymesh3 >= bly21-del) & (ymesh3 <= bly22+del);
 	
 	%bc3 is all with x >= b2 inside R3 on boundary of R2
-	bcb3{3} = (xmesh3 >= blx22-del) & (xmesh3 <= blx22) & (ymesh3 >= bly21-del) & (ymesh3 <= bly22+del);
+	bcb3{3} = (xmesh3 >= blx22-del) & (xmesh3 <= blx22+eps) & (ymesh3 >= bly21-del) & (ymesh3 <= bly22+del);
 	bcb3{2} = bc2 & (xmesh2 >= blx22-eps) & (ymesh2 >= bly21-del) & (ymesh2 <= bly22+del);
 	
 	bcsur = filtering{3}{1};

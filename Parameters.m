@@ -12,7 +12,7 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.05;
+	par.h = 0.01;
 	par.ghostpoints = true;
 	par.streamfunction = true;
 	par.order = 2;
@@ -24,14 +24,14 @@ function par = Parameters
 	par.conlines = 30;
 	par.zeroout = false;
 	par.plot = true;
-	par.topause = 0;
 	
 	%domain decomposition parameters
 	par.ddrun = true;
 	par.ddbounds = {{[0.0,-0.5],[1.5,0.5]},{[1.0,-1.5],[3.5,1.5]},{[3.0,-1.5],[5.0,1.5]}};
 	par.ddoverlap = 0.5;
 	par.ddmidratio = 0.6;
-	par.dditer = 50;
+	par.dditer = 1;
+	par.topause = 0;
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh;
