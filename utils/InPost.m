@@ -13,43 +13,40 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
 		
-		filterMat = filtering{1};
-		valind = filtering{2};
-		on = filtering{3};
-		onfull = filtering{4};	
-
-		%Switch to first order on the boundary
-		dbc = boundarysides(grids,filtering);
-		bcw = dbc{1};
-		bce = dbc{2};
-		bcs = dbc{3};
-		bcn = dbc{4};
-		bcc = dbc{5};
-
-		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
-		dx = kron(speye(ny),Dx);
-		dx = filterMat*dx*filterMat';
-		
-		if(par.zeroout)
-			dx = spdiag(~(bcw|bce|bcc))*dx;
-		else
-			dx = spdiag(~bcw)*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
-			dx = spdiag(~bce)*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
-		end
-
-		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
-		dy = kron(Dy,speye(nx));
-		dy = filterMat*dy*filterMat';
-		
-		if(par.zeroout)
-			dy = spdiag(~(bcs|bcn|bcc))*dy;
-		else
-			dy = spdiag(~bcs)*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
-			dy = spdiag(~bcn)*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
-		end
-		
-		umesh = dy*psimesh;
-		vmesh = -dx*psimesh;
+% 		filterMat = filtering{1};
+% 		valind = filtering{2};
+% 		on = filtering{3};
+% 		onfull = filtering{4};	
+% 
+% 		%Switch to first order on the boundary
+% 		dbc = boundarysides(grids,filtering);
+% 		bcw = dbc{1};
+% 		bce = dbc{2};
+% 		bcs = dbc{3};
+% 		bcn = dbc{4};
+% 		bcc = dbc{5};
+% 
+% 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
+% 		dx = kron(speye(ny),Dx);
+% 		dx = filterMat*dx*filterMat';
+% 		
+% 		if(par.zeroout)
+% 			dx = spdiag(~(bcw|bce|bcc))*dx;
+% 		else
+% 			dx = spdiag(~bcw)*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
+% 			dx = spdiag(~bce)*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+% 		end
+% 
+% 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
+% 		dy = kron(Dy,speye(nx));
+% 		dy = filterMat*dy*filterMat';
+% 		
+% 		if(par.zeroout)
+% 			dy = spdiag(~(bcs|bcn|bcc))*dy;
+% 		else
+% 			dy = spdiag(~bcs)*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
+% 			dy = spdiag(~bcn)*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
+% 		end
 		
 		if(par.filter)
 			
@@ -58,16 +55,10 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 				case 1
 					%do nothing
 				case 2
-					[~,~,~,umeshfull] = closure(grids,filtering,'inner',filtering{5}{1},filterMat'*umesh);
-					[~,~,~,
-					[~,grids,filtering,vmeshfull] = closure(grids,filtering,'inner',filtering{5}{1},filterMat'*vmesh);
-					filterMat = filtering{1};
-					nx = grids{9};
-					ny = grids{10};
-					psimesh = filterMat*psimeshfull;
-					umesh = filterMat*umeshfull;
-					vmesh = filterMat*vmeshfull;
-					
+					[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{1},bcxfull);
+					[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{1},bcyfull);
+					[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{1},psimeshfull);
+					[~,grids,filtering] = closure(grids,filtering,'inner',filtering{5}{1},filtering{5}{1});
 				case 3
 					[~,~,~,bcxfull] = closure(grids,filtering,'inner',filtering{5}{2},bcxfull);
 					[~,~,~,bcyfull] = closure(grids,filtering,'inner',filtering{5}{2},bcyfull);
@@ -91,27 +82,27 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		end
 		
 % 		%TODO figure out how to get back our psi at the right size
-% 		filterMat = filtering{1};
-% 		bc = filtering{4}{1};
-% 		valind = filtering{2}{1};
-% 		on = filtering{3}{1};
-% 		onfull = filtering{3}{2};
-% 		
-% 		bcx = logical(filterMat*(1*bcxfull));
-% 		bcy = logical(filterMat*(1*bcyfull));
-% 		psimesh = filterMat*psimeshfull;
-% 		nx = grids{9};
-% 		ny = grids{10};
-% 		
-% 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
-% 		dx = kron(speye(ny),Dx);
-% 		dx = filterMat*dx*filterMat';
-% 		dx = spdiag(~(bcx|bcy))*dx;
-% 		
-% 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
-% 		dy = kron(Dy,speye(nx));
-% 		dy = filterMat*dy*filterMat';
-% 		dy = spdiag(~(bcx|bcy))*dy;
+		filterMat = filtering{1};
+		bc = filtering{4}{1};
+		valind = filtering{2}{1};
+		on = filtering{3}{1};
+		onfull = filtering{3}{2};
+		
+		bcx = logical(filterMat*(1*bcxfull));
+		bcy = logical(filterMat*(1*bcyfull));
+		psimesh = filterMat*psimeshfull;
+		nx = grids{9};
+		ny = grids{10};
+		
+		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
+		dx = kron(speye(ny),Dx);
+		dx = filterMat*dx*filterMat';
+		dx = spdiag(~(bcx|bcy))*dx;
+		
+		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
+		dy = kron(Dy,speye(nx));
+		dy = filterMat*dy*filterMat';
+		dy = spdiag(~(bcx|bcy))*dy;
 
 		
 	else
@@ -149,11 +140,10 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 			dy = spdiag(~bcs)*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
 			dy = spdiag(~bcn)*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
 		end
-		
-		umesh = dy*psimesh;
-		vmesh = -dx*psimesh;
-		
 	end
+	
+	umesh = dy*psimesh;
+	vmesh = -dx*psimesh;
 	
 	umeshfull = filterMat'*umesh;
 	Umesh = reshape(umeshfull,[nx,ny])';

@@ -22,7 +22,7 @@ function par = Parameters
 	
 	%plotting parameters
 	par.toPlot = 1;						%1==surf,2==quiver,3==scatter,4==contour
-	par.filter = false;
+	par.filter = true;
 	par.numfilter = 1;
 	par.conlines = 30;
 	par.zeroout = false;
