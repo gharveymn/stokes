@@ -13,6 +13,41 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
 		
+% 		filterMat = filtering{1};
+% 		valind = filtering{2};
+% 		on = filtering{3};
+% 		onfull = filtering{4};	
+% 
+% 		%Switch to first order on the boundary
+% 		dbc = boundarysides(grids,filtering);
+% 		bcw = dbc{1};
+% 		bce = dbc{2};
+% 		bcs = dbc{3};
+% 		bcn = dbc{4};
+% 		bcc = dbc{5};
+% 
+% 		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
+% 		dx = kron(speye(ny),Dx);
+% 		dx = filterMat*dx*filterMat';
+% 		
+% 		if(par.zeroout)
+% 			dx = spdiag(~(bcw|bce|bcc))*dx;
+% 		else
+% 			dx = spdiag(~bcw)*dx + 1/h*(-spdiag(bcw) + spdiag(bcw(1:end-1),1));
+% 			dx = spdiag(~bce)*dx + 1/h*(-spdiag(bce(2:end),-1) + spdiag(bce));
+% 		end
+% 
+% 		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
+% 		dy = kron(Dy,speye(nx));
+% 		dy = filterMat*dy*filterMat';
+% 		
+% 		if(par.zeroout)
+% 			dy = spdiag(~(bcs|bcn|bcc))*dy;
+% 		else
+% 			dy = spdiag(~bcs)*dy + 1/h*(-spdiag(bcs) + spdiag(bcs(1:end-nx),nx));
+% 			dy = spdiag(~bcn)*dy + 1/h*(-spdiag(bcn(nx+1:end),-nx) + spdiag(bcn));
+% 		end
+		
 		if(par.filter)
 			
 			%again we're setting a hard limit of order 3
@@ -46,7 +81,7 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 			
 		end
 		
-		%TODO figure out how to get back our psi at the right size
+% 		%TODO figure out how to get back our psi at the right size
 		filterMat = filtering{1};
 		bc = filtering{4}{1};
 		valind = filtering{2}{1};
@@ -68,6 +103,7 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
 		dy = spdiag(~(bcx|bcy))*dy;
+
 		
 	else
 		filterMat = filtering{1};
@@ -76,7 +112,7 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		onfull = filtering{4};
 		
 		%Switch to first order on the boundary
-		dbc = boundarysides(grids{7},grids{8},onfull,valind,nx);
+		dbc = boundarysides(grids,filtering);
 		bcw = dbc{1};
 		bce = dbc{2};
 		bcs = dbc{3};
