@@ -1,10 +1,9 @@
-function [psimesh,mats] = SOLap(grids,filtering,rhs,bc,mats)
+function [psimesh,mats] = SODuoPrim(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		%express lane!
 		M = mats{1};
 	else
-		
 		filterMat = filtering{1};
 		%make derivative matrices
 		lap = laplacian2(grids{9},grids{10},grids{11},[],[],bc{2}{1},bc{2}{2});
@@ -19,7 +18,7 @@ function [psimesh,mats] = SOLap(grids,filtering,rhs,bc,mats)
 	%[L,U] = ilu(M);
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
-	psimesh = M\rhs;
+	psimesh = M\(M\rhs);
 	
 	
 end

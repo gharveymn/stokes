@@ -1,4 +1,4 @@
-function [rhs,bcinds] = BCSymChP(grids,filtering,rhs,par)
+function [rhs,bc] = BCSymChP(grids,filtering,rhs,par)
 	%BCSYMCHP BCSymCh for the primitive formulation
 	
 	xmesh = grids{3};
@@ -14,7 +14,7 @@ function [rhs,bcinds] = BCSymChP(grids,filtering,rhs,par)
 	del = par.h;
 	
 	%for use with symch map
-	bcinds = {on,on,on};
+	bc = {on,on,on};
 	
 	
 	xmax = max(xmesh(on));
@@ -61,22 +61,33 @@ function [rhs,bcinds] = BCSymChP(grids,filtering,rhs,par)
 	% set bottom
 	rhs{1}(ymesh < centerout & ~(xmesh==inflowx | xmesh==outflowx) & on) = out(xmesh==xmax&ymesh==ymin);
 	
+		if(par.order > 1)
+		rhs = extendgp(rhs,dbcfull,valindouter,gpca,nx);
+	end
+	
+	for i=1:par.order-1
+		bc{1}{1} = bc{1}{1}|gpca{i}(valindouter);
+		bc{1}{2} = bc{1}{1};
+		bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
+		bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
+	end
+	
 	if(par.ghostpoints)
 		rhs{1} = extendgp(rhs{1},bcfull,valindouter,gpca,nx);
-		bcinds{1} = bcinds{1}|gpca{1}(valindouter)|gpca{2}(valindouter);	
-		bcinds{3} = bcinds{1};
+		bc{1} = bc{1}|gpca{1}(valindouter)|gpca{2}(valindouter);	
+		bc{3} = bc{1};
 	end
-	bcinds{1} = bcinds{1}&((xmesh<=inflowx & ymesh <= inflowmax & ymesh >= inflowmin)...
+	bc{1} = bc{1}&((xmesh<=inflowx & ymesh <= inflowmax & ymesh >= inflowmin)...
 						|(xmesh>=outflowx & ymesh <= outflowmax & ymesh >= outflowmin));				
 	
 	if(par.ghostpoints)
-		bcinds{2} = (~bcinds{1}&(gpca{1}(valindouter)|gpca{2}(valindouter)|on))...
+		bc{2} = (~bc{1}&(gpca{1}(valindouter)|gpca{2}(valindouter)|on))...
 								|((xmesh==outflowx|xmesh==outflowx+del|xmesh==outflowx+2*del)&ymesh==outflowmin)...
 								|((xmesh==outflowx|xmesh==outflowx+del|xmesh==outflowx+2*del)&ymesh==outflowmax)...
 								|((xmesh==inflowx|xmesh==inflowx-del|xmesh==inflowx-2*del)&ymesh==inflowmin)...
 								|((xmesh==inflowx|xmesh==inflowx-del|xmesh==inflowx-2*del)&ymesh==inflowmax);
 	else
-		bcinds{2} = (~bcinds{1}&on)|(xmesh==outflowx&ymesh==outflowmin)...
+		bc{2} = (~bc{1}&on)|(xmesh==outflowx&ymesh==outflowmin)...
 								|(xmesh==outflowx&ymesh==outflowmax)...
 								|(xmesh==inflowx&ymesh==inflowmin)...
 								|(xmesh==inflowx&ymesh==inflowmax);

@@ -24,7 +24,7 @@ function [umesh,vmesh,pmesh] = SOPrim(grids,filtering,rhs,bc,mats)
 	M33 = zer;
 	
 	M11 = ~bcu.*M11 + spdiag(bcu);
-	M13 = ~bcu.*M13;
+	M13 = ~bcu.*M13 + spdiag(bcu);
 	M22 = ~bcv.*M22 + spdiag(bcv);
 	M23 = ~bcv.*M23;
 	

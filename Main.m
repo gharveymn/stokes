@@ -56,7 +56,11 @@ function [figs,mat,vec] = run(par,figs)
 	
 	if(par.streamfunction)
 		if(par.ddrun)
-			psimesh = ddsolver(grids,filtering,rhs,bc,par,solver);
+			if(exist('figs','var'))
+				psimesh = ddsolver(grids,filtering,rhs,bc,par,solver,figs);
+			else
+				psimesh = ddsolver(grids,filtering,rhs,bc,par,solver);
+			end
 		else
 			psimesh = solver(grids,filtering,rhs,bc);
 		end

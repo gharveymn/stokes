@@ -1,4 +1,4 @@
-function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
+function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 	%DDASCH multiplicative schwarz
 	
 	nx = grids{9};
@@ -7,7 +7,12 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 	filterMat = filtering{1};
 	
 	psimesh = SOBih(grids,filtering,rhs,bc);
-	figs = InPost(psimesh,bc,grids,filtering,par);
+	
+	if(exist('figs','var'))
+		figs = InPost(psimesh,bc,grids,filtering,par,figs);
+	else
+		figs = InPost(psimesh,bc,grids,filtering,par);
+	end
 	
 	%TODO complete the bc
 	[gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,psimesh,rhs,par);
@@ -70,12 +75,12 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 
 	%use solution to get regions 1...
 	rhs1(bc1{1}{1}) = p10(bc1{1}{1});
-	rhs1(bcb1{1}) = p20(bcb1{2});
+	rhs1(bcb1{1}) = p21(bcb1{2});
 	[p11,mats1] = solver(grids1,filtering1,rhs1,bc1);
 
 	%...and 3
 	rhs3(bc3{1}{1}) = p30(bc3{1}{1});
-	rhs3(bcb2{3}) = p20(bcb2{2});
+	rhs3(bcb2{3}) = p21(bcb2{2});
 	[p31,mats3] = solver(grids3,filtering3,rhs3,bc3);
 
 	%probably put some convergence check here
@@ -87,7 +92,7 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 	psimesh = Recompose(grids,{p11,p21,p31},par);
 	figs = InPost(psimesh,bc,grids,filtering,par,figs);
 	
-	for i = 1:par.dditer
+	for i = 1:par.dditer-1
 		
 		if(par.topause > 0)
 			pause(par.topause)
@@ -101,12 +106,12 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 		
 		%use solution to get regions 1...
 		rhs1(bc1{1}{1}) = p10(bc1{1}{1});
-		rhs1(bcb1{1}) = p20(bcb1{2});
+		rhs1(bcb1{1}) = p21(bcb1{2});
 		p11 = solver(grids1,filtering1,rhs1,bc1,mats1);
 		
 		%...and 3
 		rhs3(bc3{1}{1}) = p30(bc3{1}{1});
-		rhs3(bcb2{3}) = p20(bcb2{2});
+		rhs3(bcb2{3}) = p21(bcb2{2});
 		p31 = solver(grids3,filtering3,rhs3,bc3,mats3);
 		
 		

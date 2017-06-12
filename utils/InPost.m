@@ -12,7 +12,7 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	
 	%TODO change so that derivatives are cool at boundaries
 	if(par.ghostpoints)
-		
+
 		if(par.filter)
 			
 			%again we're setting a hard limit of order 3
@@ -46,7 +46,7 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 			
 		end
 		
-		%TODO figure out how to get back our psi at the right size
+% 		%TODO figure out how to get back our psi at the right size
 		filterMat = filtering{1};
 		bc = filtering{4}{1};
 		valind = filtering{2}{1};
@@ -68,15 +68,16 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		dy = kron(Dy,speye(nx));
 		dy = filterMat*dy*filterMat';
 		dy = spdiag(~(bcx|bcy))*dy;
+
 		
 	else
 		filterMat = filtering{1};
 		valind = filtering{2};
-		on = filtering{3};
-		onfull = filtering{4};
+		on = filtering{3}{1};
+		onfull = filtering{3}{2};
 		
 		%Switch to first order on the boundary
-		dbc = boundarysides(grids{7},grids{8},onfull,valind,nx);
+		dbc = boundarysides(grids,filtering);
 		bcw = dbc{1};
 		bce = dbc{2};
 		bcs = dbc{3};

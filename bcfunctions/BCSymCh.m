@@ -31,7 +31,7 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	
 	centerin = inflowmin + d;
 	
-	a = 1;
+	a = par.inflowAmp;
 	c = 1/12;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
