@@ -38,7 +38,7 @@ function par = Parameters
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymCh;
-	par.solver = @SOBih;
+	par.solver = @SOPrim;
 	par.ddsolver = @DDMSch;
 	
 end
