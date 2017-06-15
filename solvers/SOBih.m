@@ -1,7 +1,7 @@
 function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
-		bih = mats{1};
+		M = mats{1};
 	else
 		nx = grids{9};
 		ny = grids{10};

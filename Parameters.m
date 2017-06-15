@@ -12,7 +12,7 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.1;
+	par.h = 0.05;
 	par.ghostpoints = true;
 	par.streamfunction = true;
 	par.order = 2;
@@ -22,7 +22,7 @@ function par = Parameters
 	
 	%plotting parameters
 	par.toPlot = 3;						%1==surf,2==quiver,3==scatter,4==contour
-	par.filter = true;
+	par.filter = false;
 	par.numfilter = 1;
 	par.conlines = 30;
 	par.zeroout = false;
@@ -38,7 +38,11 @@ function par = Parameters
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymChN;
+<<<<<<< HEAD
 	par.solver = @SOBih;
+=======
+	par.solver = @SOBihN;
+>>>>>>> a42c0d93c93d74087ddc8344ef56e5838765d673
 	par.ddsolver = @DDMSch;
 	
 end
