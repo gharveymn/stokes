@@ -12,7 +12,7 @@ function par = Parameters
 	
 	par.maptype = 'g';
 	par.mapfile = 'symch.txt';
-	par.h = 0.1;
+	par.h = 0.05;
 	par.ghostpoints = true;
 	par.streamfunction = true;
 	par.order = 2;
@@ -21,8 +21,8 @@ function par = Parameters
 	par.inflowAmp = 50;
 	
 	%plotting parameters
-	par.toPlot = 1;						%1==surf,2==quiver,3==scatter,4==contour
-	par.filter = true;
+	par.toPlot = 3;						%1==surf,2==quiver,3==scatter,4==contour
+	par.filter = false;
 	par.numfilter = 1;
 	par.conlines = 30;
 	par.zeroout = false;
@@ -37,8 +37,8 @@ function par = Parameters
 	par.topause = 0;
 	
 	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymCh;
-	par.solver = @SOPrim;
+	par.bcfunc = @BCSymChN;
+	par.solver = @SOBihN;
 	par.ddsolver = @DDMSch;
 	
 end

@@ -1,4 +1,4 @@
-function [rhs,bc] = BCSymChN(grids,filtering,rhs,par)
+function [rhs,bc,bcn] = BCSymChN(grids,filtering,rhs,par)
 	
 	xmeshfull = grids{7};
 	ymeshfull = grids{8};
@@ -73,9 +73,11 @@ function [rhs,bc] = BCSymChN(grids,filtering,rhs,par)
 	
 	for i=1:par.order-1
 		bc{1}{1} = bc{1}{1}|gpca{i}(valindouter);
-		bc{1}{2} = bc{1}{1} & ~((xmesh >= xmax) & (ymesh < ymax) & (ymesh > ymin));
+		bc{1}{2} = bc{1}{1} & ~((xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h));
 		bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
 		bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
+		bc{3} = (xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h);
+		rhs((xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h)) = 0;
 	end
 	
 	
