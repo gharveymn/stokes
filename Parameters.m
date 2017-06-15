@@ -21,7 +21,7 @@ function par = Parameters
 	par.inflowAmp = 50;
 	
 	%plotting parameters
-	par.toPlot = 4;						%1==surf,2==quiver,3==scatter,4==contour
+	par.toPlot = 3;						%1==surf,2==quiver,3==scatter,4==contour
 	par.filter = true;
 	par.numfilter = 1;
 	par.conlines = 30;
@@ -37,8 +37,8 @@ function par = Parameters
 	par.topause = 0;
 	
 	par.rhfunc = @RHZero;
-	par.bcfunc = @BCSymCh;
-	par.solver = @SOPrim;
+	par.bcfunc = @BCSymChN;
+	par.solver = @SOBih;
 	par.ddsolver = @DDMSch;
 	
 end
