@@ -16,7 +16,9 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	h = par.h;
 	
 	% add all the the indices which are on the boundary
-	bc = {{on,on},{onfull,onfull}};
+	% bc{1} - dirichlet
+	% bc{2} - neumann
+	bc = {{{on,on},{onfull,onfull}},{{[],[]},{[],[]}}};
 	
 	xmax = max(xmesh(on));
 	xmin = min(xmesh(on));
@@ -35,7 +37,7 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	c = 1/12;
 	
 	inflowx = xmin*ones(numel(xmesh),1);
-	in = a*(d^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + c;
+	in = a*(d^2.*(ymesh-centerin) - (ymesh-centerin).^3./3) + a*c;
 	in(~(xmesh==inflowx) | ~on) = 0;
 	
 	rhs = rhs + in;
@@ -52,7 +54,7 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	e = (4*a*d^3/3 + c - f)*3/(4*D^3);
 	
 	outflowx = xmax*ones(numel(xmesh),1);
-	out = e*(D^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + f;
+	out = e*(D^2.*(ymesh-centerout) - (ymesh-centerout).^3./3) + a*f;
 	out(~(xmesh==outflowx) | ~on) = 0;
 	
 	rhs = rhs + out;
@@ -68,10 +70,10 @@ function [rhs,bc] = BCSymCh(grids,filtering,rhs,par)
 	end
 	
 	for i=1:par.order-1
-		bc{1}{1} = bc{1}{1}|gpca{i}(valindouter);
-		bc{1}{2} = bc{1}{1};
-		bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
-		bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
+		bc{1}{1}{1} = bc{1}{1}{1}|gpca{i}(valindouter);
+		bc{1}{1}{2} = bc{1}{1}{1};
+		bc{1}{2}{1} = logical(filtering{1}'*(1*bc{1}{1}{1}));
+		bc{1}{2}{2} = logical(filtering{1}'*(1*bc{1}{1}{2}));
 	end
 	
 end

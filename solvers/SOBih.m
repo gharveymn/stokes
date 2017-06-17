@@ -9,7 +9,7 @@ function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
 		filterMat = filtering{1};
 		
 		%make derivative matrices
-		bih = biharmonic2(nx,ny,h,bc{2}{1},bc{2}{2});
+		bih = biharmonic2(nx,ny,h,bc{1}{2}{1},bc{1}{2}{2});
 		M = filterMat*bih*filterMat';
 		
 		mats = {M};

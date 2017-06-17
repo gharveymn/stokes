@@ -9,21 +9,16 @@ function [psimesh,mats] = SOBihN(grids,filtering,rhs,bc,mats)
 		h = grids{11};
 		filterMat = filtering{1};
 		
+		%idea: link with dy = 0 on out top/bottom boundaries
+		
 		%make derivative matrices
-		bih = biharmonic2(nx,ny,h,bc{2}{1},bc{2}{2});
+		bih = biharmonic2(nx,ny,h,bc{1}{2}{1},bc{1}{2}{2});%,bc{2}{2}{1});%,bc{2}{2}{2});
+		dx = deriv(nx,h,1,2);
+		dy = deriv(ny,h,1,2);
+		psixy = kron(dy,dx);
+		bih = bih + spdiag(bc{2}{2}{1})*psixy;
+		bih = spdiag(~bc{2}{2}{2})*bih + spdiag(bc{2}{2}{2})*kron(dy,speye(nx));
 		M = filterMat*bih*filterMat';
-		
-		Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
-		dx = kron(speye(ny),Dx);
-		dx = filterMat*dx*filterMat';
-		dx = spdiag(bc{3})*dx;
-		
-		Dy = sptoeplitz([0 -1],[0 1],ny)./(2*h);
-		dy = kron(Dy,speye(nx));
-		dy = filterMat*dy*filterMat';
-		dy = spdiag(bc{3})*dy;
-		
-		M = M + (spdiag(~bc{3})*M + dy);
 		
 		mats = {M};
 	end

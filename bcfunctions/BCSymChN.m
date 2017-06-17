@@ -1,4 +1,4 @@
-function [rhs,bc,bcn] = BCSymChN(grids,filtering,rhs,par)
+function [rhs,bc] = BCSymChN(grids,filtering,rhs,par)
 	
 	xmeshfull = grids{7};
 	ymeshfull = grids{8};
@@ -16,7 +16,7 @@ function [rhs,bc,bcn] = BCSymChN(grids,filtering,rhs,par)
 	h = par.h;
 	
 	% add all the the indices which are on the boundary
-	bc = {{on,on},{onfull,onfull}};
+	bc = {{{on,on},{onfull,onfull}},{{[],[]},{[],[]}}};
 	
 	xmax = max(xmesh(on));
 	xmin = min(xmesh(on));
@@ -72,12 +72,15 @@ function [rhs,bc,bcn] = BCSymChN(grids,filtering,rhs,par)
 	end
 	
 	for i=1:par.order-1
-		bc{1}{1} = bc{1}{1}|gpca{i}(valindouter);
-		bc{1}{2} = bc{1}{1} & ~((xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h));
-		bc{2}{1} = logical(filtering{1}'*(1*bc{1}{1}));
-		bc{2}{2} = logical(filtering{1}'*(1*bc{1}{2}));
-		bc{3} = (xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h);
-		rhs((xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h)) = 0;
+		bc{1}{1}{1} = (bc{1}{1}{1}|gpca{i}(valindouter)) & ~((xmesh >= xmax) & (ymesh < ymax) & (ymesh > ymin));
+		bc{1}{1}{2} = bc{1}{1}{1};
+		bc{1}{2}{1} = logical(filtering{1}'*(1*bc{1}{1}{1}));
+		bc{1}{2}{2} = logical(filtering{1}'*(1*bc{1}{1}{2}));
+		bc{2}{1}{1} = (xmesh >= xmax) & (ymesh < ymax) & (ymesh > ymin);
+		bc{2}{1}{2} = bc{2}{1}{1}&((ymesh >= ymax-par.h) | (ymesh <= ymin+par.h));
+		bc{2}{2}{1} = logical(filtering{1}'*(1*bc{2}{1}{1}));
+		bc{2}{2}{2} = logical(filtering{1}'*(1*bc{2}{1}{2}));
+		%rhs((xmesh >= xmax) & (ymesh <= ymax + par.order*par.h) & (ymesh >= ymin - par.order*par.h)) = 0;
 	end
 	
 	

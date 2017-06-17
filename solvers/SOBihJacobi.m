@@ -4,7 +4,7 @@ function [psimesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
 		bih = mats{1};
 		L = mats{2};
 		Dinv = mats{3};
-		U = mats{4];
+		U = mats{4};
 	else
 		%make derivative matrices
 		bih = biharmonic2(nx,ny,h);
@@ -32,4 +32,3 @@ function [psimesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
 	end
 	psimesh = vecn(1:sz);
 end
-

@@ -18,7 +18,7 @@ function par = Parameters
 	par.order = 2;
 	
 	%inflow/outflow parameters
-	par.inflowAmp = 50;
+	par.inflowAmp = 0.1;
 	
 	%plotting parameters
 	par.toPlot = 3;						%1==surf,2==quiver,3==scatter,4==contour
@@ -38,11 +38,7 @@ function par = Parameters
 	
 	par.rhfunc = @RHZero;
 	par.bcfunc = @BCSymChN;
-<<<<<<< HEAD
-	par.solver = @SOBih;
-=======
 	par.solver = @SOBihN;
->>>>>>> a42c0d93c93d74087ddc8344ef56e5838765d673
 	par.ddsolver = @DDMSch;
 	
 end
