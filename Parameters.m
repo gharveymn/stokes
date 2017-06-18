@@ -15,7 +15,7 @@ function par = Parameters
 	par.h = 0.05;
 	par.ghostpoints = true;
 	par.streamfunction = true;
-	par.order = 2;
+	par.order = 3;
 	
 	%inflow/outflow parameters
 	par.inflowAmp = 0.1;
