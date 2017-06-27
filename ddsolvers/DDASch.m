@@ -1,4 +1,4 @@
-function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
+function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 	%DDMSCH work in progress
 	
 	h = grids{11};
@@ -22,12 +22,12 @@ function psimesh = DDMSch(grids,filtering,rhs,bcinds,par,solver)
 	
 	nx = numel(grids{1});
 	ny = numel(grids{2});
-	sz = numel(bcinds);
+	sz = numel(bc);
 	
 	lap = -laplacian2(nx,ny,h);
 	filterMat = filtering{1};
 	lap = filterMat*lap*filterMat';
-	lap = ~bcinds.*lap + spdiags(bcinds,0,sz,sz);
+	lap = ~bc.*lap + spdiags(bc,0,sz,sz);
 	
 	xmesh = grids{3};
 	ymesh = grids{4};
