@@ -6,7 +6,7 @@ function figs = UnitarySoV(figs)
 	par = Parameters;
 	h = par.h;
 	
-	[grids,filterMat,valind,on] = ParseValidIndices;
+	[grids,filterMat,valind,on] = MakeGrids;
 	
 	xinit = grids{1};
 	yinit = grids{2};
@@ -45,12 +45,12 @@ function figs = UnitarySoV(figs)
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	vec = M\rhs;
-	psimesh = -vec(1:sz);
+	qmesh = -vec(1:sz);
 	
 	if(nargin==1)
-		InPost(grids,psimesh,nx,ny,filterMat,par,figs);
+		InPost(grids,qmesh,nx,ny,filterMat,par,figs);
 	else
-		figs = InPost(grids,psimesh,nx,ny,filterMat,par);
+		figs = InPost(grids,qmesh,nx,ny,filterMat,par);
 	end
 	
 end

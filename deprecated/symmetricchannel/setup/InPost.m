@@ -1,4 +1,4 @@
-function figs = InPost(grids,psimesh,nx,ny,filterMat,par,figs)
+function figs = InPost(grids,qmesh,nx,ny,filterMat,par,figs)
 	%INPOST does the post processing of calculation
 	
 	h = par.h;
@@ -17,8 +17,8 @@ function figs = InPost(grids,psimesh,nx,ny,filterMat,par,figs)
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	umesh = dy*psimesh;
-	vmesh = -dx*psimesh;
+	umesh = dy*qmesh;
+	vmesh = -dx*qmesh;
 	
 	umeshfull = filterMat'*umesh;
 	Umesh = reshape(umeshfull,[nx,ny])';
@@ -26,11 +26,11 @@ function figs = InPost(grids,psimesh,nx,ny,filterMat,par,figs)
 	vmeshfull = filterMat'*vmesh;
 	Vmesh = reshape(vmeshfull,[nx,ny])';
 	
-	psimeshfull = filterMat'*psimesh;
-	Psimesh = reshape(psimeshfull,[nx,ny])';
+	qmeshfull = filterMat'*qmesh;
+	Qmesh = reshape(qmeshfull,[nx,ny])';
 	
-	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
-	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
+	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Qmesh);
+	vec = cat(2,grids{3},grids{4},umesh,vmesh,qmesh);
 	
 	if(nargin == 1)
 		Plot(mat,vec,par,figs);

@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOBihCG(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOBihCG(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		bih = mats{1};
@@ -24,7 +24,7 @@ function [psimesh,mats] = SOBihCG(grids,filtering,rhs,bc,mats)
 	
 	%disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
-	[psimesh,flag,relres,it,resv]=pcg(bih,rhs);
+	[qmesh,flag,relres,it,resv]=pcg(bih,rhs);
 	
 end
 

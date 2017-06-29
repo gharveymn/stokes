@@ -1,5 +1,5 @@
-function [grids,filterMat,valind,on] = ParseValidIndices
-	%PARSEVALIDINDICES parses the map file and gives us our mesh
+function [grids,filterMat,valind,on] = MakeGrids
+	%MakeGrids parses the map file and gives us our mesh
      %xinit,yinit are unmatched x and y sets -- vector
      %xmesh,ymesh have invalid indices removed -- vector
      %Xmesh,Ymesh have NaN wherever invalid -- matrix

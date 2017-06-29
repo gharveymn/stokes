@@ -14,13 +14,13 @@ function figs=InitialPlot(mat,vec,par)
 	Y = mat(:,:,2);
 	U = mat(:,:,3);
 	V = mat(:,:,4);
-	Psi = mat(:,:,5);
+	Q = mat(:,:,5);
 	
 	x = vec(:,1);
 	y = vec(:,2);
 	u = vec(:,3);
 	v = vec(:,4);
-	psi = vec(:,5);
+	q = vec(:,5);
 	
 	ax = MakeAxis(x,y);
 	
@@ -37,14 +37,14 @@ function figs=InitialPlot(mat,vec,par)
 		y = y(fil);
 		u = u(fil);
 		v = v(fil);
-		psi = psi(fil);
+		q = q(fil);
 		
 		
 		X = X(1+nf:end-nf,1+nf:end-nf);
 		Y = Y(1+nf:end-nf,1+nf:end-nf);
 		U = U(1+nf:end-nf,1+nf:end-nf);
 		V = V(1+nf:end-nf,1+nf:end-nf);
-		Psi = Psi(1+nf:end-nf,1+nf:end-nf);
+		Q = Q(1+nf:end-nf,1+nf:end-nf);
 	end
 	
 	if(par.toPlot == "surf")
@@ -58,7 +58,7 @@ function figs=InitialPlot(mat,vec,par)
 		axis(ax)
 		
 		figure(3)
-		f3 = surf(X,Y,Psi,'edgecolor','none','facecolor','interp');
+		f3 = surf(X,Y,Q,'edgecolor','none','facecolor','interp');
 		axis(ax)
 		
 		figs = {f1,f2,f3};
@@ -71,8 +71,8 @@ function figs=InitialPlot(mat,vec,par)
 
 		figure(2)
 		ax = MakeAxis(X,Y);
-		clrs = abs(psi)./max(abs(psi(isfinite(psi))));
-		f2 = scatter3(x,y,psi,10,[clrs zeros(numel(clrs),1) 1-clrs], '.');
+		clrs = abs(q)./max(abs(q(isfinite(q))));
+		f2 = scatter3(x,y,q,10,[clrs zeros(numel(clrs),1) 1-clrs], '.');
 		axis(ax)
 		
 		figs = {f1,f2};
@@ -88,7 +88,7 @@ function figs=InitialPlot(mat,vec,par)
 		axis(ax)
 
 		figure(3)
-		f3 = scatter3(x,y,psi,10,'.');
+		f3 = scatter3(x,y,q,10,'.');
 		axis(ax)
 		
 		figs = {f1,f2,f3};
@@ -102,11 +102,11 @@ function Update(mat,vec,par,figs)
 	
 	U = mat(:,:,3);
 	V = mat(:,:,4);
-	Psi = mat(:,:,5);
+	Q = mat(:,:,5);
 	
 	u = vec(:,3);
 	v = vec(:,4);
-	psi = vec(:,5);
+	q = vec(:,5);
 	
 	if(par.filter)
 		[isz,jsz] = size(U);
@@ -115,26 +115,26 @@ function Update(mat,vec,par,figs)
 		fil = ifil&jfil;
 		u = u(fil);
 		v = v(fil);
-		psi = psi(fil);
+		q = q(fil);
 		
 		U = U(2:end-1,2:end-1);
 		V = V(2:end-1,2:end-1);
-		Psi = Psi(2:end-1,2:end-1);
+		Q = Q(2:end-1,2:end-1);
 	end
 	
 	if(par.toPlot == "surf")
 		
 		set(figs{1},'ZData',U);
 		set(figs{2},'ZData',V);
-		set(figs{3},'ZData',Psi);
+		set(figs{3},'ZData',Q);
 		
 	elseif(par.toPlot == "quiver")
 		
 		set(figs{1},'UData',u);
 		set(figs{1},'VData',v);
 		
-		clrs = MakeClrs(psi);
-		set(figs{2},'ZData',psi);
+		clrs = MakeClrs(q);
+		set(figs{2},'ZData',q);
 		set(figs{2},'CData',clrs);
 		
 	else
@@ -146,8 +146,8 @@ function Update(mat,vec,par,figs)
 		set(figs{2},'ZData',v);
 		set(figs{2},'CData',clrs);
 		
-		clrs = MakeClrs(psi);
-		set(figs{3},'ZData',psi);
+		clrs = MakeClrs(q);
+		set(figs{3},'ZData',q);
 		set(figs{3},'CData',clrs);
 	end
 	

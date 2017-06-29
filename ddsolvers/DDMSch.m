@@ -1,4 +1,4 @@
-function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
+function qmesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 	%DDASCH multiplicative schwarz
 	
 	nx = grids{9};
@@ -6,16 +6,16 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 	h = grids{11};
 	filterMat = filtering{1};
 	
-	psimesh = SOBih(grids,filtering,rhs,bc);
+	qmesh = SOBih(grids,filtering,rhs,bc);
 	
 	if(exist('figs','var'))
-		figs = InPost(psimesh,bc,grids,filtering,par,figs);
+		figs = InPost(qmesh,bc,grids,filtering,par,figs);
 	else
-		figs = InPost(psimesh,bc,grids,filtering,par);
+		figs = InPost(qmesh,bc,grids,filtering,par);
 	end
 	
 	%TODO complete the bc
-	[gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,psimesh,rhs,par);
+	[gridsnew,filteringnew,qmeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,qmesh,rhs,par);
 	
 	grids1 = gridsnew{1};
 	grids2 = gridsnew{2};
@@ -25,13 +25,13 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 	filtering2 = filteringnew{2};
 	filtering3 = filteringnew{3};
 	
-	p10 = psimeshnew{1};
-	p20 = psimeshnew{2};
-	p30 = psimeshnew{3};
+	p10 = qmeshnew{1};
+	p20 = qmeshnew{2};
+	p30 = qmeshnew{3};
 	
-	p11 = 0*psimeshnew{1};
-	p21 = 0*psimeshnew{2};
-	p31 = 0*psimeshnew{3};
+	p11 = 0*qmeshnew{1};
+	p21 = 0*qmeshnew{2};
+	p31 = 0*qmeshnew{3};
 	
 	filterMat1 = filteringnew{1};
 	filterMat2 = filteringnew{2};
@@ -89,8 +89,8 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 	p30 = p31;
 
 	%now repeat
-	psimesh = Recompose(grids,{p11,p21,p31},par);
-	figs = InPost(psimesh,bc,grids,filtering,par,figs);
+	qmesh = Recompose(grids,{p11,p21,p31},par);
+	figs = InPost(qmesh,bc,grids,filtering,par,figs);
 	
 	for i = 1:par.dditer-1
 		
@@ -121,8 +121,8 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 		p30 = p31;
 		
 		%now repeat
-		psimesh = Recompose(grids,{p11,p21,p31},par);
-		figs = InPost(psimesh,bc,grids,filtering,par,figs);
+		qmesh = Recompose(grids,{p11,p21,p31},par);
+		figs = InPost(qmesh,bc,grids,filtering,par,figs);
 		
 		disp(['Iteration ' num2str(i)])
 		
@@ -130,7 +130,7 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver,figs)
 		
 	end
 	
-	psimesh = Recompose(grids,{p11,p21,p31},par);
+	qmesh = Recompose(grids,{p11,p21,p31},par);
 	
 end
 

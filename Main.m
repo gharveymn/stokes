@@ -12,13 +12,13 @@ X = mat(:,:,1);
 Y = mat(:,:,2);
 U = mat(:,:,3);
 V = mat(:,:,4);
-Psi = mat(:,:,5);
+Q = mat(:,:,5);
 
 x = vec(:,1);
 y = vec(:,2);
 u = vec(:,3);
 v = vec(:,4);
-psi = vec(:,5);
+q = vec(:,5);
 
 clear mat vec
 
@@ -33,7 +33,7 @@ function [figs,mat,vec] = run(par,figs)
 	solver = par.solver;
 	ddsolver = par.ddsolver;
 	
-	[grids,filtering,par] = ParseValidIndices(par);
+	[grids,filtering,par] = MakeGrids(par);
 	
 	nx = numel(grids{1});
 	ny = numel(grids{2});
@@ -57,18 +57,18 @@ function [figs,mat,vec] = run(par,figs)
 	if(par.streamfunction)
 		if(par.ddrun)
 			if(exist('figs','var'))
-				psimesh = ddsolver(grids,filtering,rhs,bc,par,solver,figs);
+				qmesh = ddsolver(grids,filtering,rhs,bc,par,solver,figs);
 			else
-				psimesh = ddsolver(grids,filtering,rhs,bc,par,solver);
+				qmesh = ddsolver(grids,filtering,rhs,bc,par,solver);
 			end
 		else
-			psimesh = solver(grids,filtering,rhs,bc);
+			qmesh = solver(grids,filtering,rhs,bc);
 		end
 		
 		if(exist('figs','var'))
-			[figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs);
+			[figs,mat,vec] = InPost(qmesh,bc,grids,filtering,par,figs);
 		else
-			[figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par);
+			[figs,mat,vec] = InPost(qmesh,bc,grids,filtering,par);
 		end
 	else
 		
@@ -80,8 +80,8 @@ function [figs,mat,vec] = run(par,figs)
 		vmeshfull = filterMat'*vmesh;
 		Vmesh = reshape(vmeshfull,[nx,ny])';
 		
-		psimeshfull = filterMat'*pmesh;
-		Pmesh = reshape(psimeshfull,[nx,ny])';
+		qmeshfull = filterMat'*pmesh;
+		Pmesh = reshape(qmeshfull,[nx,ny])';
 		
 		if(par.filter)
 			on = filtering{3}{1};

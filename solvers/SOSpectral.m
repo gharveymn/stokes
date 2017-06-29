@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOSpectral(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOSpectral(grids,filtering,rhs,bc,mats)
 	
 	
 	%make derivative matrices
@@ -23,7 +23,7 @@ function [psimesh,mats] = SOSpectral(grids,filtering,rhs,bc,mats)
 	V = G./(1+Hii+Hjj);
 	
 	
-	psi = reshape(Q*V*Q'*A,nx*ny,1);	%NOTE: NORMALLY WE WANT TO TRANSPOSE FIRST SINCE WE ARE ITERATING ALONG X
-	psimesh = filterMat*psi;
+	q = reshape(Q*V*Q'*A,nx*ny,1);	%NOTE: NORMALLY WE WANT TO TRANSPOSE FIRST SINCE WE ARE ITERATING ALONG X
+	qmesh = filterMat*q;
 	
 end

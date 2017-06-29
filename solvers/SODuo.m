@@ -1,4 +1,4 @@
-function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		%express lane!
@@ -37,7 +37,7 @@ function [psimesh,mats] = SODuo(grids,filtering,rhs,bc,mats)
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
 	vec = M\rhs;
-	psimesh = vec(1:numel(bc{1}{1}));
+	qmesh = vec(1:numel(bc{1}{1}));
 	
 	
 end

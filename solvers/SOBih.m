@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		M = mats{1};
@@ -17,7 +17,7 @@ function [psimesh,mats] = SOBih(grids,filtering,rhs,bc,mats)
 	
 	%disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
-	psimesh = M\rhs;
+	qmesh = M\rhs;
 	
 end
 

@@ -1,4 +1,4 @@
-function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
+function qmesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 	%DDMSCH work in progress
 	
 	h = grids{11};
@@ -36,7 +36,7 @@ function psimesh = DDMSch(grids,filtering,rhs,bc,par,solver)
 		+ lap.*~(xmesh >= blx21 & xmesh <= blx22 & ymesh >= bly21 & ymesh <= bly22)...
 		+ lap.*~(xmesh >= blx31 & xmesh <= blx32 & ymesh >= bly31 & ymesh <= bly32);
 	
-	psimesh = pcg(lap,rhs,1e-8,100,M);
+	qmesh = pcg(lap,rhs,1e-8,100,M);
 	
 end
 

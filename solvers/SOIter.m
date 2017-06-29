@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOIter(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOIter(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		
@@ -31,7 +31,7 @@ function [psimesh,mats] = SOIter(grids,filtering,rhs,bc,mats)
 		
 	end
 	
-	psimesh = pcg(bih,rhs,1e-6,100,M);
+	qmesh = pcg(bih,rhs,1e-6,100,M);
 	
 end
 

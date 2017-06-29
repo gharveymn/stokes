@@ -1,4 +1,4 @@
-function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices
+function [xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = MakeGrids
 	% We'll either use an ascii map file or a connected grid outline (connections counter-clockwise in listed form.
 	% Last point should also be the first point).
 	

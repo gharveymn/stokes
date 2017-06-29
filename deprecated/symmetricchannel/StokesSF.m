@@ -7,9 +7,9 @@ function StokesSF
 	h = par.h;
 	toPlot = par.toPlot;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = MakeGrids;
 	
-	%note: numel(psi) = numel(xmesh) = numel(ymesh)
+	%note: numel(q) = numel(xmesh) = numel(ymesh)
 	onpf = on(valind);
 	
 	xmin = min(xinit);
@@ -80,7 +80,7 @@ function StokesSF
 	
 	disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
-	psi = bih\rhs;
+	q = bih\rhs;
 	
 	on = on|circshift(on,-1)|circshift(on,1)|circshift(on,-nx)|circshift(on,nx);
 	
@@ -112,9 +112,9 @@ function StokesSF
 	dy = filterMatinner*dy*filterMatinner';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	psi = psi(~(on(valind)));
-	u = dy*psi;
-	v = -dx*psi;
+	q = q(~(on(valind)));
+	u = dy*q;
+	v = -dx*q;
 	
 	umesh = filterMatinner'*u;
 	Umesh = reshape(umesh,[nx,ny])';
@@ -122,11 +122,11 @@ function StokesSF
 	vmesh = filterMatinner'*v;
 	Vmesh = reshape(vmesh,[nx,ny])';
 	
-	psimesh = filterMatinner'*psi;
-	Psimesh = reshape(psimesh,[nx,ny])';
+	qmesh = filterMatinner'*q;
+	Qmesh = reshape(qmesh,[nx,ny])';
 	
-	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Qmesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,qmesh);
 	
 	Plot(mat,vec,par.toPlot,par.filter);
 	

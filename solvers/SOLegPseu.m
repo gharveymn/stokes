@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOLegPseu(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOLegPseu(grids,filtering,rhs,bc,mats)
 	%SOLEGPSEU utilizes a symmetric Legendre pseudospectral method
 	
 	if(nargin == 7)
@@ -34,7 +34,7 @@ function [psimesh,mats] = SOLegPseu(grids,filtering,rhs,bc,mats)
 	end
 	
 	G = Q*rhs;
-	psimesh = M\G;
+	qmesh = M\G;
 	
 	
 end

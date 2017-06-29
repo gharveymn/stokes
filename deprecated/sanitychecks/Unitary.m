@@ -6,7 +6,7 @@ function Unitary
 	par = Parameters;
 	h = par.h;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = MakeGrids;
 	
 	%make right hand side for Dirichlet BCs
 	onpf = on(valind);
@@ -42,12 +42,12 @@ function Unitary
  	%[L,U] = ilu(M);
  	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	vec = M\rhs;
-	psi = -vec(1:sz);
+	q = -vec(1:sz);
 	
 	if(nargin==1)
-		InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,nx,ny,filterMat,h,figs);
+		InPost(xmesh,ymesh,Xmesh,Ymesh,qmesh,nx,ny,filterMat,h,figs);
 	else
-		figs = InPost(xmesh,ymesh,Xmesh,Ymesh,psimesh,nx,ny,filterMat,h);
+		figs = InPost(xmesh,ymesh,Xmesh,Ymesh,qmesh,nx,ny,filterMat,h);
 	end
 	
 end

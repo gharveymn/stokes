@@ -1,4 +1,4 @@
-function [psimesh,mats] = SODuoJacobi(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SODuoJacobi(grids,filtering,rhs,bc,mats)
 	
 	
 	if(nargin == 7)
@@ -47,7 +47,7 @@ function [psimesh,mats] = SODuoJacobi(grids,filtering,rhs,bc,mats)
 		vecn = -Dinv*(L + U)*vecn + Dinv*rhs;
 	end
 	
-	psimesh = vecn(1:sz);
+	qmesh = vecn(1:sz);
 	
 end
 

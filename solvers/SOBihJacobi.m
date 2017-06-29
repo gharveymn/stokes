@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		bih = mats{1};
@@ -30,5 +30,5 @@ function [psimesh,mats] = SOBihJacobi(grids,filtering,rhs,bc,mats)
 	for i=1:1000
 		vecn = -Dinv*(L + U)*vecn + Dinv*rhs;
 	end
-	psimesh = vecn(1:sz);
+	qmesh = vecn(1:sz);
 end

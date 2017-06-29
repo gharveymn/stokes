@@ -1,4 +1,4 @@
-function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,psimesh,rhs,par)
+function [gridsnew,filteringnew,qmeshnew,bcnew,rhsnew,bcb] = Decompose(grids,filtering,qmesh,rhs,par)
 	%DECOMPOSE for use with symch
 	
 	ddbounds = par.ddbounds;
@@ -6,13 +6,13 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 	ymesh = grids{4};
 	del = (par.order-1)*par.h+par.h/2; %the half h is for for floating point arithmetic errors
 	
-	[g1,f1,p1] = getGrid(grids,filtering,psimesh,ddbounds{1},par,del);
-	[g2,f2,p2] = getGrid(grids,filtering,psimesh,ddbounds{2},par,del);
-	[g3,f3,p3] = getGrid(grids,filtering,psimesh,ddbounds{3},par,del);
+	[g1,f1,p1] = getGrid(grids,filtering,qmesh,ddbounds{1},par,del);
+	[g2,f2,p2] = getGrid(grids,filtering,qmesh,ddbounds{2},par,del);
+	[g3,f3,p3] = getGrid(grids,filtering,qmesh,ddbounds{3},par,del);
 	
 	gridsnew = {g1,g2,g3};
 	filteringnew = {f1,f2,f3};
-	psimeshnew = {p1,p2,p3};
+	qmeshnew = {p1,p2,p3};
 	
 	bc1 = f1{3}{1};
 	bc2 = f2{3}{1};
@@ -108,7 +108,7 @@ function [gridsnew,filteringnew,psimeshnew,bcnew,rhsnew,bcb] = Decompose(grids,f
 
 end
 
-function [g,f,psimeshnew] = getGrid(grids,filtering,psimesh,bnds,par,del)
+function [g,f,qmeshnew] = getGrid(grids,filtering,qmesh,bnds,par,del)
 	
 	xinit = grids{1};
 	yinit = grids{2};
@@ -127,7 +127,7 @@ function [g,f,psimeshnew] = getGrid(grids,filtering,psimesh,bnds,par,del)
 	
 	xmeshnew = xmesh(vinds);
 	ymeshnew = ymesh(vinds);
-	psimeshnew = psimesh(vinds);
+	qmeshnew = qmesh(vinds);
 	
 	Xmeshnew = reshape(xmeshnew,[nxnew,nynew])';
 	Ymeshnew = reshape(ymeshnew,[nxnew,nynew])';

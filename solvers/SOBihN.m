@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOBihN(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOBihN(grids,filtering,rhs,bc,mats)
 	%adds support for neumann boundaries
 	
 	if(nargin == 7)
@@ -17,8 +17,8 @@ function [psimesh,mats] = SOBihN(grids,filtering,rhs,bc,mats)
 		bih = spdiag(~o)*bih + circshift(spdiag(o),-1,2);
 		%dx = deriv(nx,h,1,2);
 		%dy = deriv(ny,h,1,2);
-		%psixy = kron(dy,dx);
-		%bih = bih + spdiag(bc{2}{2}{1}&~(grids{7}>=5+1.5*grids{11}))*psixy;
+		%qxy = kron(dy,dx);
+		%bih = bih + spdiag(bc{2}{2}{1}&~(grids{7}>=5+1.5*grids{11}))*qxy;
 		%bih = spdiag(~bc{2}{2}{2})*bih + spdiag(bc{2}{2}{2})*kron(dy,speye(nx));
 		M = filterMat*bih*filterMat';
 		
@@ -27,7 +27,7 @@ function [psimesh,mats] = SOBihN(grids,filtering,rhs,bc,mats)
 	
 	%disp(['lower bound for condition number: ' num2str(condest(bih))])
 	
-	psimesh = M\rhs;
+	qmesh = M\rhs;
 	
 end
 

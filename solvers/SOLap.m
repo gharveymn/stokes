@@ -1,4 +1,4 @@
-function [psimesh,mats] = SOLap(grids,filtering,rhs,bc,mats)
+function [qmesh,mats] = SOLap(grids,filtering,rhs,bc,mats)
 	
 	if(nargin == 7)
 		%express lane!
@@ -19,7 +19,7 @@ function [psimesh,mats] = SOLap(grids,filtering,rhs,bc,mats)
 	%[L,U] = ilu(M);
 	%[vec,flag,relres,iter,resvec] = pcg(M,rhs,1e-8,100,L,U);
 	
-	psimesh = M\rhs;
+	qmesh = M\rhs;
 	
 	
 end

@@ -2,7 +2,7 @@ function Stokes
 	%calculates stokes flow
 	
 	if (~nargin)
-		[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = ParseValidIndices;
+		[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,on] = MakeGrids;
 	end
 	
 	par = Parameters;

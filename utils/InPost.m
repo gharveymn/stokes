@@ -1,8 +1,8 @@
-function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
+function [figs,mat,vec] = InPost(qmesh,bc,grids,filtering,par,figs)
 	%INPOST does the post processing of calculation
 	
 	h = par.h;
-	psimeshfull = filtering{1}'*psimesh;
+	qmeshfull = filtering{1}'*qmesh;
 	
 	nx = grids{9};
 	ny = grids{10};
@@ -22,22 +22,22 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 				case 2
 					[~,~,~,bcxdfull] = closure(grids,filtering,'inner',filtering{5}{1},bcxdfull);
 					[~,~,~,bcydfull] = closure(grids,filtering,'inner',filtering{5}{1},bcydfull);
-					[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{1},psimeshfull);
+					[~,~,~,qmeshfull] = closure(grids,filtering,'inner',filtering{5}{1},qmeshfull);
 					[~,grids,filtering] = closure(grids,filtering,'inner',filtering{5}{1},filtering{5}{1});
 				case 3
 					[~,~,~,bcxdfull] = closure(grids,filtering,'inner',filtering{5}{2},bcxdfull);
 					[~,~,~,bcydfull] = closure(grids,filtering,'inner',filtering{5}{2},bcydfull);
-					[~,~,~,psimeshfull] = closure(grids,filtering,'inner',filtering{5}{2},psimeshfull);
+					[~,~,~,qmeshfull] = closure(grids,filtering,'inner',filtering{5}{2},qmeshfull);
 					[~,newgrids,newfiltering,gp] = closure(grids,filtering,'inner',filtering{5}{2},filtering{5}{1});
 
-				% 	[~,~,~,umeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-				% 	[~,~,~,vmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
-				% 	[~,~,~,psimeshfull] = closure(newgrids,newfiltering,h,'inner',gp,psimeshfull);
+				% 	[~,~,~,umeshfull] = closure(newgrids,newfiltering,h,'inner',gp,qmeshfull);
+				% 	[~,~,~,vmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,qmeshfull);
+				% 	[~,~,~,qmeshfull] = closure(newgrids,newfiltering,h,'inner',gp,qmeshfull);
 				% 	[~,newgrids,newfiltering,gp] = closure(newgrids,newfiltering,h,'inner',gp,gp);
 
 					[~,~,~,bcxdfull] = closure(newgrids,newfiltering,'inner',gp,bcxdfull);
 					[~,~,~,bcydfull] = closure(newgrids,newfiltering,'inner',gp,bcydfull);
-					[~,~,~,psimeshfull] = closure(newgrids,newfiltering,'inner',gp,psimeshfull);
+					[~,~,~,qmeshfull] = closure(newgrids,newfiltering,'inner',gp,qmeshfull);
 					[~,grids,filtering] = closure(newgrids,newfiltering,'inner',gp,gp);
 				otherwise
 					ME = MException('closure:invalidParameterException','Invalid value for par.order');
@@ -46,13 +46,13 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 			
 		end
 		
-% 		%TODO figure out how to get back our psi at the right size
+% 		%TODO figure out how to get back our q at the right size
 		filterMat = filtering{1};
 		on = filtering{3}{1};
 		
 		bcxd = logical(filterMat*(1*bcxdfull));
 		bcyd = logical(filterMat*(1*bcydfull));
-		psimesh = filterMat*psimeshfull;
+		qmesh = filterMat*qmeshfull;
 		nx = grids{9};
 		ny = grids{10};
 		
@@ -104,8 +104,8 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 		end
 	end
 	
-	umesh = dy*psimesh;
-	vmesh = -dx*psimesh;
+	umesh = dy*qmesh;
+	vmesh = -dx*qmesh;
 	
 	umeshfull = filterMat'*umesh;
 	Umesh = reshape(umeshfull,[nx,ny])';
@@ -113,12 +113,12 @@ function [figs,mat,vec] = InPost(psimesh,bc,grids,filtering,par,figs)
 	vmeshfull = filterMat'*vmesh;
 	Vmesh = reshape(vmeshfull,[nx,ny])';
 	
-	psimeshfull = filterMat'*psimesh;
-	Psimesh = reshape(psimeshfull,[nx,ny])';
+	qmeshfull = filterMat'*qmesh;
+	Qmesh = reshape(qmeshfull,[nx,ny])';
 	
 	% use matrices rather than cell arrays so they throw a dimension error if we have a bug mismatched
-	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Psimesh);
-	vec = cat(2,grids{3},grids{4},umesh,vmesh,psimesh);
+	mat = cat(3,grids{5},grids{6},Umesh,Vmesh,Qmesh);
+	vec = cat(2,grids{3},grids{4},umesh,vmesh,qmesh);
 	
 	if(par.plot)
 		if(exist('figs','var'))

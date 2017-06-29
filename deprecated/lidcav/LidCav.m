@@ -6,9 +6,9 @@ function LidCav
 	h = par.h;
 	toPlot = par.toPlot;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = MakeGrids;
 	
-	%note: numel(psi) = numel(xmesh) = numel(ymesh)
+	%note: numel(q) = numel(xmesh) = numel(ymesh)
 	
 	xmin = min(xinit);
 	xmax = max(xinit);
@@ -67,7 +67,7 @@ function LidCav
 
 	bih = ~on.*bih + spdiags(on,0,sz,sz);
 	
-	psi = bih\rhs;
+	q = bih\rhs;
 	
 	
 	%make some derivative operator matrices
@@ -87,8 +87,8 @@ function LidCav
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	u = -dy*psi;
-	v = dx*psi;
+	u = -dy*q;
+	v = dx*q;
 	
 	umesh = filterMat'*u;
 	Umesh = reshape(umesh,[nx,ny])';
@@ -96,11 +96,11 @@ function LidCav
 	vmesh = filterMat'*v;
 	Vmesh = reshape(vmesh,[nx,ny])';
 	
-	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[nx,ny])';
+	qmesh = filterMat'*q;
+	Qmesh = reshape(qmesh,[nx,ny])';
 	
-	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Qmesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,qmesh);
 	
 	Plot(mat,vec,toPlot);
 	

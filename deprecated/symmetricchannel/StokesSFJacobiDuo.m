@@ -7,9 +7,9 @@ function StokesSFJacobiDuo
 	h = par.h;
 	toPlot = par.toPlot;
 	
-	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = ParseValidIndices;
+	[xinit,yinit,xmesh,ymesh,Xmesh,Ymesh,filterMat,valind,on,xmeshfull,ymeshfull] = MakeGrids;
 	
-	%note: numel(psi) = numel(xmesh) = numel(ymesh)
+	%note: numel(q) = numel(xmesh) = numel(ymesh)
 	onpf = on(valind);
 	
 	xmin = min(xinit);
@@ -95,8 +95,8 @@ function StokesSFJacobiDuo
 	
 	vecn = M\rhs;
 	
-	psi = vecn(1:sz);
-	psi = filterMat*psi;
+	q = vecn(1:sz);
+	q = filterMat*q;
 	
 	Dx = sptoeplitz([0 -1],[0 1],nx)./(2*h);
 	Dx(1,:) = 0;
@@ -112,8 +112,8 @@ function StokesSFJacobiDuo
 	dy = filterMat*dy*filterMat';
 	dy = dy.*~(sum(dy,2)~=0);
 	
-	u = dy*psi;
-	v = -dx*psi;
+	u = dy*q;
+	v = -dx*q;
 
 	umesh = filterMat'*u;
 	Umesh = reshape(umesh,[nx,ny])';
@@ -121,11 +121,11 @@ function StokesSFJacobiDuo
 	vmesh = filterMat'*v;
 	Vmesh = reshape(vmesh,[nx,ny])';
 
-	psimesh = filterMat'*psi;
-	Psimesh = reshape(psimesh,[nx,ny])';
+	qmesh = filterMat'*q;
+	Qmesh = reshape(qmesh,[nx,ny])';
 
-	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-	vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+	mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Qmesh);
+	vec = cat(2,xmesh,ymesh,umesh,vmesh,qmesh);
 
 	figs = Plot(mat,vec,par.toPlot,par.filter);
 	drawnow;
@@ -135,14 +135,14 @@ function StokesSFJacobiDuo
 		disp(norm(vecn-vecn1))
 		vecn = vecn1;
 	
-		psi = vecn(1:sz);
-		psi = filterMat*psi;
+		q = vecn(1:sz);
+		q = filterMat*q;
 
 		%make some derivative operator matrices
 		%TODO: just make these into a function in the path
 
-		u = dy*psi;
-		v = -dx*psi;
+		u = dy*q;
+		v = -dx*q;
 
 		umesh = filterMat'*u;
 		Umesh = reshape(umesh,[nx,ny])';
@@ -150,11 +150,11 @@ function StokesSFJacobiDuo
 		vmesh = filterMat'*v;
 		Vmesh = reshape(vmesh,[nx,ny])';
 
-		psimesh = filterMat'*psi;
-		Psimesh = reshape(psimesh,[nx,ny])';
+		qmesh = filterMat'*q;
+		Qmesh = reshape(qmesh,[nx,ny])';
 
-		mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Psimesh);
-		vec = cat(2,xmesh,ymesh,umesh,vmesh,psimesh);
+		mat = cat(3,Xmesh,Ymesh,Umesh,Vmesh,Qmesh);
+		vec = cat(2,xmesh,ymesh,umesh,vmesh,qmesh);
 
 		Plot(mat,vec,par.toPlot,par.filter,figs);
 		drawnow;
