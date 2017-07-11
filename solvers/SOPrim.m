@@ -2,8 +2,8 @@ function [umesh,vmesh,pmesh] = SOPrim(grids,filtering,rhs,bc,mats)
 	
 	fu = rhs{1};
 	fv = rhs{2};
-	bcu = bcinds{1};
-	bcv = bcinds{2};
+	bcu = bc{1};
+	bcv = bc{2};
 	
 	lap = filterMat*laplacian2(nx,ny,h,4)*filterMat';
 	
